@@ -54,25 +54,26 @@ export default function Messages() {
     enabled: user?.role === 'lawyer',
   });
 
-  // Get available contacts (lawyers for clients, clients for lawyers)
+  // Get available contacts (all lawyers for clients, all clients for lawyers)
   const getAvailableContacts = () => {
     if (user?.role === 'client') {
-      return lawyers.map((lawyer: Lawyer) => ({
+      // Show all lawyers, not just ones with existing conversations
+      return Array.isArray(lawyers) ? lawyers.map((lawyer: Lawyer) => ({
         _id: lawyer._id,
         name: lawyer.name,
         email: lawyer.email,
         role: 'lawyer',
         specialization: lawyer.specialization,
-      }));
+      })) : [];
     } else if (user?.role === 'lawyer') {
-      // For lawyers, show clients they can chat with
-      return clients.map((client: User) => ({
+      // Show all clients, not just ones with existing conversations
+      return Array.isArray(clients) ? clients.map((client: User) => ({
         _id: client._id,
         name: client.name,
         email: client.email,
         role: 'client',
         city: client.city,
-      }));
+      })) : [];
     }
     return [];
   };
@@ -119,11 +120,14 @@ export default function Messages() {
     contact.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const conversationList = Object.keys(conversations).map(userId => {
-    const contact = getContactInfo(userId);
+  // Get all available contacts and existing conversations
+  const allContacts = getAvailableContacts();
+  
+  const conversationList = allContacts.map(contact => {
+    const userId = contact._id;
     const lastMessage = getLastMessage(userId);
     const unreadCount = getUnreadCount(userId);
-    
+
     return {
       userId,
       contact,

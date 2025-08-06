@@ -134,7 +134,7 @@ export default function FindLawyers() {
     setIsDialogOpen(true);
   };
 
-  const cities = Array.from(new Set(Array.isArray(lawyers) ? lawyers.map((l: User) => l.city).filter(Boolean) : [])) as Set<string>;
+  const cities = Array.from(new Set(Array.isArray(lawyers) ? lawyers.map((l: User) => l.city).filter(Boolean) : []));
   const caseTypes = ['fraud', 'theft', 'murder', 'civil', 'corporate'];
 
   if (isLoading) {
@@ -195,11 +195,15 @@ export default function FindLawyers() {
 
       {/* Lawyers Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Array.isArray(lawyers) && lawyers.length === 0 ? (
+        {isLoading ? (
+          <div className="col-span-3 text-center py-8 text-gray-500">
+            Loading lawyers...
+          </div>
+        ) : !Array.isArray(lawyers) || lawyers.length === 0 ? (
           <div className="col-span-3 text-center py-8 text-gray-500">
             No lawyers found matching your criteria
           </div>
-        ) : Array.isArray(lawyers) ? lawyers.map((lawyer: User) => (
+        ) : lawyers.map((lawyer: User) => (
           <Card key={lawyer._id} className="hover:shadow-lg transition-shadow">
             <CardHeader className="flex flex-row items-center space-y-0 pb-2">
               <Avatar className="h-12 w-12 mr-4">
@@ -255,11 +259,7 @@ export default function FindLawyers() {
               </div>
             </CardContent>
           </Card>
-        )) : (
-          <div className="col-span-3 text-center py-8 text-gray-500">
-            Loading lawyers...
-          </div>
-        )}
+        ))}
       </div>
 
       {/* Case Request Dialog */}
