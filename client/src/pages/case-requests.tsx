@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { Clock, CheckCircle, XCircle, User, MapPin, Calendar, Phone, Mail } from 'lucide-react';
 import { format } from 'date-fns';
+import CompleteCase from '@/components/CompleteCase';
 import type { CaseRequest } from '@shared/schema';
 
 interface CaseRequestWithDetails extends CaseRequest {
@@ -30,6 +31,7 @@ export default function CaseRequests() {
   const [selectedRequest, setSelectedRequest] = useState<CaseRequestWithDetails | null>(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [isResponseDialogOpen, setIsResponseDialogOpen] = useState(false);
+  const [isCompleteCaseDialogOpen, setIsCompleteCaseDialogOpen] = useState(false);
   const [lawyerResponse, setLawyerResponse] = useState('');
   const [responseAction, setResponseAction] = useState<'accepted' | 'rejected' | null>(null);
   const { toast } = useToast();
@@ -41,31 +43,27 @@ export default function CaseRequests() {
 
   const updateCaseRequestMutation = useMutation({
     mutationFn: async ({ id, status, lawyerResponse }: { id: string; status: string; lawyerResponse: string }) => {
-      const response = await fetch(`/api/case-requests/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({ status, lawyerResponse }),
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to update case request');
-      }
-      
-      return response.json();
+      const response = await apiRequest('PATCH', `/api/case-requests/${id}`, { status, lawyerResponse });
+      return await response.json();
     },
-    onSuccess: () => {
-      toast({
-        title: 'Response Sent',
-        description: 'Your response has been sent to the client.',
-      });
-      setIsResponseDialogOpen(false);
-      setSelectedRequest(null);
-      setLawyerResponse('');
-      setResponseAction(null);
+    onSuccess: (data) => {
+      if (responseAction === 'accepted') {
+        toast({
+          title: 'Request Accepted',
+          description: 'Now complete the case details to create the official case.',
+        });
+        setIsResponseDialogOpen(false);
+        setIsCompleteCaseDialogOpen(true);
+      } else {
+        toast({
+          title: 'Response Sent',
+          description: 'Your response has been sent to the client.',
+        });
+        setIsResponseDialogOpen(false);
+        setSelectedRequest(null);
+        setLawyerResponse('');
+        setResponseAction(null);
+      }
       queryClient.invalidateQueries({ queryKey: ['/api/case-requests'] });
     },
     onError: (error: any) => {
@@ -76,6 +74,66 @@ export default function CaseRequests() {
       });
     },
   });
+
+  const createCaseMutation = useMutation({
+    mutationFn: async (caseData: any) => {
+      const response = await apiRequest('POST', '/api/cases', caseData);
+      return await response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Case Created Successfully',
+        description: 'The official case has been created with PNR number.',
+      });
+      setIsCompleteCaseDialogOpen(false);
+      setSelectedRequest(null);
+      setLawyerResponse('');
+      setResponseAction(null);
+      queryClient.invalidateQueries({ queryKey: ['/api/cases'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/case-requests'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to create case',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const handleCompleteCase = (completeData: any) => {
+    if (!selectedRequest) return;
+    
+    const caseData = {
+      title: selectedRequest.title,
+      description: completeData.additionalNotes || selectedRequest.description,
+      caseType: completeData.caseType,
+      victim: {
+        name: selectedRequest.victimName || 'N/A',
+        phone: selectedRequest.clientPhone || 'N/A',
+        email: selectedRequest.clientEmail || 'N/A',
+      },
+      accused: {
+        name: selectedRequest.accusedName || 'N/A',
+        phone: 'N/A',
+        address: 'N/A',
+      },
+      clientId: selectedRequest.clientId,
+      lawyerId: selectedRequest.lawyerId,
+      pnr: completeData.pnr,
+      policeStationId: completeData.policeStation,
+      city: 'Unknown', // Will be updated based on police station
+      incidentDate: completeData.incidentDate,
+      incidentTime: completeData.incidentTime,
+      incidentLocation: completeData.incidentLocation,
+      urgency: completeData.urgency,
+      evidenceDescription: completeData.evidenceDescription,
+      witnessDetails: completeData.witnessDetails,
+      status: 'submitted',
+    };
+
+    createCaseMutation.mutate(caseData);
+  };
 
   const handleViewDetails = (request: CaseRequestWithDetails) => {
     setSelectedRequest(request);
@@ -244,11 +302,11 @@ export default function CaseRequests() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm font-medium text-gray-500">Case Type</Label>
-                  <p className="capitalize">{selectedRequest.caseType}</p>
+                  <p className="capitalize">{selectedRequest.caseType || 'To be determined'}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-gray-500">City</Label>
-                  <p>{selectedRequest.city}</p>
+                  <p>{selectedRequest.city || 'To be determined'}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-gray-500">Status</Label>
@@ -267,19 +325,46 @@ export default function CaseRequests() {
                 <p className="mt-1 text-gray-700">{selectedRequest.description}</p>
               </div>
 
+              {/* Client Contact Information */}
+              <div>
+                <Label className="text-sm font-medium text-gray-500">Client Contact Information</Label>
+                <div className="mt-2 space-y-1">
+                  {selectedRequest.client && (
+                    <div className="flex items-center gap-2">
+                      <User className="h-4 w-4 text-gray-400" />
+                      <span>{selectedRequest.client.name}</span>
+                    </div>
+                  )}
+                  {selectedRequest.clientPhone && (
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-gray-400" />
+                      <span>{selectedRequest.clientPhone}</span>
+                    </div>
+                  )}
+                  {selectedRequest.clientEmail && (
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-gray-400" />
+                      <span>{selectedRequest.clientEmail}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <Label className="text-sm font-medium text-gray-500">Victim Information</Label>
                   <div className="mt-2 space-y-1">
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4 text-gray-400" />
-                      <span>{selectedRequest.victim.name}</span>
+                      <span>{selectedRequest.victimName || selectedRequest.victim?.name || 'N/A'}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-gray-400" />
-                      <span>{selectedRequest.victim.phone}</span>
-                    </div>
-                    {selectedRequest.victim.email && (
+                    {selectedRequest.victim?.phone && (
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-gray-400" />
+                        <span>{selectedRequest.victim.phone}</span>
+                      </div>
+                    )}
+                    {selectedRequest.victim?.email && (
                       <div className="flex items-center gap-2">
                         <Mail className="h-4 w-4 text-gray-400" />
                         <span>{selectedRequest.victim.email}</span>
@@ -293,15 +378,15 @@ export default function CaseRequests() {
                   <div className="mt-2 space-y-1">
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4 text-gray-400" />
-                      <span>{selectedRequest.accused.name}</span>
+                      <span>{selectedRequest.accusedName || selectedRequest.accused?.name || 'N/A'}</span>
                     </div>
-                    {selectedRequest.accused.phone && (
+                    {selectedRequest.accused?.phone && (
                       <div className="flex items-center gap-2">
                         <Phone className="h-4 w-4 text-gray-400" />
                         <span>{selectedRequest.accused.phone}</span>
                       </div>
                     )}
-                    {selectedRequest.accused.address && (
+                    {selectedRequest.accused?.address && (
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4 text-gray-400" />
                         <span>{selectedRequest.accused.address}</span>
@@ -374,6 +459,20 @@ export default function CaseRequests() {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Complete Case Dialog */}
+      <Dialog open={isCompleteCaseDialogOpen} onOpenChange={setIsCompleteCaseDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto">
+          {selectedRequest && (
+            <CompleteCase
+              caseRequest={selectedRequest}
+              onSubmit={handleCompleteCase}
+              onCancel={() => setIsCompleteCaseDialogOpen(false)}
+              isSubmitting={createCaseMutation.isPending}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>

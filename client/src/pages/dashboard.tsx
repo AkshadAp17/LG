@@ -1,12 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { Plus, FolderOpen, Clock, CalendarCheck, FileText } from "lucide-react";
+import { Plus, FolderOpen, Clock, CalendarCheck, FileText, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import StatsCard from "@/components/StatsCard";
 import CaseCard from "@/components/CaseCard";
 import LawyerCard from "@/components/LawyerCard";
 import { authService } from "@/lib/auth";
-import type { Case, Lawyer } from "@shared/schema";
+import { apiRequest } from "@/lib/queryClient";
+import type { Case, Lawyer, Notification } from "@shared/schema";
 
 export default function Dashboard() {
   const user = authService.getUser();
@@ -22,6 +24,14 @@ export default function Dashboard() {
   const { data: availableLawyers = [], isLoading: lawyersLoading } = useQuery<Lawyer[]>({
     queryKey: ['/api/lawyers'],
     enabled: user?.role === 'client',
+  });
+
+  const { data: notifications = [] } = useQuery<Notification[]>({
+    queryKey: ['/api/notifications'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/notifications');
+      return await response.json();
+    },
   });
 
   const handleSelectLawyer = (lawyer: Lawyer) => {
@@ -117,6 +127,43 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Notifications for Lawyers */}
+        {user?.role === 'lawyer' && notifications.length > 0 && (
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <Bell className="h-5 w-5" />
+                  Recent Notifications
+                </CardTitle>
+                <Badge variant="secondary">{notifications.length}</Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {notifications.slice(0, 5).map((notification: Notification) => (
+                  <div
+                    key={notification._id}
+                    className={`p-3 rounded-lg border ${
+                      notification.read ? 'bg-gray-50' : 'bg-blue-50 border-blue-200'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-medium text-sm">{notification.title}</h4>
+                        <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+                      </div>
+                      {!notification.read && (
+                        <Badge variant="default" className="text-xs">New</Badge>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Lawyer Selection Card - Only for clients */}
         {user?.role === 'client' && (
           <Card>

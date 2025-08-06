@@ -513,7 +513,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Verify lawyer owns this request
       const existingRequest = await storage.getCaseRequest(req.params.id);
-      if (!existingRequest || existingRequest.lawyerId !== req.user._id) {
+      if (!existingRequest || existingRequest.lawyerId.toString() !== req.user._id.toString()) {
         return res.status(403).json({ message: 'Access denied' });
       }
       
