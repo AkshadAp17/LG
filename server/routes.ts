@@ -93,6 +93,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get users by role (for messaging)
+  app.get("/api/users", async (req, res) => {
+    try {
+      const { role } = req.query;
+      
+      if (!role) {
+        return res.status(400).json({ message: "Role parameter is required" });
+      }
+
+      const users = await storage.getUsersByRole(role as string);
+      res.json(users);
+    } catch (error: any) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
   app.get('/api/lawyers/:id', async (req, res) => {
     try {
       const lawyer = await storage.getLawyer(req.params.id);

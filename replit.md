@@ -10,6 +10,18 @@ The application provides features for case creation and tracking, lawyer discove
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (January 2025)
+
+✓ Successfully migrated from Replit Agent to Replit environment
+✓ Implemented role-based navigation system:
+  - Clients: Dashboard, Cases, Calendar, Find Lawyers, Documents, Messages
+  - Lawyers: Dashboard, Cases, Calendar, Documents, Messages (removed Find Lawyers)
+  - Police Officers: Dashboard, Cases, Calendar only
+✓ Enhanced messaging system to enable chat between clients and lawyers
+✓ Made notifications fully functional with real-time unread counts
+✓ Added comprehensive role-based signup system supporting all three user types
+✓ Fixed MongoDB connection and storage layer type compatibility issues
+
 ## System Architecture
 
 ### Frontend Architecture

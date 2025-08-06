@@ -48,7 +48,13 @@ export default function Messages() {
     return acc;
   }, {});
 
-  // Get available contacts (lawyers for clients, all users for others)
+  // Fetch contacts based on user role
+  const { data: clients = [] } = useQuery({
+    queryKey: ['/api/users', { role: 'client' }],
+    enabled: user?.role === 'lawyer',
+  });
+
+  // Get available contacts (lawyers for clients, clients for lawyers)
   const getAvailableContacts = () => {
     if (user?.role === 'client') {
       return lawyers.map((lawyer: Lawyer) => ({
@@ -57,6 +63,15 @@ export default function Messages() {
         email: lawyer.email,
         role: 'lawyer',
         specialization: lawyer.specialization,
+      }));
+    } else if (user?.role === 'lawyer') {
+      // For lawyers, show clients they can chat with
+      return clients.map((client: User) => ({
+        _id: client._id,
+        name: client.name,
+        email: client.email,
+        role: 'client',
+        city: client.city,
       }));
     }
     return [];
@@ -125,7 +140,11 @@ export default function Messages() {
     <div>
       <div className="mb-6">
         <h2 className="text-3xl font-bold text-gray-900 mb-2">Messages</h2>
-        <p className="text-gray-600">Communicate with lawyers and case participants</p>
+        <p className="text-gray-600">
+          {user?.role === 'client' && "Communicate with your lawyers"}
+          {user?.role === 'lawyer' && "Communicate with your clients"}
+          {user?.role === 'police' && "View case communications"}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[700px]">
@@ -229,6 +248,11 @@ export default function Messages() {
                             {contact.specialization && (
                               <p className="text-xs text-gray-500">
                                 {contact.specialization.join(', ')}
+                              </p>
+                            )}
+                            {contact.city && (
+                              <p className="text-xs text-gray-500">
+                                {contact.city}
                               </p>
                             )}
                           </div>

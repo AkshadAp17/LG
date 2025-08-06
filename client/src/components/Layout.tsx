@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Scale, LayoutDashboard, FolderOpen, Users, Calendar, FileText, MessageSquare, Bell, ChevronDown, Settings } from "lucide-react";
 import { authService } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -22,19 +23,48 @@ export default function Layout({ children }: LayoutProps) {
   const [showNotifications, setShowNotifications] = useState(false);
   const user = authService.getUser();
 
+  // Fetch notifications count
+  const { data: notifications = [] } = useQuery({
+    queryKey: ['/api/notifications'],
+    enabled: !!user,
+  });
+
+  const unreadCount = notifications.filter((notif: any) => !notif.read).length;
+
   const handleLogout = () => {
     authService.logout();
     navigate("/login");
   };
 
-  const sidebarItems = [
-    { path: "/dashboard", icon: LayoutDashboard, label: "LayoutDashboard" },
-    { path: "/cases", icon: FolderOpen, label: "My Cases" },
-    { path: "/lawyers", icon: Users, label: "Find Lawyers" },
-    { path: "/calendar", icon: Calendar, label: "Calendar" },
-    { path: "/documents", icon: FileText, label: "Documents" },
-    { path: "/messages", icon: MessageSquare, label: "Messages" },
-  ];
+  const getSidebarItems = () => {
+    const baseItems = [
+      { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+      { path: "/cases", icon: FolderOpen, label: "Cases" },
+      { path: "/calendar", icon: Calendar, label: "Calendar" },
+    ];
+
+    if (user?.role === 'client') {
+      return [
+        ...baseItems,
+        { path: "/lawyers", icon: Users, label: "Find Lawyers" },
+        { path: "/documents", icon: FileText, label: "Documents" },
+        { path: "/messages", icon: MessageSquare, label: "Messages" },
+      ];
+    } else if (user?.role === 'lawyer') {
+      return [
+        ...baseItems,
+        { path: "/documents", icon: FileText, label: "Documents" },
+        { path: "/messages", icon: MessageSquare, label: "Messages" },
+      ];
+    } else if (user?.role === 'police') {
+      // Police officers only see Dashboard, Cases, and Calendar
+      return baseItems;
+    }
+
+    return baseItems;
+  };
+
+  const sidebarItems = getSidebarItems();
 
   return (
     <div className="min-h-screen bg-legal-gray">
@@ -55,12 +85,14 @@ export default function Layout({ children }: LayoutProps) {
                 className="relative"
               >
                 <Bell className="h-5 w-5" />
-                <Badge 
-                  variant="destructive" 
-                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs p-0"
-                >
-                  3
-                </Badge>
+                {unreadCount > 0 && (
+                  <Badge 
+                    variant="destructive" 
+                    className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs p-0"
+                  >
+                    {unreadCount}
+                  </Badge>
+                )}
               </Button>
               
               <DropdownMenu>
