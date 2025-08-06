@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import CloudinaryUpload from "./CloudinaryUpload";
 import type { Lawyer } from "@shared/schema";
 
 interface ClientCaseFormProps {
@@ -38,20 +39,46 @@ export default function ClientCaseForm({ isOpen, onClose, selectedLawyer }: Clie
       phone: '',
       address: '',
     },
-    urgency: 'medium',
+    documents: [] as string[],
   });
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Fetch police stations based on selected city
+  const { data: policeStations = [] } = useQuery({
+    queryKey: ['/api/police-stations', formData.city],
+    enabled: !!formData.city,
+  });
+
   const createCase = useMutation({
     mutationFn: async (data: any) => {
+      // Get the first police station for the selected city
+      const policeStation = policeStations.length > 0 ? policeStations[0] : null;
+      
+      // Add required fields that might be missing
+      const caseData = {
+        ...data,
+        status: 'submitted',
+        policeStationId: policeStation?._id || '68939cf0eb6ef63a16eb8420', // Use police station from city or fallback
+        victim: {
+          name: data.victim.name || 'Unknown',
+          phone: data.victim.phone || 'N/A',
+          email: data.victim.email || '',
+        },
+        accused: {
+          name: data.accused.name || 'Unknown',
+          phone: data.accused.phone || '',
+          address: data.accused.address || '',
+        },
+      };
+      
       const formDataObj = new FormData();
-      Object.keys(data).forEach(key => {
+      Object.keys(caseData).forEach(key => {
         if (key === 'victim' || key === 'accused') {
-          formDataObj.append(key, JSON.stringify(data[key]));
+          formDataObj.append(key, JSON.stringify(caseData[key]));
         } else {
-          formDataObj.append(key, data[key]);
+          formDataObj.append(key, caseData[key]);
         }
       });
       
@@ -92,7 +119,7 @@ export default function ClientCaseForm({ isOpen, onClose, selectedLawyer }: Clie
         phone: '',
         address: '',
       },
-      urgency: 'medium',
+      documents: [],
     });
   };
 
@@ -114,6 +141,10 @@ export default function ClientCaseForm({ isOpen, onClose, selectedLawyer }: Clie
     };
 
     createCase.mutate(submitData);
+  };
+
+  const handleDocumentUpload = (documentUrls: string[]) => {
+    setFormData(prev => ({ ...prev, documents: documentUrls }));
   };
 
   return (
@@ -289,6 +320,16 @@ export default function ClientCaseForm({ isOpen, onClose, selectedLawyer }: Clie
                 rows={2}
               />
             </div>
+          </div>
+
+          {/* Document Upload */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Supporting Documents</h3>
+            <CloudinaryUpload
+              onUpload={handleDocumentUpload}
+              maxFiles={5}
+              label="Upload Evidence & Documents"
+            />
           </div>
 
           {/* Action Buttons */}
