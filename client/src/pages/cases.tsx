@@ -18,7 +18,7 @@ export default function Cases() {
   const user = authService.getUser();
   const queryClient = useQueryClient();
 
-  const { data: cases = [], isLoading } = useQuery({
+  const { data: cases = [], isLoading } = useQuery<Case[]>({
     queryKey: ['/api/cases'],
   });
 
@@ -70,7 +70,7 @@ export default function Cases() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold text-gray-900">Cases</h2>
-        {user?.role === 'client' && (
+        {user?.role === 'lawyer' && (
           <Button
             onClick={() => setShowCreateForm(true)}
             className="bg-legal-blue hover:bg-blue-700 text-white"

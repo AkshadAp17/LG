@@ -13,7 +13,11 @@ import {
 } from "@/components/ui/select";
 import { Search } from "lucide-react";
 import LawyerCard from "@/components/LawyerCard";
+import LawyerProfileModal from "@/components/LawyerProfileModal";
+import ClientCaseForm from "@/components/ClientCaseForm";
 import WinLossChart from "@/components/WinLossChart";
+import { useToast } from "@/hooks/use-toast";
+import { authService } from "@/lib/auth";
 import type { Lawyer } from "@shared/schema";
 
 export default function Lawyers() {
@@ -22,6 +26,10 @@ export default function Lawyers() {
     caseType: "",
   });
   const [selectedLawyer, setSelectedLawyer] = useState<Lawyer | null>(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showCaseForm, setShowCaseForm] = useState(false);
+  const { toast } = useToast();
+  const user = authService.getUser();
 
   const { data: lawyers = [], isLoading } = useQuery({
     queryKey: ['/api/lawyers', filters.city, filters.caseType],
@@ -39,12 +47,29 @@ export default function Lawyers() {
 
   const handleSelectLawyer = (lawyer: Lawyer) => {
     setSelectedLawyer(lawyer);
+    setShowProfileModal(true);
+  };
+
+  const handleChooseLawyer = (lawyer: Lawyer) => {
+    setSelectedLawyer(lawyer);
+    setShowProfileModal(false);
+    setShowCaseForm(true);
   };
 
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-6">Find Lawyers</h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold text-gray-900">Find Lawyers</h2>
+          {user?.role === 'client' && (
+            <Button
+              onClick={() => setShowCaseForm(true)}
+              className="bg-legal-blue hover:bg-blue-700 text-white"
+            >
+              Request Legal Help
+            </Button>
+          )}
+        </div>
 
         {/* Search Filters */}
         <Card className="mb-6">
@@ -54,13 +79,13 @@ export default function Lawyers() {
                 <Label htmlFor="caseType">Case Type</Label>
                 <Select
                   value={filters.caseType}
-                  onValueChange={(value) => setFilters(prev => ({ ...prev, caseType: value }))}
+                  onValueChange={(value) => setFilters(prev => ({ ...prev, caseType: value === 'all' ? '' : value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select case type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Types</SelectItem>
+                    <SelectItem value="all">All Types</SelectItem>
                     <SelectItem value="fraud">Fraud</SelectItem>
                     <SelectItem value="theft">Theft</SelectItem>
                     <SelectItem value="murder">Murder</SelectItem>
@@ -74,13 +99,13 @@ export default function Lawyers() {
                 <Label htmlFor="city">City</Label>
                 <Select
                   value={filters.city}
-                  onValueChange={(value) => setFilters(prev => ({ ...prev, city: value }))}
+                  onValueChange={(value) => setFilters(prev => ({ ...prev, city: value === 'all' ? '' : value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select city" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Cities</SelectItem>
+                    <SelectItem value="all">All Cities</SelectItem>
                     <SelectItem value="delhi">Delhi</SelectItem>
                     <SelectItem value="mumbai">Mumbai</SelectItem>
                     <SelectItem value="bangalore">Bangalore</SelectItem>
@@ -216,6 +241,21 @@ export default function Lawyers() {
           </Card>
         </div>
       </div>
+
+      {/* Lawyer Profile Modal */}
+      <LawyerProfileModal
+        lawyer={selectedLawyer}
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        onSelectLawyer={user?.role === 'client' ? handleChooseLawyer : undefined}
+      />
+
+      {/* Client Case Form */}
+      <ClientCaseForm
+        isOpen={showCaseForm}
+        onClose={() => setShowCaseForm(false)}
+        selectedLawyer={selectedLawyer}
+      />
     </div>
   );
 }
