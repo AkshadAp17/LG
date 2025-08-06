@@ -122,22 +122,28 @@ export const caseRequestSchema = z.object({
   lawyerId: z.string(),
   title: z.string(),
   description: z.string(),
-  caseType: z.enum(['fraud', 'theft', 'murder', 'civil', 'corporate']),
+  // Simplified fields - only basic info from client
+  victimName: z.string(),
+  accusedName: z.string(),
+  clientPhone: z.string(),
+  clientEmail: z.string().optional(),
+  documents: z.array(z.string()).optional(),
+  status: z.enum(['pending', 'accepted', 'rejected']).default('pending'),
+  lawyerResponse: z.string().optional(),
+  // Optional detailed fields (filled by lawyer later)
+  caseType: z.enum(['fraud', 'theft', 'murder', 'civil', 'corporate']).optional(),
   victim: z.object({
     name: z.string(),
     phone: z.string(),
     email: z.string().optional(),
-  }),
+  }).optional(),
   accused: z.object({
     name: z.string(),
     phone: z.string().optional(),
     address: z.string().optional(),
-  }),
-  city: z.string(),
-  policeStationId: z.string(),
-  documents: z.array(z.string()).optional(),
-  status: z.enum(['pending', 'accepted', 'rejected']).default('pending'),
-  lawyerResponse: z.string().optional(),
+  }).optional(),
+  city: z.string().optional(),
+  policeStationId: z.string().optional(),
   createdAt: z.date().optional(),
 });
 

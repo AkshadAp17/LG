@@ -113,22 +113,30 @@ const caseRequestSchema = new mongoose.Schema({
   lawyerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   title: { type: String, required: true },
   description: { type: String, required: true },
-  caseType: { type: String, enum: ['fraud', 'theft', 'murder', 'civil', 'corporate'], required: true },
-  victim: {
-    name: { type: String, required: true },
-    phone: { type: String, required: true },
-    email: { type: String }
-  },
-  accused: {
-    name: { type: String, required: true },
-    phone: { type: String },
-    address: { type: String }
-  },
-  city: { type: String, required: true },
-  policeStationId: { type: mongoose.Schema.Types.ObjectId, ref: 'PoliceStation', required: true },
+  
+  // Simplified fields - only basic info from client
+  victimName: { type: String, required: true },
+  accusedName: { type: String, required: true },
+  clientPhone: { type: String, required: true },
+  clientEmail: { type: String },
   documents: [String],
   status: { type: String, enum: ['pending', 'accepted', 'rejected'], default: 'pending' },
   lawyerResponse: { type: String },
+  
+  // Optional detailed fields (filled by lawyer later)
+  caseType: { type: String, enum: ['fraud', 'theft', 'murder', 'civil', 'corporate'] },
+  victim: {
+    name: { type: String },
+    phone: { type: String },
+    email: { type: String }
+  },
+  accused: {
+    name: { type: String },
+    phone: { type: String },
+    address: { type: String }
+  },
+  city: { type: String },
+  policeStationId: { type: mongoose.Schema.Types.ObjectId, ref: 'PoliceStation' },
 }, { timestamps: true });
 
 export const CaseRequestModel = mongoose.model('CaseRequest', caseRequestSchema);

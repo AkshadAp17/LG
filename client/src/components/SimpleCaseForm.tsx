@@ -14,6 +14,8 @@ const simpleCaseRequestSchema = z.object({
   description: z.string().min(10, 'Please provide a brief description'),
   victimName: z.string().min(1, 'Victim name is required'),
   accusedName: z.string().min(1, 'Accused name is required'),
+  clientPhone: z.string().min(10, 'Valid phone number required'),
+  clientEmail: z.string().email('Valid email required').optional().or(z.literal('')),
 });
 
 type SimpleCaseRequestData = z.infer<typeof simpleCaseRequestSchema>;
@@ -42,6 +44,8 @@ export default function SimpleCaseForm({
       description: '',
       victimName: '',
       accusedName: '',
+      clientPhone: '',
+      clientEmail: '',
     },
   });
 
@@ -134,6 +138,38 @@ export default function SimpleCaseForm({
             {form.formState.errors.accusedName && (
               <p className="text-sm text-red-600 mt-1">
                 {form.formState.errors.accusedName.message}
+              </p>
+            )}
+          </div>
+
+          {/* Client Contact Information */}
+          <div>
+            <Label htmlFor="clientPhone">Your Phone Number</Label>
+            <Input
+              id="clientPhone"
+              {...form.register('clientPhone')}
+              placeholder="Your contact number"
+              data-testid="input-client-phone"
+            />
+            {form.formState.errors.clientPhone && (
+              <p className="text-sm text-red-600 mt-1">
+                {form.formState.errors.clientPhone.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="clientEmail">Your Email (Optional)</Label>
+            <Input
+              id="clientEmail"
+              type="email"
+              {...form.register('clientEmail')}
+              placeholder="your.email@example.com"
+              data-testid="input-client-email"
+            />
+            {form.formState.errors.clientEmail && (
+              <p className="text-sm text-red-600 mt-1">
+                {form.formState.errors.clientEmail.message}
               </p>
             )}
           </div>

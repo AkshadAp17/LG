@@ -18,6 +18,8 @@ type SimpleCaseRequestData = {
   description: string;
   victimName: string;
   accusedName: string;
+  clientPhone: string;
+  clientEmail?: string;
   lawyerId: string;
 };
 
