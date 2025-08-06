@@ -4,11 +4,11 @@ import {
   type User, type InsertUser, type Lawyer, type InsertLawyer,
   type Case, type InsertCase, type PoliceStation, type InsertPoliceStation,
   type Message, type InsertMessage, type Notification, type InsertNotification,
-  type CaseRequest, type InsertCaseRequest, type LoginData, type AuthResponse
+  type LoginData, type AuthResponse
 } from "@shared/schema";
 import { 
   UserModel, LawyerModel, CaseModel, PoliceStationModel, 
-  MessageModel, NotificationModel, CaseRequestModel 
+  MessageModel, NotificationModel 
 } from "./db.js";
 
 export interface IStorage {
@@ -45,12 +45,6 @@ export interface IStorage {
   getNotifications(userId: string): Promise<Notification[]>;
   createNotification(notification: InsertNotification): Promise<Notification>;
   markNotificationAsRead(id: string): Promise<void>;
-  
-  // Case Requests
-  getCaseRequests(filters?: { clientId?: string; lawyerId?: string; status?: string }): Promise<CaseRequest[]>;
-  getCaseRequest(id: string): Promise<CaseRequest | null>;
-  createCaseRequest(caseRequest: InsertCaseRequest): Promise<CaseRequest>;
-  updateCaseRequest(id: string, data: Partial<CaseRequest>): Promise<CaseRequest | null>;
 }
 
 export class MongoStorage implements IStorage {
@@ -482,102 +476,6 @@ export class MongoStorage implements IStorage {
 
   async markNotificationAsRead(id: string): Promise<void> {
     await NotificationModel.findByIdAndUpdate(id, { read: true });
-  }
-
-  async getCaseRequests(filters?: { clientId?: string; lawyerId?: string; status?: string }): Promise<CaseRequest[]> {
-    const query: any = {};
-    
-    if (filters?.clientId) query.clientId = filters.clientId;
-    if (filters?.lawyerId) query.lawyerId = filters.lawyerId;
-    if (filters?.status) query.status = filters.status;
-
-    const requests = await CaseRequestModel.find(query).sort({ createdAt: -1 });
-    return requests.map(req => ({
-      _id: req._id.toString(),
-      clientId: req.clientId,
-      lawyerId: req.lawyerId,
-      title: req.title,
-      description: req.description,
-      caseType: req.caseType,
-      victim: req.victim,
-      accused: req.accused,
-      city: req.city,
-      policeStationId: req.policeStationId,
-      documents: req.documents,
-      status: req.status,
-      lawyerResponse: req.lawyerResponse,
-      createdAt: req.createdAt,
-    }));
-  }
-
-  async getCaseRequest(id: string): Promise<CaseRequest | null> {
-    const request = await CaseRequestModel.findById(id);
-    if (!request) return null;
-    
-    return {
-      _id: request._id.toString(),
-      clientId: request.clientId,
-      lawyerId: request.lawyerId,
-      title: request.title,
-      description: request.description,
-      caseType: request.caseType,
-      victim: request.victim,
-      accused: request.accused,
-      city: request.city,
-      policeStationId: request.policeStationId,
-      documents: request.documents,
-      status: request.status,
-      lawyerResponse: request.lawyerResponse,
-      createdAt: request.createdAt,
-    };
-  }
-
-  async createCaseRequest(requestData: InsertCaseRequest): Promise<CaseRequest> {
-    const request = new CaseRequestModel({
-      ...requestData,
-      status: 'pending',
-      createdAt: new Date(),
-    });
-    
-    const savedRequest = await request.save();
-    return {
-      _id: savedRequest._id.toString(),
-      clientId: savedRequest.clientId,
-      lawyerId: savedRequest.lawyerId,
-      title: savedRequest.title,
-      description: savedRequest.description,
-      caseType: savedRequest.caseType,
-      victim: savedRequest.victim,
-      accused: savedRequest.accused,
-      city: savedRequest.city,
-      policeStationId: savedRequest.policeStationId,
-      documents: savedRequest.documents,
-      status: savedRequest.status,
-      lawyerResponse: savedRequest.lawyerResponse,
-      createdAt: savedRequest.createdAt,
-    };
-  }
-
-  async updateCaseRequest(id: string, data: Partial<CaseRequest>): Promise<CaseRequest | null> {
-    const request = await CaseRequestModel.findByIdAndUpdate(id, data, { new: true });
-    if (!request) return null;
-    
-    return {
-      _id: request._id.toString(),
-      clientId: request.clientId,
-      lawyerId: request.lawyerId,
-      title: request.title,
-      description: request.description,
-      caseType: request.caseType,
-      victim: request.victim,
-      accused: request.accused,
-      city: request.city,
-      policeStationId: request.policeStationId,
-      documents: request.documents,
-      status: request.status,
-      lawyerResponse: request.lawyerResponse,
-      createdAt: request.createdAt,
-    };
   }
 }
 

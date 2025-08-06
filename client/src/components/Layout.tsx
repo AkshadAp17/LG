@@ -46,13 +46,14 @@ export default function Layout({ children }: LayoutProps) {
     if (user?.role === 'client') {
       return [
         ...baseItems,
-        { path: "/lawyers", icon: Users, label: "Find Lawyers" },
+        { path: "/find-lawyers", icon: Users, label: "Find Lawyers" },
         { path: "/documents", icon: FileText, label: "Documents" },
         { path: "/messages", icon: MessageSquare, label: "Messages" },
       ];
     } else if (user?.role === 'lawyer') {
       return [
         ...baseItems,
+        { path: "/case-requests", icon: Users, label: "Case Requests" },
         { path: "/documents", icon: FileText, label: "Documents" },
         { path: "/messages", icon: MessageSquare, label: "Messages" },
       ];

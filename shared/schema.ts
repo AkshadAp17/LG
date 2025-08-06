@@ -115,15 +115,46 @@ export const insertMessageSchema = messageSchema.omit({ _id: true, timestamp: tr
 export type Message = z.infer<typeof messageSchema>;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
 
+// Case Request Schema (for client to lawyer communication)
+export const caseRequestSchema = z.object({
+  _id: z.string().optional(),
+  clientId: z.string(),
+  lawyerId: z.string(),
+  title: z.string(),
+  description: z.string(),
+  caseType: z.enum(['fraud', 'theft', 'murder', 'civil', 'corporate']),
+  victim: z.object({
+    name: z.string(),
+    phone: z.string(),
+    email: z.string().optional(),
+  }),
+  accused: z.object({
+    name: z.string(),
+    phone: z.string().optional(),
+    address: z.string().optional(),
+  }),
+  city: z.string(),
+  policeStationId: z.string(),
+  documents: z.array(z.string()).optional(),
+  status: z.enum(['pending', 'accepted', 'rejected']).default('pending'),
+  lawyerResponse: z.string().optional(),
+  createdAt: z.date().optional(),
+});
+
+export const insertCaseRequestSchema = caseRequestSchema.omit({ _id: true, createdAt: true });
+export type CaseRequest = z.infer<typeof caseRequestSchema>;
+export type InsertCaseRequest = z.infer<typeof insertCaseRequestSchema>;
+
 // Notification Schema
 export const notificationSchema = z.object({
   _id: z.string().optional(),
   userId: z.string(),
   title: z.string(),
   message: z.string(),
-  type: z.enum(['case_approved', 'case_rejected', 'hearing_scheduled', 'new_message', 'case_created']),
+  type: z.enum(['case_approved', 'case_rejected', 'hearing_scheduled', 'new_message', 'case_created', 'case_request']),
   read: z.boolean().optional(),
   caseId: z.string().optional(),
+  caseRequestId: z.string().optional(),
   createdAt: z.date().optional(),
 });
 

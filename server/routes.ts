@@ -10,7 +10,7 @@ import connectDB, { CaseModel, NotificationModel } from './db.js';
 import { seedDatabase } from './seeder.js';
 import { 
   insertUserSchema, loginSchema, insertCaseSchema,
-  insertMessageSchema, insertNotificationSchema
+  insertMessageSchema, insertNotificationSchema, insertCaseRequestSchema
 } from "@shared/schema.js";
 import { sendCaseApprovalEmail, sendCaseRejectionEmail } from './email.js';
 
@@ -353,8 +353,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/messages', authenticateToken, async (req: any, res) => {
     try {
-      const messageData = insertMessageSchema.parse(req.body);
-      messageData.senderId = req.user._id;
+      const messageData = {
+        receiverId: req.body.receiverId,
+        content: req.body.content,
+        caseId: req.body.caseId,
+        senderId: req.user._id,
+      };
       
       const message = await storage.createMessage(messageData);
       
@@ -368,6 +372,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.status(201).json(message);
     } catch (error: any) {
+      console.error('Message creation error:', error);
       res.status(400).json({ message: error.message || 'Failed to send message' });
     }
   });
@@ -431,6 +436,141 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(stats);
     } catch (error: any) {
       res.status(500).json({ message: error.message || 'Failed to fetch dashboard stats' });
+    }
+  });
+
+  // Case Request routes (for client-lawyer communication)
+  app.get('/api/case-requests', authenticateToken, async (req: any, res) => {
+    try {
+      const filters: any = {};
+      
+      if (req.user.role === 'client') {
+        filters.clientId = req.user._id;
+      } else if (req.user.role === 'lawyer') {
+        filters.lawyerId = req.user._id;
+      }
+      
+      if (req.query.status) {
+        filters.status = req.query.status;
+      }
+      
+      const requests = await storage.getCaseRequests(filters);
+      res.json(requests);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || 'Failed to fetch case requests' });
+    }
+  });
+
+  app.get('/api/case-requests/:id', authenticateToken, async (req: any, res) => {
+    try {
+      const request = await storage.getCaseRequest(req.params.id);
+      if (!request) {
+        return res.status(404).json({ message: 'Case request not found' });
+      }
+      
+      // Check if user has access to this request
+      if (req.user.role === 'client' && request.clientId !== req.user._id) {
+        return res.status(403).json({ message: 'Access denied' });
+      }
+      if (req.user.role === 'lawyer' && request.lawyerId !== req.user._id) {
+        return res.status(403).json({ message: 'Access denied' });
+      }
+      
+      res.json(request);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || 'Failed to fetch case request' });
+    }
+  });
+
+  app.post('/api/case-requests', authenticateToken, requireRole(['client']), async (req: any, res) => {
+    try {
+      const requestData = {
+        ...req.body,
+        clientId: req.user._id,
+      };
+      
+      const request = await storage.createCaseRequest(requestData);
+      
+      // Create notification for the lawyer
+      await storage.createNotification({
+        userId: requestData.lawyerId,
+        title: 'New Case Request',
+        message: `You have received a new case request from ${req.user.name}: ${requestData.title}`,
+        type: 'case_request',
+        caseRequestId: request._id,
+      });
+      
+      res.status(201).json(request);
+    } catch (error: any) {
+      console.error('Case request creation error:', error);
+      res.status(400).json({ message: error.message || 'Failed to create case request' });
+    }
+  });
+
+  app.patch('/api/case-requests/:id', authenticateToken, requireRole(['lawyer']), async (req: any, res) => {
+    try {
+      const { status, lawyerResponse } = req.body;
+      
+      // Verify lawyer owns this request
+      const existingRequest = await storage.getCaseRequest(req.params.id);
+      if (!existingRequest || existingRequest.lawyerId !== req.user._id) {
+        return res.status(403).json({ message: 'Access denied' });
+      }
+      
+      const updatedRequest = await storage.updateCaseRequest(req.params.id, {
+        status,
+        lawyerResponse,
+      });
+      
+      if (!updatedRequest) {
+        return res.status(404).json({ message: 'Case request not found' });
+      }
+      
+      // Create notification for client
+      const notificationMessage = status === 'accepted' 
+        ? `Your case request "${updatedRequest.title}" has been accepted by ${req.user.name}`
+        : `Your case request "${updatedRequest.title}" has been rejected by ${req.user.name}`;
+        
+      await storage.createNotification({
+        userId: updatedRequest.clientId,
+        title: status === 'accepted' ? 'Case Request Accepted' : 'Case Request Rejected',
+        message: notificationMessage,
+        type: 'case_request',
+        caseRequestId: updatedRequest._id,
+      });
+      
+      // If accepted, create the actual case
+      if (status === 'accepted') {
+        const caseData = {
+          title: updatedRequest.title,
+          description: updatedRequest.description,
+          caseType: updatedRequest.caseType,
+          victim: updatedRequest.victim,
+          accused: updatedRequest.accused,
+          city: updatedRequest.city,
+          policeStationId: updatedRequest.policeStationId,
+          documents: updatedRequest.documents || [],
+          clientId: updatedRequest.clientId,
+          lawyerId: updatedRequest.lawyerId,
+          status: 'submitted' as const,
+        };
+        
+        const newCase = await storage.createCase(caseData);
+        
+        // Notify client about case creation
+        await storage.createNotification({
+          userId: updatedRequest.clientId,
+          title: 'Case Created',
+          message: `Your case "${newCase.title}" has been created and submitted for police review`,
+          type: 'case_created',
+          caseId: newCase._id,
+        });
+      }
+      
+      res.json(updatedRequest);
+    } catch (error: any) {
+      console.error('Case request update error:', error);
+      res.status(400).json({ message: error.message || 'Failed to update case request' });
     }
   });
 

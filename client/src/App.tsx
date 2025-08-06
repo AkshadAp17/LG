@@ -8,6 +8,8 @@ import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import Dashboard from "@/pages/dashboard";
 import Lawyers from "@/pages/lawyers";
+import FindLawyers from "@/pages/find-lawyers";
+import CaseRequests from "@/pages/case-requests";
 import Cases from "@/pages/cases";
 import Calendar from "@/pages/calendar";
 import Messages from "@/pages/messages";
@@ -47,6 +49,22 @@ function Router() {
         <ProtectedRoute>
           <Layout>
             <Lawyers />
+          </Layout>
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/find-lawyers">
+        <ProtectedRoute>
+          <Layout>
+            <FindLawyers />
+          </Layout>
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/case-requests">
+        <ProtectedRoute>
+          <Layout>
+            <CaseRequests />
           </Layout>
         </ProtectedRoute>
       </Route>

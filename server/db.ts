@@ -107,6 +107,32 @@ const messageSchema = new mongoose.Schema({
 
 export const MessageModel = mongoose.model('Message', messageSchema);
 
+// Case Request Model (for client to lawyer communication)
+const caseRequestSchema = new mongoose.Schema({
+  clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  lawyerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  caseType: { type: String, enum: ['fraud', 'theft', 'murder', 'civil', 'corporate'], required: true },
+  victim: {
+    name: { type: String, required: true },
+    phone: { type: String, required: true },
+    email: { type: String }
+  },
+  accused: {
+    name: { type: String, required: true },
+    phone: { type: String },
+    address: { type: String }
+  },
+  city: { type: String, required: true },
+  policeStationId: { type: mongoose.Schema.Types.ObjectId, ref: 'PoliceStation', required: true },
+  documents: [String],
+  status: { type: String, enum: ['pending', 'accepted', 'rejected'], default: 'pending' },
+  lawyerResponse: { type: String },
+}, { timestamps: true });
+
+export const CaseRequestModel = mongoose.model('CaseRequest', caseRequestSchema);
+
 // Notification Model
 const notificationSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -114,11 +140,12 @@ const notificationSchema = new mongoose.Schema({
   message: { type: String, required: true },
   type: { 
     type: String, 
-    enum: ['case_approved', 'case_rejected', 'hearing_scheduled', 'new_message', 'case_created'],
+    enum: ['case_approved', 'case_rejected', 'hearing_scheduled', 'new_message', 'case_created', 'case_request'],
     required: true 
   },
   read: { type: Boolean, default: false },
   caseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Case' },
+  caseRequestId: { type: mongoose.Schema.Types.ObjectId, ref: 'CaseRequest' },
 }, { timestamps: true });
 
 export const NotificationModel = mongoose.model('Notification', notificationSchema);
