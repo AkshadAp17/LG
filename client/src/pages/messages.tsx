@@ -19,11 +19,11 @@ export default function Messages() {
   const user = authService.getUser();
   const queryClient = useQueryClient();
 
-  const { data: messages = [], isLoading: messagesLoading } = useQuery({
+  const { data: messages = [], isLoading: messagesLoading } = useQuery<Message[]>({
     queryKey: ['/api/messages'],
   });
 
-  const { data: lawyers = [] } = useQuery({
+  const { data: lawyers = [] } = useQuery<Lawyer[]>({
     queryKey: ['/api/lawyers'],
     enabled: user?.role === 'client',
   });
@@ -49,7 +49,7 @@ export default function Messages() {
   }, {});
 
   // Fetch contacts based on user role
-  const { data: clients = [] } = useQuery({
+  const { data: clients = [] } = useQuery<User[]>({
     queryKey: ['/api/users', { role: 'client' }],
     enabled: user?.role === 'lawyer',
   });

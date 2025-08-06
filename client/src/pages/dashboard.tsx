@@ -11,22 +11,22 @@ import type { Case, Lawyer } from "@shared/schema";
 export default function Dashboard() {
   const user = authService.getUser();
 
-  const { data: stats = {}, isLoading: statsLoading } = useQuery({
+  const { data: stats = {}, isLoading: statsLoading } = useQuery<any>({
     queryKey: ['/api/dashboard/stats'],
   });
 
-  const { data: recentCases = [], isLoading: casesLoading } = useQuery({
+  const { data: recentCases = [], isLoading: casesLoading } = useQuery<Case[]>({
     queryKey: ['/api/cases'],
   });
 
-  const { data: availableLawyers = [], isLoading: lawyersLoading } = useQuery({
+  const { data: availableLawyers = [], isLoading: lawyersLoading } = useQuery<Lawyer[]>({
     queryKey: ['/api/lawyers'],
     enabled: user?.role === 'client',
   });
 
   const handleSelectLawyer = (lawyer: Lawyer) => {
-    console.log('Selected lawyer:', lawyer);
-    // TODO: Implement lawyer selection logic
+    // Navigate to find lawyers page with this lawyer pre-selected
+    window.location.href = `/find-lawyers?selected=${lawyer._id}`;
   };
 
   if (statsLoading) {

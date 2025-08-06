@@ -50,9 +50,10 @@ export default function FindLawyers() {
     queryKey: ['/api/users', { role: 'lawyer', city: selectedCity, caseType: selectedCaseType }],
     queryFn: async () => {
       const params = new URLSearchParams({ role: 'lawyer' });
-      if (selectedCity) params.append('city', selectedCity);
-      if (selectedCaseType) params.append('caseType', selectedCaseType);
-      return apiRequest(`/api/users?${params}`);
+      if (selectedCity && selectedCity !== 'all') params.append('city', selectedCity);
+      if (selectedCaseType && selectedCaseType !== 'all') params.append('caseType', selectedCaseType);
+      const response = await apiRequest('GET', `/api/users?${params}`);
+      return response as unknown as User[];
     },
   });
 
@@ -133,7 +134,7 @@ export default function FindLawyers() {
     setIsDialogOpen(true);
   };
 
-  const cities = Array.from(new Set(lawyers.map((l: User) => l.city).filter(Boolean)));
+  const cities = Array.from(new Set(Array.isArray(lawyers) ? lawyers.map((l: User) => l.city).filter(Boolean) : [])) as Set<string>;
   const caseTypes = ['fraud', 'theft', 'murder', 'civil', 'corporate'];
 
   if (isLoading) {
@@ -170,8 +171,8 @@ export default function FindLawyers() {
             <SelectValue placeholder="Filter by city" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Cities</SelectItem>
-            {cities.map(city => (
+            <SelectItem value="all">All Cities</SelectItem>
+            {Array.from(cities).filter(Boolean).map((city: string) => (
               <SelectItem key={city} value={city}>{city}</SelectItem>
             ))}
           </SelectContent>
@@ -182,7 +183,7 @@ export default function FindLawyers() {
             <SelectValue placeholder="Filter by case type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Case Types</SelectItem>
+            <SelectItem value="all">All Case Types</SelectItem>
             {caseTypes.map(type => (
               <SelectItem key={type} value={type}>
                 {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -194,7 +195,11 @@ export default function FindLawyers() {
 
       {/* Lawyers Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {lawyers.map((lawyer) => (
+        {Array.isArray(lawyers) && lawyers.length === 0 ? (
+          <div className="col-span-3 text-center py-8 text-gray-500">
+            No lawyers found matching your criteria
+          </div>
+        ) : Array.isArray(lawyers) ? lawyers.map((lawyer: User) => (
           <Card key={lawyer._id} className="hover:shadow-lg transition-shadow">
             <CardHeader className="flex flex-row items-center space-y-0 pb-2">
               <Avatar className="h-12 w-12 mr-4">
@@ -250,14 +255,12 @@ export default function FindLawyers() {
               </div>
             </CardContent>
           </Card>
-        ))}
+        )) : (
+          <div className="col-span-3 text-center py-8 text-gray-500">
+            Loading lawyers...
+          </div>
+        )}
       </div>
-
-      {!isLoading && lawyers.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500">No lawyers found matching your criteria.</p>
-        </div>
-      )}
 
       {/* Case Request Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

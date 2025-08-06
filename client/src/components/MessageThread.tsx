@@ -8,9 +8,11 @@ interface MessageThreadProps {
 }
 
 export default function MessageThread({ messages, currentUserId }: MessageThreadProps) {
-  const sortedMessages = messages.sort((a, b) => 
-    new Date(a.timestamp!).getTime() - new Date(b.timestamp!).getTime()
-  );
+  const sortedMessages = messages.sort((a, b) => {
+    const aTime = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+    const bTime = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+    return aTime - bTime;
+  });
 
   if (messages.length === 0) {
     return (
@@ -25,14 +27,15 @@ export default function MessageThread({ messages, currentUserId }: MessageThread
       {sortedMessages.map((message, index) => {
         const isOwnMessage = message.senderId === currentUserId;
         const showTimestamp = index === 0 || 
-          new Date(message.timestamp!).getTime() - new Date(sortedMessages[index - 1].timestamp!).getTime() > 300000; // 5 minutes
+          (message.timestamp && sortedMessages[index - 1].timestamp &&
+           new Date(message.timestamp).getTime() - new Date(sortedMessages[index - 1].timestamp!).getTime() > 300000); // 5 minutes
 
         return (
           <div key={message._id} className="space-y-2">
             {showTimestamp && (
               <div className="text-center">
                 <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                  {format(new Date(message.timestamp!), 'MMM d, yyyy h:mm a')}
+                  {message.timestamp ? format(new Date(message.timestamp), 'MMM d, yyyy h:mm a') : 'Now'}
                 </span>
               </div>
             )}
@@ -57,7 +60,7 @@ export default function MessageThread({ messages, currentUserId }: MessageThread
                   <p className="text-sm break-words">{message.content}</p>
                 </div>
                 <div className={`mt-1 text-xs text-gray-500 ${isOwnMessage ? 'text-right' : ''}`}>
-                  {format(new Date(message.timestamp!), 'h:mm a')}
+                  {message.timestamp ? format(new Date(message.timestamp), 'h:mm a') : 'Now'}
                   {!message.read && !isOwnMessage && (
                     <span className="ml-2 inline-block w-2 h-2 bg-blue-500 rounded-full"></span>
                   )}
