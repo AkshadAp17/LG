@@ -5,38 +5,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { MapPin, Star, Briefcase, MessageCircle } from 'lucide-react';
 import type { User } from '@shared/schema';
+import SimpleCaseForm from '@/components/SimpleCaseForm';
 
-const caseRequestSchema = z.object({
-  lawyerId: z.string().min(1, 'Please select a lawyer'),
-  title: z.string().min(1, 'Title is required'),
-  description: z.string().min(10, 'Description must be at least 10 characters'),
-  caseType: z.enum(['fraud', 'theft', 'murder', 'civil', 'corporate']),
-  victim: z.object({
-    name: z.string().min(1, 'Victim name is required'),
-    phone: z.string().min(10, 'Valid phone number required'),
-    email: z.string().email().optional().or(z.literal('')),
-  }),
-  accused: z.object({
-    name: z.string().min(1, 'Accused name is required'),
-    phone: z.string().optional(),
-    address: z.string().optional(),
-  }),
-  city: z.string().min(1, 'City is required'),
-  policeStationId: z.string().min(1, 'Police station is required'),
-});
-
-type CaseRequestFormData = z.infer<typeof caseRequestSchema>;
+// Simplified case request data type
+type SimpleCaseRequestData = {
+  title: string;
+  description: string;
+  victimName: string;
+  accusedName: string;
+  lawyerId: string;
+};
 
 export default function FindLawyers() {
   const [selectedCity, setSelectedCity] = useState<string>('');
@@ -68,57 +51,17 @@ export default function FindLawyers() {
     },
   });
 
-  const { data: policeStations = [] } = useQuery<any[]>({
-    queryKey: ['/api/police-stations'],
-  });
-
-  const form = useForm<CaseRequestFormData>({
-    resolver: zodResolver(caseRequestSchema),
-    defaultValues: {
-      lawyerId: '',
-      title: '',
-      description: '',
-      caseType: 'civil',
-      victim: {
-        name: '',
-        phone: '',
-        email: '',
-      },
-      accused: {
-        name: '',
-        phone: '',
-        address: '',
-      },
-      city: '',
-      policeStationId: '',
-    },
-  });
-
   const createCaseRequestMutation = useMutation({
-    mutationFn: async (data: CaseRequestFormData) => {
-      const response = await fetch('/api/case-requests', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(data),
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to send case request');
-      }
-      
-      return response.json();
+    mutationFn: async (data: SimpleCaseRequestData) => {
+      const response = await apiRequest('POST', '/api/case-requests', data);
+      return await response.json();
     },
     onSuccess: () => {
       toast({
-        title: 'Case Request Sent',
-        description: 'Your case request has been sent to the lawyer. You will be notified of their response.',
+        title: 'Success',
+        description: 'Case request sent successfully! The lawyer will complete the detailed form.',
       });
       setIsDialogOpen(false);
-      form.reset();
       queryClient.invalidateQueries({ queryKey: ['/api/case-requests'] });
     },
     onError: (error: any) => {
@@ -130,18 +73,12 @@ export default function FindLawyers() {
     },
   });
 
-  const onSubmit = (data: CaseRequestFormData) => {
-    if (selectedLawyer) {
-      createCaseRequestMutation.mutate({
-        ...data,
-        lawyerId: selectedLawyer._id || '',
-      });
-    }
+  const handleCaseRequest = (data: SimpleCaseRequestData) => {
+    createCaseRequestMutation.mutate(data);
   };
 
   const handleSendRequest = (lawyer: User) => {
     setSelectedLawyer(lawyer);
-    form.setValue('lawyerId', lawyer._id!);
     setIsDialogOpen(true);
   };
 
@@ -172,7 +109,7 @@ export default function FindLawyers() {
     <div className="container mx-auto p-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Find Lawyers</h1>
-        <p className="text-gray-600">Browse experienced lawyers and send case requests</p>
+        <p className="text-gray-600">Browse experienced lawyers and send simple case requests</p>
       </div>
 
       {/* Filters */}
@@ -184,7 +121,9 @@ export default function FindLawyers() {
           <SelectContent>
             <SelectItem value="all">All Cities</SelectItem>
             {Array.from(cities).filter(Boolean).map((city: string) => (
-              <SelectItem key={city} value={city}>{city}</SelectItem>
+              <SelectItem key={city} value={city}>
+                {city}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -195,7 +134,7 @@ export default function FindLawyers() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Case Types</SelectItem>
-            {caseTypes.map(type => (
+            {caseTypes.map((type) => (
               <SelectItem key={type} value={type}>
                 {type.charAt(0).toUpperCase() + type.slice(1)}
               </SelectItem>
@@ -215,286 +154,98 @@ export default function FindLawyers() {
             <p>No lawyers found matching your criteria</p>
             <p className="text-sm mt-2">Try adjusting your filters or check back later for more lawyers.</p>
           </div>
-        ) : lawyers.map((lawyer: User) => (
-          <Card key={lawyer._id} className="hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-              <Avatar className="h-12 w-12 mr-4">
-                <AvatarImage src={lawyer.image} alt={lawyer.name} />
-                <AvatarFallback>{lawyer.name.split(' ').map((n: string) => n[0]).join('')}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <CardTitle className="text-lg">{lawyer.name}</CardTitle>
-                <div className="flex items-center text-sm text-gray-500">
-                  <MapPin className="h-4 w-4 mr-1" />
-                  {lawyer.city}
+        ) : (
+          lawyers.map((lawyer) => (
+            <Card key={lawyer._id} className="hover:shadow-lg transition-shadow">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-12 w-12">
+                    <AvatarFallback>
+                      {lawyer.name?.charAt(0)?.toUpperCase() || 'L'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <CardTitle className="text-lg">{lawyer.name}</CardTitle>
+                    <CardDescription className="flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {lawyer.city}
+                    </CardDescription>
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center">
-                  <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                  <span className="text-sm font-medium">{lawyer.rating || 4.5}/5</span>
-                  <span className="text-sm text-gray-500 ml-2">
-                    ({lawyer.stats?.totalCases || 0} cases)
-                  </span>
-                </div>
+              </CardHeader>
 
-                <div className="flex items-center">
-                  <Briefcase className="h-4 w-4 mr-1" />
-                  <span className="text-sm text-gray-600">{lawyer.experience || 0} years experience</span>
-                </div>
+              <CardContent className="pt-0">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Briefcase className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">
+                      {lawyer.experience} years experience
+                    </span>
+                  </div>
 
-                <div className="flex flex-wrap gap-1">
-                  {lawyer.specialization?.slice(0, 3).map((spec: string) => (
-                    <Badge key={spec} variant="secondary" className="text-xs">
-                      {spec}
-                    </Badge>
-                  ))}
-                </div>
+                  <div className="flex items-center gap-2">
+                    <Star className="h-4 w-4 text-yellow-500" />
+                    <span className="text-sm text-gray-600">
+                      {lawyer.rating || 'No rating'} rating
+                    </span>
+                  </div>
 
-                {lawyer.description && (
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {lawyer.description}
-                  </p>
-                )}
+                  {lawyer.specialization && lawyer.specialization.length > 0 && (
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium">Specializations:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {lawyer.specialization.map((spec, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {spec}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-                <div className="flex gap-2 pt-2">
-                  <Button 
-                    onClick={() => handleSendRequest(lawyer)}
-                    className="flex-1"
-                  >
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Send Request
-                  </Button>
+                  {lawyer.stats && (
+                    <div className="text-sm text-gray-600">
+                      <span className="font-medium">Cases:</span> {lawyer.stats.totalCases || 0} total,{' '}
+                      {lawyer.stats.wonCases || 0} won
+                    </div>
+                  )}
+
+                  <div className="flex gap-2 pt-2">
+                    <Button
+                      onClick={() => handleSendRequest(lawyer)}
+                      className="flex-1"
+                      data-testid={`button-send-request-${lawyer._id}`}
+                    >
+                      Send Case Request
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="shrink-0"
+                      data-testid={`button-message-${lawyer._id}`}
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
 
-      {/* Case Request Dialog */}
+      {/* Simple Case Request Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Send Case Request to {selectedLawyer?.name}</DialogTitle>
-            <DialogDescription>
-              Provide details about your case. The lawyer will review and respond to your request.
-            </DialogDescription>
-          </DialogHeader>
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Case Title</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Brief title for your case" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="caseType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Case Type</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select case type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="fraud">Fraud</SelectItem>
-                          <SelectItem value="theft">Theft</SelectItem>
-                          <SelectItem value="murder">Murder</SelectItem>
-                          <SelectItem value="civil">Civil</SelectItem>
-                          <SelectItem value="corporate">Corporate</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="city"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>City</FormLabel>
-                      <FormControl>
-                        <Input placeholder="City where case occurred" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Case Description</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Provide detailed description of your case..."
-                        className="min-h-[100px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="space-y-4">
-                <h3 className="font-semibold">Victim Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="victim.name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Victim Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Full name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="victim.phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Contact number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="victim.email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email (Optional)</FormLabel>
-                        <FormControl>
-                          <Input placeholder="email@example.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="font-semibold">Accused Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="accused.name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Accused Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Full name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="accused.phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone (Optional)</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Contact number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="accused.address"
-                    render={({ field }) => (
-                      <FormItem className="md:col-span-2">
-                        <FormLabel>Address (Optional)</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Full address" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              <FormField
-                control={form.control}
-                name="policeStationId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Police Station</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select police station" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {(policeStations as any[]).map((station: any) => (
-                          <SelectItem key={station._id} value={station._id}>
-                            {station.name} - {station.city}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="flex justify-end gap-3">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => setIsDialogOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit" 
-                  disabled={createCaseRequestMutation.isPending}
-                >
-                  {createCaseRequestMutation.isPending ? 'Sending...' : 'Send Request'}
-                </Button>
-              </div>
-            </form>
-          </Form>
+        <DialogContent className="max-w-2xl">
+          {selectedLawyer && (
+            <SimpleCaseForm
+              lawyerName={selectedLawyer.name}
+              lawyerId={selectedLawyer._id!}
+              onSubmit={handleCaseRequest}
+              onCancel={() => setIsDialogOpen(false)}
+              isSubmitting={createCaseRequestMutation.isPending}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
