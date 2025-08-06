@@ -68,14 +68,14 @@ export default function SimpleCaseForm({
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Send Case Request to {lawyerName}</CardTitle>
+    <div className="w-full">
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold">Send Case Request to {lawyerName}</h3>
         <p className="text-sm text-gray-600">
           Provide basic case information. The lawyer will help complete the detailed form later.
         </p>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           {/* Case Title */}
           <div>
@@ -240,7 +240,7 @@ export default function SimpleCaseForm({
             </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

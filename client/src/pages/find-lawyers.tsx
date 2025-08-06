@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { MapPin, Star, Briefcase, MessageCircle } from 'lucide-react';
@@ -122,7 +122,7 @@ export default function FindLawyers() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Cities</SelectItem>
-            {Array.from(cities).filter(Boolean).map((city: string) => (
+            {Array.from(cities).filter(Boolean).map((city: string | undefined) => city && (
               <SelectItem key={city} value={city}>
                 {city}
               </SelectItem>
@@ -238,15 +238,20 @@ export default function FindLawyers() {
 
       {/* Simple Case Request Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Send Case Request</DialogTitle>
+          </DialogHeader>
           {selectedLawyer && (
-            <SimpleCaseForm
-              lawyerName={selectedLawyer.name}
-              lawyerId={selectedLawyer._id!}
-              onSubmit={handleCaseRequest}
-              onCancel={() => setIsDialogOpen(false)}
-              isSubmitting={createCaseRequestMutation.isPending}
-            />
+            <div className="max-h-[calc(90vh-100px)] overflow-y-auto">
+              <SimpleCaseForm
+                lawyerName={selectedLawyer.name}
+                lawyerId={selectedLawyer._id!}
+                onSubmit={handleCaseRequest}
+                onCancel={() => setIsDialogOpen(false)}
+                isSubmitting={createCaseRequestMutation.isPending}
+              />
+            </div>
           )}
         </DialogContent>
       </Dialog>
