@@ -46,13 +46,21 @@ export default function FindLawyers() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: lawyers = [], isLoading } = useQuery<User[]>({
+  const { data: lawyers = [], isLoading, error } = useQuery<User[]>({
     queryKey: ['/api/users', { role: 'lawyer', city: selectedCity, caseType: selectedCaseType }],
     queryFn: async () => {
       const params = new URLSearchParams({ role: 'lawyer' });
       if (selectedCity && selectedCity !== 'all') params.append('city', selectedCity);
       if (selectedCaseType && selectedCaseType !== 'all') params.append('caseType', selectedCaseType);
       const response = await apiRequest('GET', `/api/users?${params}`);
+      console.log('Lawyers API Response:', response);
+      console.log('Is Array:', Array.isArray(response));
+      console.log('Length:', response?.length);
+      
+      // Simple debug check
+      if (Array.isArray(response) && response.length > 0) {
+        console.log('First lawyer name:', response[0]?.name);
+      }
       return response as unknown as User[];
     },
   });
@@ -201,7 +209,8 @@ export default function FindLawyers() {
           </div>
         ) : !Array.isArray(lawyers) || lawyers.length === 0 ? (
           <div className="col-span-3 text-center py-8 text-gray-500">
-            No lawyers found matching your criteria
+            <p>No lawyers found matching your criteria</p>
+            <p className="text-xs mt-2">Debug: Array: {Array.isArray(lawyers).toString()}, Length: {lawyers?.length || 0}</p>
           </div>
         ) : lawyers.map((lawyer: User) => (
           <Card key={lawyer._id} className="hover:shadow-lg transition-shadow">
