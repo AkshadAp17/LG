@@ -24,7 +24,11 @@ export default function Messages() {
   });
 
   const { data: lawyers = [] } = useQuery<Lawyer[]>({
-    queryKey: ['/api/lawyers'],
+    queryKey: ['/api/users', { role: 'lawyer' }],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/users?role=lawyer');
+      return await response.json();
+    },
     enabled: user?.role === 'client',
   });
 
@@ -51,6 +55,10 @@ export default function Messages() {
   // Fetch contacts based on user role
   const { data: clients = [] } = useQuery<User[]>({
     queryKey: ['/api/users', { role: 'client' }],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/users?role=client');
+      return await response.json();
+    },
     enabled: user?.role === 'lawyer',
   });
 

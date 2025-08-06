@@ -53,15 +53,18 @@ export default function FindLawyers() {
       if (selectedCity && selectedCity !== 'all') params.append('city', selectedCity);
       if (selectedCaseType && selectedCaseType !== 'all') params.append('caseType', selectedCaseType);
       const response = await apiRequest('GET', `/api/users?${params}`);
-      console.log('Lawyers API Response:', response);
-      console.log('Is Array:', Array.isArray(response));
-      console.log('Length:', response?.length);
-      
-      // Simple debug check
-      if (Array.isArray(response) && response.length > 0) {
-        console.log('First lawyer name:', response[0]?.name);
+      const data = await response.json();
+      // Filter data based on criteria
+      let filteredData = data;
+      if (selectedCity && selectedCity !== 'all') {
+        filteredData = filteredData.filter((lawyer: User) => lawyer.city === selectedCity);
       }
-      return response as unknown as User[];
+      if (selectedCaseType && selectedCaseType !== 'all') {
+        filteredData = filteredData.filter((lawyer: User) => 
+          lawyer.specialization?.includes(selectedCaseType)
+        );
+      }
+      return filteredData as User[];
     },
   });
 
@@ -210,7 +213,7 @@ export default function FindLawyers() {
         ) : !Array.isArray(lawyers) || lawyers.length === 0 ? (
           <div className="col-span-3 text-center py-8 text-gray-500">
             <p>No lawyers found matching your criteria</p>
-            <p className="text-xs mt-2">Debug: Array: {Array.isArray(lawyers).toString()}, Length: {lawyers?.length || 0}</p>
+            <p className="text-sm mt-2">Try adjusting your filters or check back later for more lawyers.</p>
           </div>
         ) : lawyers.map((lawyer: User) => (
           <Card key={lawyer._id} className="hover:shadow-lg transition-shadow">
