@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { authService } from "./lib/auth";
 import Login from "@/pages/login";
+import Signup from "@/pages/signup";
 import Dashboard from "@/pages/dashboard";
 import Lawyers from "@/pages/lawyers";
 import Cases from "@/pages/cases";
@@ -24,6 +25,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/login" component={Login} />
+      <Route path="/signup" component={Signup} />
       
       <Route path="/">
         {authService.isAuthenticated() ? (

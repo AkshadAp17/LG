@@ -1,104 +1,87 @@
-import { sql } from 'drizzle-orm';
-import {
-  pgTable,
-  varchar,
-  text,
-  integer,
-  timestamp,
-  jsonb,
-  boolean,
-  uuid,
-  date,
-} from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Users table
-export const users = pgTable("users", {
-  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  name: varchar("name", { length: 255 }).notNull(),
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  password: varchar("password", { length: 255 }).notNull(),
-  phone: varchar("phone", { length: 20 }).notNull(),
-  role: varchar("role", { length: 20 }).notNull(),
-  city: varchar("city", { length: 255 }),
-  specialization: text("specialization").array(), // for lawyers
-  experience: integer("experience"), // for lawyers
-  policeStationCode: varchar("police_station_code", { length: 50 }), // for police
-  stats: jsonb("stats").$type<{
-    totalCases: number;
-    wonCases: number;
-    lostCases: number;
-  }>(),
-  rating: integer("rating"),
-  description: text("description"),
-  image: varchar("image", { length: 500 }),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+// User Schema
+export const userSchema = z.object({
+  _id: z.string().optional(),
+  name: z.string(),
+  email: z.string().email(),
+  password: z.string().min(6),
+  phone: z.string(),
+  role: z.enum(['client', 'lawyer', 'police']),
+  city: z.string().optional(),
+  specialization: z.array(z.string()).optional(), // for lawyers
+  experience: z.number().optional(), // for lawyers
+  policeStationCode: z.string().optional(), // for police
+  stats: z.object({
+    totalCases: z.number(),
+    wonCases: z.number(),
+    lostCases: z.number(),
+  }).optional(),
+  rating: z.number().optional(),
+  description: z.string().optional(),
+  image: z.string().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 });
 
-export const insertUserSchema = createInsertSchema(users).omit({ 
-  id: true, 
-  createdAt: true, 
-  updatedAt: true 
-});
-export type User = typeof users.$inferSelect;
+export const insertUserSchema = userSchema.omit({ _id: true, createdAt: true, updatedAt: true });
+export type User = z.infer<typeof userSchema>;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
-// Police stations table
-export const policeStations = pgTable("police_stations", {
-  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  name: varchar("name", { length: 255 }).notNull(),
-  code: varchar("code", { length: 50 }).notNull().unique(),
-  city: varchar("city", { length: 255 }).notNull(),
-  address: text("address").notNull(),
-  phone: varchar("phone", { length: 20 }).notNull(),
-  email: varchar("email", { length: 255 }).notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
+// Lawyer Schema
+export const lawyerSchema = z.object({
+  _id: z.string().optional(),
+  name: z.string(),
+  email: z.string().email(),
+  phone: z.string(),
+  specialization: z.array(z.string()),
+  city: z.string(),
+  experience: z.number(),
+  rating: z.number(),
+  stats: z.object({
+    totalCases: z.number(),
+    wonCases: z.number(),
+    lostCases: z.number(),
+  }),
+  description: z.string().optional(),
+  image: z.string().optional(),
+  createdAt: z.date().optional(),
 });
 
-export const insertPoliceStationSchema = createInsertSchema(policeStations).omit({ 
-  id: true, 
-  createdAt: true 
-});
-export type PoliceStation = typeof policeStations.$inferSelect;
-export type InsertPoliceStation = z.infer<typeof insertPoliceStationSchema>;
+export const insertLawyerSchema = lawyerSchema.omit({ _id: true, createdAt: true });
+export type Lawyer = z.infer<typeof lawyerSchema>;
+export type InsertLawyer = z.infer<typeof insertLawyerSchema>;
 
-// Cases table
-export const cases = pgTable("cases", {
-  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  title: varchar("title", { length: 255 }).notNull(),
-  description: text("description").notNull(),
-  caseType: varchar("case_type", { length: 50 }).notNull(),
-  victim: jsonb("victim").$type<{
-    name: string;
-    phone: string;
-    email?: string;
-  }>().notNull(),
-  accused: jsonb("accused").$type<{
-    name: string;
-    phone?: string;
-    address?: string;
-  }>().notNull(),
-  clientId: uuid("client_id").notNull().references(() => users.id),
-  lawyerId: uuid("lawyer_id").references(() => users.id),
-  policeStationId: uuid("police_station_id").notNull().references(() => policeStations.id),
-  city: varchar("city", { length: 255 }).notNull(),
-  status: varchar("status", { length: 50 }).notNull().default('draft'),
-  pnr: varchar("pnr", { length: 100 }),
-  hearingDate: date("hearing_date"),
-  documents: text("documents").array(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+// Case Schema
+export const caseSchema = z.object({
+  _id: z.string().optional(),
+  title: z.string(),
+  description: z.string(),
+  caseType: z.enum(['fraud', 'theft', 'murder', 'civil', 'corporate']),
+  victim: z.object({
+    name: z.string(),
+    phone: z.string(),
+    email: z.string().optional(),
+  }),
+  accused: z.object({
+    name: z.string(),
+    phone: z.string().optional(),
+    address: z.string().optional(),
+  }),
+  clientId: z.string(),
+  lawyerId: z.string().optional(),
+  policeStationId: z.string(),
+  city: z.string(),
+  status: z.enum(['draft', 'submitted', 'under_review', 'approved', 'rejected']),
+  pnr: z.string().optional(),
+  hearingDate: z.date().optional(),
+  documents: z.array(z.string()).optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 });
 
-export const insertCaseSchema = createInsertSchema(cases).omit({ 
-  id: true, 
-  createdAt: true, 
-  updatedAt: true, 
-  pnr: true 
-});
-export type Case = typeof cases.$inferSelect;
+export const insertCaseSchema = caseSchema.omit({ _id: true, createdAt: true, updatedAt: true, pnr: true });
+export type Case = z.infer<typeof caseSchema>;
 export type InsertCase = z.infer<typeof insertCaseSchema>;
 
 // Police Station Schema
