@@ -1,0 +1,134 @@
+⚖️ Legal Case Management System
+🔨 Tech Stack:
+Frontend: React.js (with Tailwind CSS)
+
+Backend: Node.js, Express.js
+
+Database: MongoDB (Mongoose ODM)
+
+Others:
+
+Multer (File Uploads)
+
+Nodemailer (Email Notifications)
+
+JWT (optional auth)
+
+Chart.js or Recharts (Win/Loss Graphs)
+
+Date-fns / Moment.js (Date handling)
+
+🧠 System Flow (Real-World Legal Workflow)
+👤 1. User (Client)
+Registers or logs in (optional auth)
+
+Views available lawyers by:
+
+Case type (e.g., Fraud, Theft, Murder)
+
+City-wise filter
+
+Selects a lawyer from the list
+
+Uploads case-related documents and messages lawyer
+
+👨‍⚖️ 2. Lawyer
+Receives case request from user
+
+Reviews documents
+
+Fills Case Form:
+
+Victim and Accused details
+
+Case Title, Description
+
+Selected Police Station (auto-suggested by city)
+
+Uploads additional documents or video
+
+Creates the case
+
+🚨 3. Police Station
+Police stations are created city-wise with a unique special code like DEL-001, MUM-002
+
+Once a case is created and assigned, the station receives it for review
+
+Can view:
+
+Victim/Accused info
+
+All uploaded documents
+
+Can Approve or Reject the case
+
+⚙️ 4. Case Processing After Approval
+If approved:
+
+A unique PNR number is generated
+
+A hearing date is automatically assigned (randomly within 1–30 days from creation)
+
+Email notifications are sent to:
+
+Victim
+
+Accused
+
+Lawyer
+
+User
+
+If rejected, user and lawyer are notified
+
+📆 Calendar System
+After approval, all hearing dates are shown in a calendar view
+
+Both lawyer and user dashboards display the calendar
+
+Pending cases with missed dates get auto-updated hearing dates
+
+Can filter/search by case name or parties involved
+
+📈 Win/Loss Graph (Lawyer Stats)
+User can view lawyer profiles in detail
+
+Specialization
+
+Experience
+
+Case win/loss statistics visualized using charts
+
+Contact & email info
+
+✉️ Notifications & Messaging
+Real-time or email-based messaging system:
+
+Lawyer <-> User
+
+Notifications on case creation, approval, rejection
+
+All parties receive emails via Nodemailer
+
+🧱 Database Schema Overview
+User: name, email, selected lawyer, uploaded documents
+
+Lawyer: name, specialization, city, cases, stats
+
+Case: title, description, victim, accused, documents, status, hearing date, police station
+
+Police Station: name, city, special number (e.g., BLR-003)
+
+Notifications: sender, receiver, type, timestamp
+
+✅ Features Summary
+Feature	Status
+Lawyer selection by client	✅
+Document upload (client + lawyer)	✅
+City-wise police station routing	✅
+Case creation & review flow	✅
+Police station approval system	✅
+Email notifications	✅
+Auto-generated hearing date	✅
+Case calendar for all parties	✅
+Lawyer profile with win/loss graph	✅
