@@ -352,7 +352,12 @@ export class MongoStorage implements IStorage {
   }
 
   async createCase(caseData: InsertCase): Promise<Case> {
-    const case_ = new CaseModel(caseData);
+    // Set default status to under_review if not specified
+    const caseWithStatus = {
+      ...caseData,
+      status: caseData.status || 'under_review' as const
+    };
+    const case_ = new CaseModel(caseWithStatus);
     const savedCase = await case_.save();
     
     return {

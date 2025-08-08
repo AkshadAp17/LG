@@ -285,8 +285,13 @@ export default function Cases() {
                         </div>
                         <div className="mt-2 p-2 bg-yellow-100 rounded border-l-4 border-yellow-400">
                           <p className="text-sm text-yellow-800">
-                            <strong>Status:</strong> Case submitted to police station for review. 
-                            Police will approve or reject this case.
+                            <strong>Status:</strong> {selectedCase.status === 'submitted' || selectedCase.status === 'under_review' 
+                              ? 'Case submitted to police station for review. Police will approve or reject this case.'
+                              : selectedCase.status === 'approved'
+                              ? 'Case has been approved by police'
+                              : selectedCase.status === 'rejected'
+                              ? 'Case has been rejected by police'
+                              : 'Case status unknown'}
                           </p>
                         </div>
                       </div>
@@ -336,7 +341,7 @@ export default function Cases() {
 
                   {/* Action Buttons */}
                   <div className="flex flex-col gap-2 pt-4 border-t">
-                    {user?.role === 'police' && selectedCase.status === 'under_review' && (
+                    {user?.role === 'police' && (selectedCase.status === 'under_review' || selectedCase.status === 'submitted') && (
                       <div className="flex space-x-3">
                         <Button
                           variant="outline"

@@ -677,7 +677,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           documents: updatedRequest.documents || [],
           clientId: updatedRequest.clientId,
           lawyerId: updatedRequest.lawyerId,
-          status: 'submitted' as const,
+          status: 'under_review' as const,
           pnr: caseDetails?.pnr || `PNR${Date.now()}`, // Auto-generate PNR if not provided
           hearingDate: caseDetails?.hearingDate ? new Date(caseDetails.hearingDate) : undefined,
         };
