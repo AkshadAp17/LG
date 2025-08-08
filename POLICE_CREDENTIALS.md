@@ -101,6 +101,9 @@ You can login to any police station account using:
 - **Client:** john.smith@email.com / password123
 - **Client:** alice.johnson@email.com / password123  
 - **Lawyer:** sarah.johnson@lawfirm.com / password123
+- **Lawyer:** michael.chen@lawfirm.com / password123
+- **Lawyer:** priya.sharma@lawfirm.com / password123
+- **Lawyer:** rajesh.kumar@lawfirm.com / password123
 
 ## Features Available to Police Officers
 - View and manage case requests from clients

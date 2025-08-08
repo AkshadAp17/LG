@@ -191,6 +191,40 @@ export const seedDatabase = async () => {
         city: 'mumbai',
       },
       
+      // Lawyer Users (matching the lawyers in LawyerModel)
+      {
+        name: 'Sarah Johnson',
+        email: 'sarah.johnson@lawfirm.com',
+        password: hashedPassword,
+        phone: '+91-9876543210',
+        role: 'lawyer',
+        city: 'delhi',
+      },
+      {
+        name: 'Michael Chen',
+        email: 'michael.chen@lawfirm.com',
+        password: hashedPassword,
+        phone: '+91-9876543211',
+        role: 'lawyer',
+        city: 'mumbai',
+      },
+      {
+        name: 'Priya Sharma',
+        email: 'priya.sharma@lawfirm.com',
+        password: hashedPassword,
+        phone: '+91-9876543212',
+        role: 'lawyer',
+        city: 'bangalore',
+      },
+      {
+        name: 'Rajesh Kumar',
+        email: 'rajesh.kumar@lawfirm.com',
+        password: hashedPassword,
+        phone: '+91-9876543213',
+        role: 'lawyer',
+        city: 'chennai',
+      },
+      
       // Police Officers for each station (using same emails as police station emails)
       // All police officers have password: password123
       

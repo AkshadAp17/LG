@@ -112,7 +112,9 @@ export default function Login() {
             <p className="text-sm font-medium text-legal-blue mb-2">Demo Accounts:</p>
             <div className="text-xs text-gray-600 space-y-1">
               <p><strong>Client:</strong> john.smith@email.com / password123</p>
-              <p><strong>Police:</strong> officer.delhi@police.gov.in / password123</p>
+              <p><strong>Lawyer:</strong> sarah.johnson@lawfirm.com / password123</p>
+              <p><strong>Police Delhi:</strong> cp.delhi@police.gov.in / password123</p>
+              <p><strong>Police Mumbai:</strong> bandra.mumbai@police.gov.in / password123</p>
             </div>
           </div>
         </CardContent>
