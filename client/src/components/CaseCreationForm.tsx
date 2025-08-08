@@ -81,12 +81,12 @@ export default function CaseCreationForm({ caseRequestId, onSuccess, onCancel }:
         title: caseRequestDetails.title,
         description: caseRequestDetails.description,
         caseType: caseRequestDetails.caseType || 'civil',
-        victimName: caseRequestDetails.victimName || client?.name || '',
-        victimPhone: caseRequestDetails.clientPhone || client?.phone || '',
-        victimEmail: caseRequestDetails.clientEmail || client?.email || '',
-        accusedName: caseRequestDetails.accusedName || '',
-        accusedPhone: '',
-        accusedAddress: '',
+        victimName: caseRequestDetails.victimName || caseRequestDetails.victim?.name || client?.name || '',
+        victimPhone: caseRequestDetails.victim?.phone || caseRequestDetails.clientPhone || client?.phone || '',
+        victimEmail: caseRequestDetails.victim?.email || caseRequestDetails.clientEmail || client?.email || '',
+        accusedName: caseRequestDetails.accusedName || caseRequestDetails.accused?.name || '',
+        accusedPhone: caseRequestDetails.accused?.phone || '',
+        accusedAddress: caseRequestDetails.accused?.address || '',
         city: client?.city || '',
         policeStationId: caseRequestDetails.availablePoliceStations?.[0]?._id || '',
         pnr: generatePNR(),
@@ -217,19 +217,19 @@ export default function CaseCreationForm({ caseRequestId, onSuccess, onCancel }:
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div className="flex items-center gap-2">
               <User className="h-4 w-4 text-gray-500" />
-              <span><strong>Name:</strong> {client?.name}</span>
+              <span><strong>Name:</strong> {client?.name || 'Not available'}</span>
             </div>
             <div className="flex items-center gap-2">
               <Phone className="h-4 w-4 text-gray-500" />
-              <span><strong>Phone:</strong> {client?.phone}</span>
+              <span><strong>Phone:</strong> {client?.phone || caseRequestDetails.clientPhone || 'Not available'}</span>
             </div>
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-gray-500" />
-              <span><strong>Email:</strong> {client?.email}</span>
+              <span><strong>Email:</strong> {client?.email || caseRequestDetails.clientEmail || 'Not available'}</span>
             </div>
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-gray-500" />
-              <span><strong>City:</strong> {client?.city}</span>
+              <span><strong>City:</strong> {client?.city || 'Not available'}</span>
             </div>
           </CardContent>
         </Card>
@@ -242,8 +242,8 @@ export default function CaseCreationForm({ caseRequestId, onSuccess, onCancel }:
           <CardContent className="space-y-2 text-sm">
             <div><strong>Title:</strong> {caseRequestDetails.title}</div>
             <div><strong>Description:</strong> {caseRequestDetails.description}</div>
-            <div><strong>Victim:</strong> {caseRequestDetails.victimName}</div>
-            <div><strong>Accused:</strong> {caseRequestDetails.accusedName}</div>
+            <div><strong>Victim:</strong> {caseRequestDetails.victimName || caseRequestDetails.victim?.name || client?.name || 'Not specified'}</div>
+            <div><strong>Accused:</strong> {caseRequestDetails.accusedName || caseRequestDetails.accused?.name || 'Not specified'}</div>
           </CardContent>
         </Card>
 

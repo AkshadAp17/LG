@@ -82,6 +82,11 @@ export default function CaseRequests() {
     setResponseAction(null);
   };
 
+  const handleCreateCase = (request: CaseRequestWithDetails) => {
+    setSelectedRequest(request);
+    setIsCaseCreationDialogOpen(true);
+  };
+
   const handleViewDetails = (request: CaseRequestWithDetails) => {
     setSelectedRequest(request);
     setIsDetailDialogOpen(true);
@@ -200,6 +205,7 @@ export default function CaseRequests() {
                 request={request}
                 onViewDetails={handleViewDetails}
                 onRespond={handleRespond}
+                onCreateCase={handleCreateCase}
                 showActions={false}
               />
             ))}
@@ -303,20 +309,16 @@ export default function CaseRequests() {
                   <div className="mt-2 space-y-1">
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4 text-gray-400" />
-                      <span>{selectedRequest.victimName || selectedRequest.victim?.name || 'N/A'}</span>
+                      <span>{selectedRequest.victimName || selectedRequest.victim?.name || selectedRequest.client?.name || 'Not specified'}</span>
                     </div>
-                    {selectedRequest.victim?.phone && (
-                      <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-gray-400" />
-                        <span>{selectedRequest.victim.phone}</span>
-                      </div>
-                    )}
-                    {selectedRequest.victim?.email && (
-                      <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-gray-400" />
-                        <span>{selectedRequest.victim.email}</span>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-gray-400" />
+                      <span>{selectedRequest.victim?.phone || selectedRequest.clientPhone || selectedRequest.client?.phone || 'Not provided'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-gray-400" />
+                      <span>{selectedRequest.victim?.email || selectedRequest.clientEmail || selectedRequest.client?.email || 'Not provided'}</span>
+                    </div>
                   </div>
                 </div>
 
@@ -325,20 +327,16 @@ export default function CaseRequests() {
                   <div className="mt-2 space-y-1">
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4 text-gray-400" />
-                      <span>{selectedRequest.accusedName || selectedRequest.accused?.name || 'N/A'}</span>
+                      <span>{selectedRequest.accusedName || selectedRequest.accused?.name || 'Not specified'}</span>
                     </div>
-                    {selectedRequest.accused?.phone && (
-                      <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-gray-400" />
-                        <span>{selectedRequest.accused.phone}</span>
-                      </div>
-                    )}
-                    {selectedRequest.accused?.address && (
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-gray-400" />
-                        <span>{selectedRequest.accused.address}</span>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-gray-400" />
+                      <span>{selectedRequest.accused?.phone || 'Not provided'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-gray-400" />
+                      <span>{selectedRequest.accused?.address || 'Not provided'}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -349,6 +347,50 @@ export default function CaseRequests() {
                   <p className="mt-1 text-gray-700 bg-gray-50 p-3 rounded-md">
                     {selectedRequest.lawyerResponse}
                   </p>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              {selectedRequest.status === 'accepted' && (
+                <div className="flex gap-3 pt-4 border-t">
+                  <Button 
+                    onClick={() => {
+                      setIsDetailDialogOpen(false);
+                      setIsCaseCreationDialogOpen(true);
+                    }}
+                    className="flex-1"
+                  >
+                    Create Official Case
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => setIsDetailDialogOpen(false)}
+                  >
+                    Close
+                  </Button>
+                </div>
+              )}
+              
+              {selectedRequest.status === 'pending' && (
+                <div className="flex gap-3 pt-4 border-t">
+                  <Button 
+                    onClick={() => {
+                      setIsDetailDialogOpen(false);
+                      handleRespond(selectedRequest, 'accepted');
+                    }}
+                    className="flex-1"
+                  >
+                    Accept Request
+                  </Button>
+                  <Button 
+                    variant="destructive"
+                    onClick={() => {
+                      setIsDetailDialogOpen(false);
+                      handleRespond(selectedRequest, 'rejected');
+                    }}
+                  >
+                    Reject
+                  </Button>
                 </div>
               )}
             </div>
@@ -429,10 +471,11 @@ interface CaseRequestCardProps {
   request: CaseRequestWithDetails;
   onViewDetails: (request: CaseRequestWithDetails) => void;
   onRespond: (request: CaseRequestWithDetails, action: 'accepted' | 'rejected') => void;
+  onCreateCase?: (request: CaseRequestWithDetails) => void;
   showActions: boolean;
 }
 
-function CaseRequestCard({ request, onViewDetails, onRespond, showActions }: CaseRequestCardProps) {
+function CaseRequestCard({ request, onViewDetails, onRespond, onCreateCase, showActions }: CaseRequestCardProps) {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending':
@@ -492,7 +535,7 @@ function CaseRequestCard({ request, onViewDetails, onRespond, showActions }: Cas
           <div className="text-sm">
             <div className="flex items-center gap-2 text-gray-500">
               <User className="h-4 w-4" />
-              <span>Victim: {request.victim.name}</span>
+              <span>Victim: {request.victimName || request.victim?.name || 'Not specified'}</span>
             </div>
           </div>
 
@@ -506,7 +549,7 @@ function CaseRequestCard({ request, onViewDetails, onRespond, showActions }: Cas
               View Details
             </Button>
             
-            {showActions && (
+            {showActions && request.status === 'pending' && (
               <>
                 <Button
                   size="sm"
@@ -523,6 +566,16 @@ function CaseRequestCard({ request, onViewDetails, onRespond, showActions }: Cas
                   Reject
                 </Button>
               </>
+            )}
+            
+            {request.status === 'accepted' && onCreateCase && (
+              <Button
+                size="sm"
+                onClick={() => onCreateCase(request)}
+                className="flex-1 bg-green-600 hover:bg-green-700"
+              >
+                Create Case
+              </Button>
             )}
           </div>
         </div>
