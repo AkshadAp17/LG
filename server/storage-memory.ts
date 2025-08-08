@@ -104,13 +104,15 @@ export class MemoryStorage implements IStorage {
       _id: this.generateId(),
       ...userData,
       password: hashedPassword,
-      stats: { totalCases: 0, wonCases: 0, lostCases: 0 },
-      rating: 0,
+      stats: userData.stats || { totalCases: 0, wonCases: 0, lostCases: 0 },
+      rating: userData.rating || 0,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
     
     this.users.push(user);
+    console.log(`✅ New user registered: ${user.email} (ID: ${user._id})`);
+    console.log(`Total users in memory: ${this.users.length}`);
     return user;
   }
 
