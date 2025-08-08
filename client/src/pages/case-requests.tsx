@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { Clock, CheckCircle, XCircle, User, MapPin, Calendar, Phone, Mail } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, User, MapPin, Calendar, Phone, Mail, Upload } from 'lucide-react';
 import { format } from 'date-fns';
 import CaseCreationForm from '@/components/CaseCreationForm';
 import type { CaseRequest } from '@shared/schema';
@@ -342,6 +342,39 @@ export default function CaseRequests() {
                   </div>
                 </div>
               </div>
+
+              {/* Documents Section */}
+              {selectedRequest.documents && selectedRequest.documents.length > 0 && (
+                <div>
+                  <Label className="text-sm font-medium text-gray-500">Documents</Label>
+                  <div className="mt-2 space-y-2">
+                    {selectedRequest.documents.map((doc, index) => (
+                      <div key={index} className="flex items-center justify-between p-2 border rounded-lg bg-gray-50">
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Upload className="h-4 w-4" />
+                          <span>{doc}</span>
+                        </div>
+                        <Button
+                          variant="ghost" 
+                          size="sm"
+                          className="text-blue-600 hover:text-blue-800"
+                          onClick={() => {
+                            const downloadUrl = `/uploads/${doc}`;
+                            const link = document.createElement('a');
+                            link.href = downloadUrl;
+                            link.download = doc;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }}
+                        >
+                          Download
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {selectedRequest.lawyerResponse && (
                 <div>

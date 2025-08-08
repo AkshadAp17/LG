@@ -305,9 +305,27 @@ export default function Cases() {
                     {selectedCase.documents && selectedCase.documents.length > 0 ? (
                       <div className="space-y-2">
                         {selectedCase.documents.map((doc, index) => (
-                          <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
-                            <Upload className="h-4 w-4" />
-                            <span>{doc}</span>
+                          <div key={index} className="flex items-center justify-between p-2 border rounded-lg bg-gray-50">
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Upload className="h-4 w-4" />
+                              <span>{doc}</span>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-blue-600 hover:text-blue-800"
+                              onClick={() => {
+                                const downloadUrl = `/uploads/${doc}`;
+                                const link = document.createElement('a');
+                                link.href = downloadUrl;
+                                link.download = doc;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                              }}
+                            >
+                              Download
+                            </Button>
                           </div>
                         ))}
                       </div>
@@ -340,8 +358,8 @@ export default function Cases() {
                       </div>
                     )}
                     
-                    {/* Delete button for clients and lawyers */}
-                    {(user?.role === 'client' || user?.role === 'lawyer') && (
+                    {/* Delete button for lawyers only */}
+                    {user?.role === 'lawyer' && (
                       <Button
                         variant="outline"
                         className="w-full border-red-300 text-red-700 hover:bg-red-50"
