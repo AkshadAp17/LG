@@ -510,7 +510,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch('/api/case-requests/:id', authenticateToken, requireRole(['lawyer']), async (req: any, res) => {
     try {
-      const { status, lawyerResponse } = req.body;
+      const { status, lawyerResponse, autoCreateCase = true, caseDetails } = req.body;
       
       // Verify lawyer owns this request
       const existingRequest = await storage.getCaseRequest(req.params.id);
@@ -540,8 +540,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         caseRequestId: updatedRequest._id,
       });
       
-      // If accepted, create the actual case
-      if (status === 'accepted') {
+      let newCase = null;
+      
+      // If accepted and auto-create is enabled, create the case
+      if (status === 'accepted' && autoCreateCase) {
         // Get client info for city and police station assignment
         const client = await storage.getUser(updatedRequest.clientId);
         if (!client) {
@@ -557,16 +559,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const caseData = {
           title: updatedRequest.title,
           description: updatedRequest.description,
-          caseType: updatedRequest.caseType || 'civil' as const, // default if not specified
+          caseType: updatedRequest.caseType || caseDetails?.caseType || 'civil' as const,
           victim: updatedRequest.victim || {
             name: updatedRequest.victimName,
             phone: updatedRequest.clientPhone,
-            email: updatedRequest.clientEmail
+            email: updatedRequest.clientEmail || client.email
           },
           accused: updatedRequest.accused || {
             name: updatedRequest.accusedName,
-            phone: '',
-            address: ''
+            phone: caseDetails?.accusedPhone || '',
+            address: caseDetails?.accusedAddress || ''
           },
           city: updatedRequest.city || client.city || '',
           policeStationId: updatedRequest.policeStationId || policeStations[0]._id || '',
@@ -574,9 +576,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           clientId: updatedRequest.clientId,
           lawyerId: updatedRequest.lawyerId,
           status: 'submitted' as const,
+          pnr: caseDetails?.pnr || `PNR${Date.now()}`, // Auto-generate PNR if not provided
+          hearingDate: caseDetails?.hearingDate ? new Date(caseDetails.hearingDate) : undefined,
         };
         
-        const newCase = await storage.createCase(caseData);
+        newCase = await storage.createCase(caseData);
         
         // Notify client about case creation
         await storage.createNotification({
@@ -588,10 +592,129 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      res.json(updatedRequest);
+      res.json({ 
+        caseRequest: updatedRequest,
+        createdCase: newCase 
+      });
     } catch (error: any) {
       console.error('Case request update error:', error);
       res.status(400).json({ message: error.message || 'Failed to update case request' });
+    }
+  });
+
+  // Create case from case request with detailed information
+  app.post('/api/case-requests/:id/create-case', authenticateToken, requireRole(['lawyer']), async (req: any, res) => {
+    try {
+      const caseRequestId = req.params.id;
+      const caseDetails = req.body;
+      
+      // Get the case request
+      const caseRequest = await storage.getCaseRequest(caseRequestId);
+      if (!caseRequest) {
+        return res.status(404).json({ message: 'Case request not found' });
+      }
+      
+      // Verify lawyer owns this request
+      if (caseRequest.lawyerId.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: 'Access denied' });
+      }
+      
+      // Get client info
+      const client = await storage.getUser(caseRequest.clientId);
+      if (!client) {
+        throw new Error('Client not found');
+      }
+
+      // Find police station
+      const policeStations = await storage.getPoliceStations(client.city);
+      let policeStationId = caseDetails.policeStationId;
+      
+      if (!policeStationId && policeStations.length > 0) {
+        policeStationId = policeStations[0]._id;
+      }
+      
+      if (!policeStationId) {
+        throw new Error(`No police stations found in ${client.city}`);
+      }
+
+      // Create comprehensive case data with client details preserved
+      const caseData = {
+        title: caseDetails.title || caseRequest.title,
+        description: caseDetails.description || caseRequest.description,
+        caseType: caseDetails.caseType || caseRequest.caseType || 'civil' as const,
+        victim: {
+          name: caseDetails.victimName || caseRequest.victimName || client.name,
+          phone: caseDetails.victimPhone || caseRequest.clientPhone || client.phone,
+          email: caseDetails.victimEmail || caseRequest.clientEmail || client.email
+        },
+        accused: {
+          name: caseDetails.accusedName || caseRequest.accusedName,
+          phone: caseDetails.accusedPhone || '',
+          address: caseDetails.accusedAddress || ''
+        },
+        city: caseDetails.city || client.city || '',
+        policeStationId: policeStationId,
+        documents: caseDetails.documents || caseRequest.documents || [],
+        clientId: caseRequest.clientId,
+        lawyerId: caseRequest.lawyerId,
+        status: 'submitted' as const,
+        pnr: caseDetails.pnr || `PNR${Date.now()}${Math.floor(Math.random() * 1000)}`,
+        hearingDate: caseDetails.hearingDate ? new Date(caseDetails.hearingDate) : undefined,
+      };
+      
+      const newCase = await storage.createCase(caseData);
+      
+      // Update case request status to accepted if not already
+      if (caseRequest.status !== 'accepted') {
+        await storage.updateCaseRequest(caseRequestId, {
+          status: 'accepted',
+          lawyerResponse: 'Case has been created and submitted for review',
+        });
+      }
+      
+      // Notify client about case creation
+      await storage.createNotification({
+        userId: caseRequest.clientId,
+        title: 'Case Created',
+        message: `Your case "${newCase.title}" has been created and submitted for police review. PNR: ${newCase.pnr}`,
+        type: 'case_created',
+        caseId: newCase._id,
+      });
+      
+      res.status(201).json({
+        case: newCase,
+        message: 'Case created successfully with client details'
+      });
+    } catch (error: any) {
+      console.error('Case creation error:', error);
+      res.status(400).json({ message: error.message || 'Failed to create case' });
+    }
+  });
+
+  // Get detailed case request with client information
+  app.get('/api/case-requests/:id/details', authenticateToken, async (req: any, res) => {
+    try {
+      const caseRequest = await storage.getCaseRequest(req.params.id);
+      if (!caseRequest) {
+        return res.status(404).json({ message: 'Case request not found' });
+      }
+      
+      // Get client and lawyer details
+      const client = await storage.getUser(caseRequest.clientId);
+      const lawyer = await storage.getUser(caseRequest.lawyerId);
+      
+      // Get police stations in client's city
+      const policeStations = client?.city ? await storage.getPoliceStations(client.city) : [];
+      
+      res.json({
+        ...caseRequest,
+        clientDetails: client,
+        lawyerDetails: lawyer,
+        availablePoliceStations: policeStations
+      });
+    } catch (error: any) {
+      console.error('Error fetching case request details:', error);
+      res.status(500).json({ message: 'Failed to fetch case request details' });
     }
   });
 

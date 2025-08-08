@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { Clock, CheckCircle, XCircle, User, MapPin, Calendar, Phone, Mail } from 'lucide-react';
 import { format } from 'date-fns';
-import CompleteCase from '@/components/CompleteCase';
+import CaseCreationForm from '@/components/CaseCreationForm';
 import type { CaseRequest } from '@shared/schema';
 
 interface CaseRequestWithDetails extends CaseRequest {
@@ -31,7 +31,7 @@ export default function CaseRequests() {
   const [selectedRequest, setSelectedRequest] = useState<CaseRequestWithDetails | null>(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [isResponseDialogOpen, setIsResponseDialogOpen] = useState(false);
-  const [isCompleteCaseDialogOpen, setIsCompleteCaseDialogOpen] = useState(false);
+  const [isCaseCreationDialogOpen, setIsCaseCreationDialogOpen] = useState(false);
   const [lawyerResponse, setLawyerResponse] = useState('');
   const [responseAction, setResponseAction] = useState<'accepted' | 'rejected' | null>(null);
   const { toast } = useToast();
@@ -53,7 +53,7 @@ export default function CaseRequests() {
           description: 'Now complete the case details to create the official case.',
         });
         setIsResponseDialogOpen(false);
-        setIsCompleteCaseDialogOpen(true);
+        setIsCaseCreationDialogOpen(true);
       } else {
         toast({
           title: 'Response Sent',
@@ -75,64 +75,11 @@ export default function CaseRequests() {
     },
   });
 
-  const createCaseMutation = useMutation({
-    mutationFn: async (caseData: any) => {
-      const response = await apiRequest('POST', '/api/cases', caseData);
-      return await response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: 'Case Created Successfully',
-        description: 'The official case has been created with PNR number.',
-      });
-      setIsCompleteCaseDialogOpen(false);
-      setSelectedRequest(null);
-      setLawyerResponse('');
-      setResponseAction(null);
-      queryClient.invalidateQueries({ queryKey: ['/api/cases'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/case-requests'] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to create case',
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const handleCompleteCase = (completeData: any) => {
-    if (!selectedRequest) return;
-    
-    const caseData = {
-      title: selectedRequest.title,
-      description: completeData.additionalNotes || selectedRequest.description,
-      caseType: completeData.caseType,
-      victim: {
-        name: selectedRequest.victimName || 'N/A',
-        phone: selectedRequest.clientPhone || 'N/A',
-        email: selectedRequest.clientEmail || 'N/A',
-      },
-      accused: {
-        name: selectedRequest.accusedName || 'N/A',
-        phone: 'N/A',
-        address: 'N/A',
-      },
-      clientId: selectedRequest.clientId,
-      lawyerId: selectedRequest.lawyerId,
-      pnr: completeData.pnr,
-      policeStationId: completeData.policeStation,
-      city: 'Unknown', // Will be updated based on police station
-      incidentDate: completeData.incidentDate,
-      incidentTime: completeData.incidentTime,
-      incidentLocation: completeData.incidentLocation,
-      urgency: completeData.urgency,
-      evidenceDescription: completeData.evidenceDescription,
-      witnessDetails: completeData.witnessDetails,
-      status: 'submitted',
-    };
-
-    createCaseMutation.mutate(caseData);
+  const handleCaseCreationSuccess = () => {
+    setIsCaseCreationDialogOpen(false);
+    setSelectedRequest(null);
+    setLawyerResponse('');
+    setResponseAction(null);
   };
 
   const handleViewDetails = (request: CaseRequestWithDetails) => {
@@ -462,15 +409,14 @@ export default function CaseRequests() {
         </DialogContent>
       </Dialog>
 
-      {/* Complete Case Dialog */}
-      <Dialog open={isCompleteCaseDialogOpen} onOpenChange={setIsCompleteCaseDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto">
+      {/* Case Creation Dialog */}
+      <Dialog open={isCaseCreationDialogOpen} onOpenChange={setIsCaseCreationDialogOpen}>
+        <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
           {selectedRequest && (
-            <CompleteCase
-              caseRequest={selectedRequest}
-              onSubmit={handleCompleteCase}
-              onCancel={() => setIsCompleteCaseDialogOpen(false)}
-              isSubmitting={createCaseMutation.isPending}
+            <CaseCreationForm
+              caseRequestId={selectedRequest._id!}
+              onSuccess={handleCaseCreationSuccess}
+              onCancel={() => setIsCaseCreationDialogOpen(false)}
             />
           )}
         </DialogContent>
