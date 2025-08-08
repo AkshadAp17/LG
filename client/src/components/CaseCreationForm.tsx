@@ -244,7 +244,7 @@ export default function CaseCreationForm({ caseRequestId, onSuccess, onCancel }:
             <div><strong>Title:</strong> {(caseRequestDetails as any)?.title || 'Loading...'}</div>
             <div><strong>Description:</strong> {(caseRequestDetails as any)?.description || 'Loading...'}</div>
             <div><strong>Victim:</strong> {(caseRequestDetails as any)?.victimName || (caseRequestDetails as any)?.victim?.name || client?.name || 'Not specified'}</div>
-            <div><strong>Accused:</strong> {(caseRequestDetails as any)?.accusedName || (caseRequestDetails as any)?.accused?.name || 'Not specified'}</div>
+            <div><strong>Accused:</strong> <span className="text-red-600 font-semibold">{(caseRequestDetails as any)?.accusedName || (caseRequestDetails as any)?.accused?.name || 'Not specified'}</span></div>
           </CardContent>
         </Card>
 

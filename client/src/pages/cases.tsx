@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, FolderOpen, Clock, CheckCircle, XCircle, Eye, MapPin, Phone, Mail } from "lucide-react";
+import { Plus, FolderOpen, Clock, CheckCircle, XCircle, Eye, MapPin, Phone, Mail, Trash2, Upload } from "lucide-react";
 import CaseCard from "@/components/CaseCard";
 import CaseForm from "@/components/CaseForm";
 import { authService } from "@/lib/auth";
@@ -43,6 +43,16 @@ export default function Cases() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/cases'] });
+    },
+  });
+
+  const deleteCase = useMutation({
+    mutationFn: async (caseId: string) => {
+      return apiRequest('DELETE', `/api/cases/${caseId}`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/cases'] });
+      setSelectedCase(null);
     },
   });
 
@@ -271,27 +281,64 @@ export default function Cases() {
                     </div>
                   )}
 
-                  {user?.role === 'police' && selectedCase.status === 'under_review' && (
-                    <div className="flex space-x-3 pt-4 border-t">
+                  {/* Document Section */}
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Documents</h4>
+                    {selectedCase.documents && selectedCase.documents.length > 0 ? (
+                      <div className="space-y-2">
+                        {selectedCase.documents.map((doc, index) => (
+                          <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
+                            <Upload className="h-4 w-4" />
+                            <span>{doc}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500">No documents uploaded</p>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col gap-2 pt-4 border-t">
+                    {user?.role === 'police' && selectedCase.status === 'under_review' && (
+                      <div className="flex space-x-3">
+                        <Button
+                          variant="outline"
+                          className="flex-1 border-red-300 text-red-700 hover:bg-red-50"
+                          onClick={() => rejectCase.mutate({ caseId: selectedCase._id! })}
+                          disabled={rejectCase.isPending}
+                        >
+                          <XCircle className="mr-2 h-4 w-4" />
+                          Reject
+                        </Button>
+                        <Button
+                          className="flex-1 bg-legal-emerald hover:bg-green-700 text-white"
+                          onClick={() => approveCase.mutate(selectedCase._id!)}
+                          disabled={approveCase.isPending}
+                        >
+                          <CheckCircle className="mr-2 h-4 w-4" />
+                          Approve
+                        </Button>
+                      </div>
+                    )}
+                    
+                    {/* Delete button for clients and lawyers */}
+                    {(user?.role === 'client' || user?.role === 'lawyer') && (
                       <Button
                         variant="outline"
-                        className="flex-1 border-red-300 text-red-700 hover:bg-red-50"
-                        onClick={() => rejectCase.mutate({ caseId: selectedCase._id! })}
-                        disabled={rejectCase.isPending}
+                        className="w-full border-red-300 text-red-700 hover:bg-red-50"
+                        onClick={() => {
+                          if (confirm('Are you sure you want to delete this case? This action cannot be undone.')) {
+                            deleteCase.mutate(selectedCase._id!);
+                          }
+                        }}
+                        disabled={deleteCase.isPending}
                       >
-                        <XCircle className="mr-2 h-4 w-4" />
-                        Reject
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete Case
                       </Button>
-                      <Button
-                        className="flex-1 bg-legal-emerald hover:bg-green-700 text-white"
-                        onClick={() => approveCase.mutate(selectedCase._id!)}
-                        disabled={approveCase.isPending}
-                      >
-                        <CheckCircle className="mr-2 h-4 w-4" />
-                        Approve
-                      </Button>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div className="text-center py-8 text-gray-500">

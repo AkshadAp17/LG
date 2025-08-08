@@ -364,6 +364,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete case route
+  app.delete('/api/cases/:id', authenticateToken, async (req: any, res) => {
+    try {
+      const caseId = req.params.id;
+      const case_ = await storage.getCase(caseId);
+      
+      if (!case_) {
+        return res.status(404).json({ message: 'Case not found' });
+      }
+      
+      // Check if user has permission to delete the case
+      if (req.user.role === 'client' && case_.clientId !== req.user._id) {
+        return res.status(403).json({ message: 'Not authorized to delete this case' });
+      }
+      
+      if (req.user.role === 'lawyer' && case_.lawyerId !== req.user._id) {
+        return res.status(403).json({ message: 'Not authorized to delete this case' });
+      }
+      
+      // Police can delete any case
+      
+      // Delete the case
+      await CaseModel.findByIdAndDelete(caseId);
+      
+      // Create notification
+      const recipientId = req.user.role === 'client' ? case_.lawyerId : case_.clientId;
+      if (recipientId) {
+        await storage.createNotification({
+          userId: recipientId,
+          title: 'Case Deleted',
+          message: `Case "${case_.title}" has been deleted by ${req.user.name}`,
+          type: 'case_deleted',
+          caseId: caseId,
+        });
+      }
+      
+      res.json({ message: 'Case deleted successfully' });
+    } catch (error: any) {
+      console.error('Case deletion error:', error);
+      res.status(400).json({ message: error.message || 'Failed to delete case' });
+    }
+  });
+
   // Messages routes
   app.get('/api/messages', authenticateToken, async (req: any, res) => {
     try {
