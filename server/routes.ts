@@ -80,6 +80,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(req.user);
   });
 
+  // Police Stations routes
+  app.get('/api/police-stations', async (req, res) => {
+    try {
+      const { city } = req.query;
+      const policeStations = await storage.getPoliceStations(city as string);
+      res.json(policeStations);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || 'Failed to fetch police stations' });
+    }
+  });
+
+  app.get('/api/police-stations/:id', async (req, res) => {
+    try {
+      const policeStation = await storage.getPoliceStation(req.params.id);
+      if (!policeStation) {
+        return res.status(404).json({ message: 'Police station not found' });
+      }
+      res.json(policeStation);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || 'Failed to fetch police station' });
+    }
+  });
+
   // Lawyers routes
   app.get('/api/lawyers', async (req, res) => {
     try {

@@ -4,12 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, FolderOpen, Clock, CheckCircle, XCircle, Eye } from "lucide-react";
+import { Plus, FolderOpen, Clock, CheckCircle, XCircle, Eye, MapPin, Phone, Mail } from "lucide-react";
 import CaseCard from "@/components/CaseCard";
 import CaseForm from "@/components/CaseForm";
 import { authService } from "@/lib/auth";
 import { apiRequest } from "@/lib/queryClient";
-import type { Case } from "@shared/schema";
+import type { Case, PoliceStation } from "@shared/schema";
 
 export default function Cases() {
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -20,6 +20,12 @@ export default function Cases() {
 
   const { data: cases = [], isLoading } = useQuery<Case[]>({
     queryKey: ['/api/cases'],
+  });
+
+  // Fetch police station details for selected case
+  const { data: policeStation } = useQuery<PoliceStation>({
+    queryKey: ['/api/police-stations', selectedCase?.policeStationId],
+    enabled: !!selectedCase?.policeStationId,
   });
 
   const approveCase = useMutation({
@@ -218,17 +224,50 @@ export default function Cases() {
                     </div>
                   </div>
 
-                  {selectedCase.pnr && (
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Case Information</h4>
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Case Information</h4>
+                    {selectedCase.pnr && (
                       <p className="text-sm text-gray-600">
                         <strong>PNR:</strong> {selectedCase.pnr}
                       </p>
-                      {selectedCase.hearingDate && (
+                    )}
+                    {selectedCase.hearingDate && (
+                      <p className="text-sm text-gray-600">
+                        <strong>Hearing Date:</strong> {new Date(selectedCase.hearingDate).toLocaleDateString()}
+                      </p>
+                    )}
+                    <p className="text-sm text-gray-600">
+                      <strong>City:</strong> {selectedCase.city}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      <strong>Case Type:</strong> {selectedCase.caseType}
+                    </p>
+                  </div>
+
+                  {/* Police Station Information */}
+                  {policeStation && (
+                    <div>
+                      <h4 className="font-medium text-gray-900 mb-2">Assigned Police Station</h4>
+                      <div className="bg-blue-50 p-3 rounded-lg space-y-2">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm font-medium">{policeStation.name}</span>
+                        </div>
                         <p className="text-sm text-gray-600">
-                          <strong>Hearing Date:</strong> {new Date(selectedCase.hearingDate).toLocaleDateString()}
+                          <strong>Code:</strong> {policeStation.code}
                         </p>
-                      )}
+                        <p className="text-sm text-gray-600">
+                          <strong>Address:</strong> {policeStation.address}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-gray-500" />
+                          <span className="text-sm text-gray-600">{policeStation.phone}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-gray-500" />
+                          <span className="text-sm text-gray-600">{policeStation.email}</span>
+                        </div>
+                      </div>
                     </div>
                   )}
 

@@ -52,6 +52,18 @@ export const insertLawyerSchema = lawyerSchema.omit({ _id: true, createdAt: true
 export type Lawyer = z.infer<typeof lawyerSchema>;
 export type InsertLawyer = z.infer<typeof insertLawyerSchema>;
 
+// Police Station Schema
+export const policeStationSchema = z.object({
+  _id: z.string().optional(),
+  name: z.string(),
+  code: z.string(), // e.g., DEL-001
+  city: z.string(),
+  address: z.string(),
+  phone: z.string(),
+  email: z.string().email(),
+  createdAt: z.date().optional(),
+});
+
 // Case Schema
 export const caseSchema = z.object({
   _id: z.string().optional(),
@@ -71,6 +83,7 @@ export const caseSchema = z.object({
   clientId: z.string(),
   lawyerId: z.string().optional(),
   policeStationId: z.string(),
+  policeStation: policeStationSchema.optional(),
   city: z.string(),
   status: z.enum(['draft', 'submitted', 'under_review', 'approved', 'rejected']),
   pnr: z.string().optional(),
@@ -80,21 +93,9 @@ export const caseSchema = z.object({
   updatedAt: z.date().optional(),
 });
 
-export const insertCaseSchema = caseSchema.omit({ _id: true, createdAt: true, updatedAt: true, pnr: true });
+export const insertCaseSchema = caseSchema.omit({ _id: true, createdAt: true, updatedAt: true, pnr: true, policeStation: true });
 export type Case = z.infer<typeof caseSchema>;
 export type InsertCase = z.infer<typeof insertCaseSchema>;
-
-// Police Station Schema
-export const policeStationSchema = z.object({
-  _id: z.string().optional(),
-  name: z.string(),
-  code: z.string(), // e.g., DEL-001
-  city: z.string(),
-  address: z.string(),
-  phone: z.string(),
-  email: z.string().email(),
-  createdAt: z.date().optional(),
-});
 
 export const insertPoliceStationSchema = policeStationSchema.omit({ _id: true, createdAt: true });
 export type PoliceStation = z.infer<typeof policeStationSchema>;

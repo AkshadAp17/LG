@@ -288,7 +288,7 @@ export class MongoStorage implements IStorage {
     if (filters?.lawyerId) query.lawyerId = filters.lawyerId;
     if (filters?.status) query.status = filters.status;
 
-    const cases = await CaseModel.find(query);
+    const cases = await CaseModel.find(query).populate('policeStationId');
     return cases.map(case_ => ({
       _id: case_._id.toString(),
       title: case_.title,
@@ -299,6 +299,15 @@ export class MongoStorage implements IStorage {
       clientId: case_.clientId,
       lawyerId: case_.lawyerId,
       policeStationId: case_.policeStationId,
+      policeStation: case_.policeStationId ? {
+        _id: (case_.policeStationId as any)._id?.toString(),
+        name: (case_.policeStationId as any).name,
+        code: (case_.policeStationId as any).code,
+        city: (case_.policeStationId as any).city,
+        address: (case_.policeStationId as any).address,
+        phone: (case_.policeStationId as any).phone,
+        email: (case_.policeStationId as any).email,
+      } : undefined,
       city: case_.city,
       status: case_.status,
       pnr: case_.pnr,
@@ -310,7 +319,7 @@ export class MongoStorage implements IStorage {
   }
 
   async getCase(id: string): Promise<Case | null> {
-    const case_ = await CaseModel.findById(id);
+    const case_ = await CaseModel.findById(id).populate('policeStationId');
     if (!case_) return null;
     
     return {
@@ -323,6 +332,15 @@ export class MongoStorage implements IStorage {
       clientId: case_.clientId,
       lawyerId: case_.lawyerId,
       policeStationId: case_.policeStationId,
+      policeStation: case_.policeStationId ? {
+        _id: (case_.policeStationId as any)._id?.toString(),
+        name: (case_.policeStationId as any).name,
+        code: (case_.policeStationId as any).code,
+        city: (case_.policeStationId as any).city,
+        address: (case_.policeStationId as any).address,
+        phone: (case_.policeStationId as any).phone,
+        email: (case_.policeStationId as any).email,
+      } : undefined,
       city: case_.city,
       status: case_.status,
       pnr: case_.pnr,
