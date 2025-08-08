@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import { 
   type User, type InsertUser, type Lawyer, type InsertLawyer,
   type Case, type InsertCase, type PoliceStation, type InsertPoliceStation,
@@ -10,6 +11,7 @@ import {
   UserModel, LawyerModel, CaseModel, PoliceStationModel, 
   MessageModel, NotificationModel, CaseRequestModel 
 } from "./db.js";
+import { MemoryStorage } from "./storage-memory.js";
 
 export interface IStorage {
   // Auth
@@ -54,6 +56,9 @@ export interface IStorage {
 }
 
 export class MongoStorage implements IStorage {
+  private isConnected(): boolean {
+    return mongoose.connection.readyState === 1;
+  }
   async login(data: LoginData): Promise<AuthResponse> {
     const user = await UserModel.findOne({ email: data.email });
     if (!user) {
@@ -79,12 +84,12 @@ export class MongoStorage implements IStorage {
         password: user.password,
         phone: user.phone,
         role: user.role,
-        city: user.city,
-        specialization: user.specialization,
-        experience: user.experience,
-        policeStationCode: user.policeStationCode,
-        stats: user.stats,
-        rating: user.rating,
+        city: user.city || undefined,
+        specialization: user.specialization || undefined,
+        experience: user.experience || undefined,
+        policeStationCode: user.policeStationCode || undefined,
+        stats: user.stats || undefined,
+        rating: user.rating || undefined,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
@@ -107,12 +112,12 @@ export class MongoStorage implements IStorage {
       password: savedUser.password,
       phone: savedUser.phone,
       role: savedUser.role,
-      city: savedUser.city,
-      specialization: savedUser.specialization,
-      experience: savedUser.experience,
-      policeStationCode: savedUser.policeStationCode,
-      stats: savedUser.stats,
-      rating: savedUser.rating,
+      city: savedUser.city || undefined,
+      specialization: savedUser.specialization || undefined,
+      experience: savedUser.experience || undefined,
+      policeStationCode: savedUser.policeStationCode || undefined,
+      stats: savedUser.stats || undefined,
+      rating: savedUser.rating || undefined,
       createdAt: savedUser.createdAt,
       updatedAt: savedUser.updatedAt,
     };
@@ -129,12 +134,12 @@ export class MongoStorage implements IStorage {
       password: user.password,
       phone: user.phone,
       role: user.role,
-      city: user.city,
-      specialization: user.specialization,
-      experience: user.experience,
-      policeStationCode: user.policeStationCode,
-      stats: user.stats,
-      rating: user.rating,
+      city: user.city || undefined,
+      specialization: user.specialization || undefined,
+      experience: user.experience || undefined,
+      policeStationCode: user.policeStationCode || undefined,
+      stats: user.stats || undefined,
+      rating: user.rating || undefined,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
@@ -151,12 +156,12 @@ export class MongoStorage implements IStorage {
       password: user.password,
       phone: user.phone,
       role: user.role,
-      city: user.city,
-      specialization: user.specialization,
-      experience: user.experience,
-      policeStationCode: user.policeStationCode,
-      stats: user.stats,
-      rating: user.rating,
+      city: user.city || undefined,
+      specialization: user.specialization || undefined,
+      experience: user.experience || undefined,
+      policeStationCode: user.policeStationCode || undefined,
+      stats: user.stats || undefined,
+      rating: user.rating || undefined,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
@@ -581,4 +586,5 @@ export class MongoStorage implements IStorage {
   }
 }
 
-export const storage = new MongoStorage();
+// Use memory storage for now since MongoDB connection is failing
+export const storage = new MemoryStorage();

@@ -71,6 +71,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.register(userData);
       res.status(201).json(user);
     } catch (error: any) {
+      console.error('Registration error:', error.message);
       res.status(400).json({ message: error.message || 'Registration failed' });
     }
   });
