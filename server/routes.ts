@@ -550,6 +550,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           throw new Error('Client not found');
         }
 
+        // Debug: Log the actual request data to understand what we have
+        console.log('Case Request Data:', {
+          victimName: updatedRequest.victimName,
+          accusedName: updatedRequest.accusedName,
+          clientPhone: updatedRequest.clientPhone,
+          clientEmail: updatedRequest.clientEmail,
+          victim: updatedRequest.victim,
+          accused: updatedRequest.accused
+        });
+
         // Find a police station in the client's city, or use any available station
         let policeStations = await storage.getPoliceStations(client.city);
         if (policeStations.length === 0) {
@@ -560,19 +570,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
 
+        // Ensure all required fields are populated with fallbacks
+        const victimName = updatedRequest.victimName || updatedRequest.victim?.name || client.name || 'Client';
+        const victimPhone = updatedRequest.victim?.phone || updatedRequest.clientPhone || client.phone || 'Not provided';
+        const accusedName = updatedRequest.accusedName || updatedRequest.accused?.name || 'Unknown';
+
+        console.log('Resolved data:', { victimName, victimPhone, accusedName });
+
         const caseData = {
           title: updatedRequest.title,
           description: updatedRequest.description,
           caseType: updatedRequest.caseType || caseDetails?.caseType || 'civil' as const,
-          victim: updatedRequest.victim || {
-            name: updatedRequest.victimName,
-            phone: updatedRequest.clientPhone,
-            email: updatedRequest.clientEmail || client.email
+          victim: {
+            name: victimName,
+            phone: victimPhone,
+            email: updatedRequest.victim?.email || updatedRequest.clientEmail || client.email || ''
           },
-          accused: updatedRequest.accused || {
-            name: updatedRequest.accusedName,
-            phone: caseDetails?.accusedPhone || '',
-            address: caseDetails?.accusedAddress || ''
+          accused: {
+            name: accusedName,
+            phone: updatedRequest.accused?.phone || caseDetails?.accusedPhone || '',
+            address: updatedRequest.accused?.address || caseDetails?.accusedAddress || ''
           },
           city: updatedRequest.city || client.city || '',
           policeStationId: updatedRequest.policeStationId || policeStations[0]._id || '',
@@ -584,6 +601,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           hearingDate: caseDetails?.hearingDate ? new Date(caseDetails.hearingDate) : undefined,
         };
         
+        console.log('Final case data:', caseData);
         newCase = await storage.createCase(caseData);
         
         // Notify client about case creation
@@ -629,17 +647,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw new Error('Client not found');
       }
 
-      // Find police station
-      const policeStations = await storage.getPoliceStations(client.city);
-      let policeStationId = caseDetails.policeStationId;
+      // Find police station in client's city, or use any available station
+      let policeStations = await storage.getPoliceStations(client.city);
+      if (policeStations.length === 0) {
+        policeStations = await storage.getAllPoliceStations();
+        if (policeStations.length === 0) {
+          throw new Error('No police stations available in the system');
+        }
+      }
       
+      let policeStationId = caseDetails.policeStationId;
       if (!policeStationId && policeStations.length > 0) {
         policeStationId = policeStations[0]._id;
       }
-      
-      if (!policeStationId) {
-        throw new Error(`No police stations found in ${client.city}`);
-      }
+
+      // Ensure all required fields are populated with fallbacks
+      const victimName = caseDetails.victimName || caseRequest.victimName || client.name || 'Client';
+      const victimPhone = caseDetails.victimPhone || caseRequest.clientPhone || client.phone || 'Not provided';
+      const accusedName = caseDetails.accusedName || caseRequest.accusedName || 'Unknown';
 
       // Create comprehensive case data with client details preserved
       const caseData = {
@@ -647,12 +672,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         description: caseDetails.description || caseRequest.description,
         caseType: caseDetails.caseType || caseRequest.caseType || 'civil' as const,
         victim: {
-          name: caseDetails.victimName || caseRequest.victimName || client.name,
-          phone: caseDetails.victimPhone || caseRequest.clientPhone || client.phone,
-          email: caseDetails.victimEmail || caseRequest.clientEmail || client.email
+          name: victimName,
+          phone: victimPhone,
+          email: caseDetails.victimEmail || caseRequest.clientEmail || client.email || ''
         },
         accused: {
-          name: caseDetails.accusedName || caseRequest.accusedName,
+          name: accusedName,
           phone: caseDetails.accusedPhone || '',
           address: caseDetails.accusedAddress || ''
         },
