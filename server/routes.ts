@@ -122,12 +122,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { role } = req.query;
       
-      if (!role) {
-        return res.status(400).json({ message: "Role parameter is required" });
+      if (role) {
+        // If role is specified, filter by role
+        const users = await storage.getUsersByRole(role as string);
+        res.json(users);
+      } else {
+        // If no role specified, return all users (for messaging)
+        const users = await storage.getAllUsers();
+        res.json(users);
       }
-
-      const users = await storage.getUsersByRole(role as string);
-      res.json(users);
     } catch (error: any) {
       console.error("Error fetching users:", error);
       res.status(500).json({ message: "Failed to fetch users" });
@@ -623,8 +626,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       let newCase = null;
       
-      // If accepted and auto-create is enabled, create the case
+      // If accepted and auto-create is enabled, create the case with submitted status
       if (status === 'accepted' && autoCreateCase) {
+        // Check if a case already exists for this case request
+        const existingCases = await storage.getCases({ clientId: updatedRequest.clientId, lawyerId: updatedRequest.lawyerId });
+        const hasExistingCase = existingCases.some(c => 
+          c.title === updatedRequest.title && 
+          c.description === updatedRequest.description
+        );
+        
+        if (hasExistingCase) {
+          return res.status(400).json({ 
+            message: 'A case with similar details already exists for this client-lawyer pair',
+            caseRequest: updatedRequest,
+            createdCase: null
+          });
+        }
+
         // Get client info for city and police station assignment
         const client = await storage.getUser(updatedRequest.clientId);
         if (!client) {
@@ -677,7 +695,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           documents: updatedRequest.documents || [],
           clientId: updatedRequest.clientId,
           lawyerId: updatedRequest.lawyerId,
-          status: 'under_review' as const,
+          status: 'submitted' as const,
           pnr: caseDetails?.pnr || `PNR${Date.now()}`, // Auto-generate PNR if not provided
           hearingDate: caseDetails?.hearingDate ? new Date(caseDetails.hearingDate) : undefined,
         };

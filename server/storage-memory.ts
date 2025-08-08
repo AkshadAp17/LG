@@ -246,6 +246,10 @@ export class MemoryStorage implements IStorage {
     return this.users.filter(u => u.role === role);
   }
 
+  async getAllUsers(): Promise<User[]> {
+    return this.users;
+  }
+
   async getLawyers(filters?: { city?: string; caseType?: string }): Promise<Lawyer[]> {
     let result = this.users.filter(u => u.role === 'lawyer') as Lawyer[];
     

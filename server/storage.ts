@@ -23,6 +23,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | null>;
   updateUser(id: string, data: Partial<User>): Promise<User | null>;
   getUsersByRole(role: string): Promise<User[]>;
+  getAllUsers(): Promise<User[]>;
   
   // Lawyers
   getLawyers(filters?: { city?: string; caseType?: string }): Promise<Lawyer[]>;
@@ -200,6 +201,26 @@ export class MongoStorage implements IStorage {
 
   async getUsersByRole(role: string): Promise<User[]> {
     const users = await UserModel.find({ role });
+    return users.map(user => ({
+      _id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      phone: user.phone,
+      role: user.role,
+      city: user.city,
+      specialization: user.specialization,
+      experience: user.experience,
+      policeStationCode: user.policeStationCode,
+      stats: user.stats,
+      rating: user.rating,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    }));
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    const users = await UserModel.find({});
     return users.map(user => ({
       _id: user._id.toString(),
       name: user.name,

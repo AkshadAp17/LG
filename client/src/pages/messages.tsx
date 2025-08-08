@@ -39,6 +39,11 @@ export default function Messages() {
     queryKey: ['/api/users'],
   });
 
+  // Get user's cases to show assigned lawyers
+  const { data: userCases = [] } = useQuery<any[]>({
+    queryKey: ['/api/cases'],
+  });
+
   const { data: messages = [], isLoading: messagesLoading } = useQuery<Message[]>({
     queryKey: ['/api/messages'],
     enabled: !!selectedContact,
@@ -72,11 +77,38 @@ export default function Messages() {
     });
   };
 
-  const filteredContacts = contacts.filter(contact => 
-    contact._id !== user?._id &&
-    (contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     contact.email?.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  // Get assigned lawyers for this user's cases
+  const getAssignedLawyers = () => {
+    if (user?.role !== 'client') return [];
+    return userCases
+      .filter((c: any) => c.lawyerId)
+      .map((c: any) => ({ 
+        lawyerId: c.lawyerId, 
+        caseTitle: c.title,
+        caseStatus: c.status 
+      }));
+  };
+
+  const assignedLawyers = getAssignedLawyers();
+  const assignedLawyerIds = assignedLawyers.map((l: any) => l.lawyerId);
+
+  // Filter and sort contacts - prioritize assigned lawyers for clients
+  const filteredContacts = contacts
+    .filter(contact => 
+      contact._id !== user?._id &&
+      (contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       contact.email?.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+    .sort((a, b) => {
+      // For clients, sort assigned lawyers to the top
+      if (user?.role === 'client') {
+        const aIsAssigned = assignedLawyerIds.includes(a._id);
+        const bIsAssigned = assignedLawyerIds.includes(b._id);
+        if (aIsAssigned && !bIsAssigned) return -1;
+        if (!aIsAssigned && bIsAssigned) return 1;
+      }
+      return a.name.localeCompare(b.name);
+    });
 
   const getConversationMessages = () => {
     if (!selectedContact) return [];
@@ -141,6 +173,8 @@ export default function Messages() {
                   filteredContacts.map((contact) => {
                     const lastMessage = getLastMessage(contact._id || '');
                     const isSelected = selectedContact?._id === contact._id;
+                    const isAssignedLawyer = user?.role === 'client' && assignedLawyerIds.includes(contact._id);
+                    const assignedCase = assignedLawyers.find((l: any) => l.lawyerId === contact._id);
                     
                     return (
                       <div
@@ -150,7 +184,7 @@ export default function Messages() {
                           isSelected 
                             ? 'bg-purple-50 border-l-4 border-l-purple-500' 
                             : 'hover:bg-gray-50'
-                        }`}
+                        } ${isAssignedLawyer ? 'ring-2 ring-green-200 bg-green-50' : ''}`}
                       >
                         <div className="relative">
                           <Avatar className="w-12 h-12">
@@ -163,6 +197,11 @@ export default function Messages() {
                             </AvatarFallback>
                           </Avatar>
                           <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                          {isAssignedLawyer && (
+                            <div className="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 border-2 border-white rounded-full flex items-center justify-center">
+                              <div className="w-2 h-2 bg-white rounded-full"></div>
+                            </div>
+                          )}
                         </div>
                         
                         <div className="flex-1 min-w-0">
@@ -177,6 +216,14 @@ export default function Messages() {
                               </span>
                             )}
                           </div>
+                          
+                          {isAssignedLawyer && assignedCase && (
+                            <div className="mb-1">
+                              <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 border-blue-200">
+                                Assigned • {assignedCase.caseTitle}
+                              </Badge>
+                            </div>
+                          )}
                           
                           <div className="flex items-center justify-between">
                             <p className="text-sm text-gray-600 truncate">
