@@ -542,14 +542,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // If accepted, create the actual case
       if (status === 'accepted') {
+        // Get client info for city and police station assignment
+        const client = await storage.getUser(updatedRequest.clientId);
+        if (!client) {
+          throw new Error('Client not found');
+        }
+
+        // Find a police station in the client's city
+        const policeStations = await storage.getPoliceStations(client.city);
+        if (policeStations.length === 0) {
+          throw new Error(`No police stations found in ${client.city}`);
+        }
+
         const caseData = {
           title: updatedRequest.title,
           description: updatedRequest.description,
-          caseType: updatedRequest.caseType,
-          victim: updatedRequest.victim,
-          accused: updatedRequest.accused,
-          city: updatedRequest.city,
-          policeStationId: updatedRequest.policeStationId,
+          caseType: updatedRequest.caseType || 'civil' as const, // default if not specified
+          victim: updatedRequest.victim || {
+            name: updatedRequest.victimName,
+            phone: updatedRequest.clientPhone,
+            email: updatedRequest.clientEmail
+          },
+          accused: updatedRequest.accused || {
+            name: updatedRequest.accusedName,
+            phone: '',
+            address: ''
+          },
+          city: updatedRequest.city || client.city || '',
+          policeStationId: updatedRequest.policeStationId || policeStations[0]._id || '',
           documents: updatedRequest.documents || [],
           clientId: updatedRequest.clientId,
           lawyerId: updatedRequest.lawyerId,
