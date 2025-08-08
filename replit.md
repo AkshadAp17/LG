@@ -59,6 +59,10 @@ Preferred communication style: Simple, everyday language.
 ✓ Fixed police station API endpoint and resolved [object Object] errors
 ✓ Added comprehensive document management with download buttons
 ✓ Improved police station status messaging for better user understanding
+✓ Fixed police case approval system - cases now created with 'under_review' status (August 8, 2025)
+✓ Police officers can now properly approve/reject cases instead of seeing "submitted" status
+✓ Fixed accused name display in case requests - names now show correctly instead of "Name not specified"
+✓ Completed data flow fix from case request form submission to case details display
 
 ## System Architecture
 
