@@ -34,11 +34,7 @@ export default function Signup() {
     city: '',
   });
 
-  // Fetch police stations for police officers
-  const { data: policeStations } = useQuery({
-    queryKey: ['/api/police-stations', formData.city],
-    enabled: selectedRole === 'police' && !!formData.city,
-  });
+  // Police stations will be automatically assigned based on city
 
   const signupMutation = useMutation({
     mutationFn: async (data: InsertUser) => {
@@ -82,8 +78,7 @@ export default function Signup() {
       return formData.name && formData.email && formData.password && formData.phone && formData.city && 
              formData.specialization?.length && formData.experience;
     } else if (selectedRole === 'police') {
-      return formData.name && formData.email && formData.password && formData.phone && formData.city && 
-             formData.policeStationCode;
+      return formData.name && formData.email && formData.password && formData.phone && formData.city;
     }
     return false;
   };
@@ -280,23 +275,10 @@ export default function Signup() {
                 )}
 
                 {selectedRole === 'police' && formData.city && (
-                  <div className="space-y-2">
-                    <Label htmlFor="policeStationCode">Police Station</Label>
-                    <Select 
-                      value={formData.policeStationCode} 
-                      onValueChange={(value) => handleInputChange('policeStationCode', value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select your police station" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {policeStations?.map((station: PoliceStation) => (
-                          <SelectItem key={station.code} value={station.code}>
-                            {station.name} ({station.code})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                    <p className="text-sm text-blue-800">
+                      <strong>Note:</strong> You will be automatically assigned to the main police station in {formData.city}.
+                    </p>
                   </div>
                 )}
 

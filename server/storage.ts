@@ -98,6 +98,14 @@ export class MongoStorage implements IStorage {
   }
 
   async register(userData: InsertUser): Promise<User> {
+    // Auto-assign police station for police officers based on their city
+    if (userData.role === 'police' && userData.city && !userData.policeStationCode) {
+      const cityStations = await PoliceStationModel.find({ city: userData.city });
+      if (cityStations.length > 0) {
+        userData.policeStationCode = cityStations[0].code; // Assign first station in the city
+      }
+    }
+
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const user = new UserModel({
       ...userData,

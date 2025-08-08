@@ -194,6 +194,18 @@ export class MemoryStorage implements IStorage {
       throw new Error('User with this email already exists');
     }
 
+    // Auto-assign police station for police officers based on their city
+    if (userData.role === 'police' && userData.city && !userData.policeStationCode) {
+      const cityStations = this.policeStations.filter(station => station.city === userData.city);
+      console.log(`🔍 Found ${cityStations.length} stations for city: ${userData.city}`);
+      if (cityStations.length > 0) {
+        userData.policeStationCode = cityStations[0].code; // Assign first station in the city
+        console.log(`🚔 Auto-assigned station ${cityStations[0].code}: ${cityStations[0].name}`);
+      } else {
+        console.log(`⚠️  No police stations found for city: ${userData.city}`);
+      }
+    }
+
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const user: User = {
       _id: this.generateId(),
@@ -207,6 +219,9 @@ export class MemoryStorage implements IStorage {
     
     this.users.push(user);
     console.log(`✅ New user registered: ${user.email} (ID: ${user._id})`);
+    if (userData.role === 'police' && userData.policeStationCode) {
+      console.log(`🚔 Police officer assigned to station: ${userData.policeStationCode}`);
+    }
     console.log(`Total users in memory: ${this.users.length}`);
     return user;
   }
