@@ -112,33 +112,45 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-4xl shadow-2xl border-0">
-        <CardHeader className="text-center py-8 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <Scale className="text-white text-4xl" />
-            <CardTitle className="text-3xl font-bold">
-              LegalCaseMS
-            </CardTitle>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-lg">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center mb-6">
+            <div className="bg-blue-600 p-4 rounded-2xl shadow-lg">
+              <Scale className="text-white text-3xl" />
+            </div>
           </div>
-          <p className="text-blue-100 text-lg">Legal Case Management System</p>
-        </CardHeader>
-        
-        <CardContent className="p-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="login" className="text-lg py-3">Sign In</TabsTrigger>
-              <TabsTrigger value="signup" className="text-lg py-3">Sign Up</TabsTrigger>
-            </TabsList>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">LegalCaseMS</h1>
+          <p className="text-gray-600 text-lg">Professional Legal Case Management System</p>
+        </div>
+
+        <Card className="shadow-2xl border-0 backdrop-blur-sm bg-white/90">
+          <CardContent className="p-8">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+              <TabsList className="grid w-full grid-cols-2 h-12 bg-gray-100 rounded-xl p-1">
+                <TabsTrigger 
+                  value="login" 
+                  className="h-10 rounded-lg font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                >
+                  Sign In
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="signup" 
+                  className="h-10 rounded-lg font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                >
+                  Sign Up
+                </TabsTrigger>
+              </TabsList>
             
             {/* Login Tab */}
             <TabsContent value="login" className="space-y-6">
               <div className="text-center mb-6">
-                <h2 className="text-2xl font-semibold text-gray-800">Welcome Back</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
                 <p className="text-gray-600 mt-2">Sign in to access your legal cases</p>
               </div>
               
-              <form onSubmit={handleLogin} className="space-y-6 max-w-md mx-auto">
+              <form onSubmit={handleLogin} className="space-y-6">
                 {loginMutation.error && (
                   <Alert variant="destructive">
                     <AlertDescription>
@@ -420,9 +432,10 @@ export default function Login() {
                 </div>
               )}
             </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
