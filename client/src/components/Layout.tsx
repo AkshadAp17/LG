@@ -29,7 +29,7 @@ export default function Layout({ children }: LayoutProps) {
     enabled: !!user,
   });
 
-  const unreadCount = notifications.filter((notif: any) => !notif.read).length;
+  const unreadCount = Array.isArray(notifications) ? notifications.filter((notif: any) => !notif.read).length : 0;
 
   const handleLogout = () => {
     authService.logout();
