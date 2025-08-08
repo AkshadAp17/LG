@@ -263,6 +263,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get individual police station by ID
+  app.get('/api/police-stations/:id', async (req, res) => {
+    try {
+      const stationId = req.params.id;
+      const station = await storage.getPoliceStation(stationId);
+      if (!station) {
+        return res.status(404).json({ message: 'Police station not found' });
+      }
+      res.json(station);
+    } catch (error: any) {
+      console.error('Police station fetch error:', error);
+      res.status(500).json({ message: error.message || 'Failed to fetch police station' });
+    }
+  });
+
   // Case approval/rejection (Police only)
   app.patch('/api/cases/:id/approve', authenticateToken, requireRole(['police']), async (req: any, res) => {
     try {
@@ -375,11 +390,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Check if user has permission to delete the case
-      if (req.user.role === 'client' && case_.clientId !== req.user._id) {
+      if (req.user.role === 'client' && case_.clientId.toString() !== req.user._id.toString()) {
         return res.status(403).json({ message: 'Not authorized to delete this case' });
       }
       
-      if (req.user.role === 'lawyer' && case_.lawyerId !== req.user._id) {
+      if (req.user.role === 'lawyer' && case_.lawyerId?.toString() !== req.user._id.toString()) {
         return res.status(403).json({ message: 'Not authorized to delete this case' });
       }
       

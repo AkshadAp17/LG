@@ -25,6 +25,12 @@ export default function Cases() {
   // Fetch police station details for selected case
   const { data: policeStation } = useQuery<PoliceStation>({
     queryKey: ['/api/police-stations', selectedCase?.policeStationId],
+    queryFn: async () => {
+      if (!selectedCase?.policeStationId) return null;
+      const response = await fetch(`/api/police-stations/${selectedCase.policeStationId}`);
+      if (!response.ok) throw new Error('Failed to fetch police station');
+      return response.json();
+    },
     enabled: !!selectedCase?.policeStationId,
   });
 
@@ -219,7 +225,7 @@ export default function Cases() {
                     <div>
                       <h4 className="font-medium text-gray-900 mb-2">Accused Details</h4>
                       <p className="text-sm text-gray-600">
-                        <strong>Name:</strong> {selectedCase.accused.name}
+                        <strong>Name:</strong> <span className="text-red-600 font-semibold">{selectedCase.accused.name || 'Not specified'}</span>
                       </p>
                       {selectedCase.accused.phone && (
                         <p className="text-sm text-gray-600">
@@ -255,9 +261,9 @@ export default function Cases() {
                   </div>
 
                   {/* Police Station Information */}
-                  {policeStation && (
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Assigned Police Station</h4>
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Police Station Status</h4>
+                    {policeStation ? (
                       <div className="bg-blue-50 p-3 rounded-lg space-y-2">
                         <div className="flex items-center gap-2">
                           <MapPin className="h-4 w-4 text-blue-600" />
@@ -277,9 +283,21 @@ export default function Cases() {
                           <Mail className="h-4 w-4 text-gray-500" />
                           <span className="text-sm text-gray-600">{policeStation.email}</span>
                         </div>
+                        <div className="mt-2 p-2 bg-yellow-100 rounded border-l-4 border-yellow-400">
+                          <p className="text-sm text-yellow-800">
+                            <strong>Status:</strong> Case submitted to police station for review. 
+                            Police will approve or reject this case.
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    ) : (
+                      <div className="bg-gray-50 p-3 rounded-lg">
+                        <p className="text-sm text-gray-600">
+                          No police station assigned yet
+                        </p>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Document Section */}
                   <div>
