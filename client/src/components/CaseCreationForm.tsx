@@ -75,20 +75,21 @@ export default function CaseCreationForm({ caseRequestId, onSuccess, onCancel }:
 
   // Auto-populate form when case request details are loaded
   useEffect(() => {
-    if (caseRequestDetails) {
-      const client = caseRequestDetails.clientDetails;
+    if (caseRequestDetails && typeof caseRequestDetails === 'object') {
+      const client = (caseRequestDetails as any).clientDetails;
+      const request = caseRequestDetails as any;
       form.reset({
-        title: caseRequestDetails.title,
-        description: caseRequestDetails.description,
-        caseType: caseRequestDetails.caseType || 'civil',
-        victimName: caseRequestDetails.victimName || caseRequestDetails.victim?.name || client?.name || '',
-        victimPhone: caseRequestDetails.victim?.phone || caseRequestDetails.clientPhone || client?.phone || '',
-        victimEmail: caseRequestDetails.victim?.email || caseRequestDetails.clientEmail || client?.email || '',
-        accusedName: caseRequestDetails.accusedName || caseRequestDetails.accused?.name || '',
-        accusedPhone: caseRequestDetails.accused?.phone || '',
-        accusedAddress: caseRequestDetails.accused?.address || '',
+        title: request.title || '',
+        description: request.description || '',
+        caseType: request.caseType || 'civil',
+        victimName: request.victimName || request.victim?.name || client?.name || '',
+        victimPhone: request.victim?.phone || request.clientPhone || client?.phone || '',
+        victimEmail: request.victim?.email || request.clientEmail || client?.email || '',
+        accusedName: request.accusedName || request.accused?.name || '',
+        accusedPhone: request.accused?.phone || '',
+        accusedAddress: request.accused?.address || '',
         city: client?.city || '',
-        policeStationId: caseRequestDetails.availablePoliceStations?.[0]?._id || '',
+        policeStationId: request.availablePoliceStations?.[0]?._id || '',
         pnr: generatePNR(),
         hearingDate: '',
       });
@@ -185,7 +186,7 @@ export default function CaseCreationForm({ caseRequestId, onSuccess, onCancel }:
     );
   }
 
-  const client = caseRequestDetails.clientDetails;
+  const client = (caseRequestDetails as any)?.clientDetails;
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
@@ -221,11 +222,11 @@ export default function CaseCreationForm({ caseRequestId, onSuccess, onCancel }:
             </div>
             <div className="flex items-center gap-2">
               <Phone className="h-4 w-4 text-gray-500" />
-              <span><strong>Phone:</strong> {client?.phone || caseRequestDetails.clientPhone || 'Not available'}</span>
+              <span><strong>Phone:</strong> {client?.phone || (caseRequestDetails as any)?.clientPhone || 'Not available'}</span>
             </div>
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-gray-500" />
-              <span><strong>Email:</strong> {client?.email || caseRequestDetails.clientEmail || 'Not available'}</span>
+              <span><strong>Email:</strong> {client?.email || (caseRequestDetails as any)?.clientEmail || 'Not available'}</span>
             </div>
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-gray-500" />
@@ -240,10 +241,10 @@ export default function CaseCreationForm({ caseRequestId, onSuccess, onCancel }:
             <CardTitle className="text-lg">Original Request Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <div><strong>Title:</strong> {caseRequestDetails.title}</div>
-            <div><strong>Description:</strong> {caseRequestDetails.description}</div>
-            <div><strong>Victim:</strong> {caseRequestDetails.victimName || caseRequestDetails.victim?.name || client?.name || 'Not specified'}</div>
-            <div><strong>Accused:</strong> {caseRequestDetails.accusedName || caseRequestDetails.accused?.name || 'Not specified'}</div>
+            <div><strong>Title:</strong> {(caseRequestDetails as any)?.title || 'Loading...'}</div>
+            <div><strong>Description:</strong> {(caseRequestDetails as any)?.description || 'Loading...'}</div>
+            <div><strong>Victim:</strong> {(caseRequestDetails as any)?.victimName || (caseRequestDetails as any)?.victim?.name || client?.name || 'Not specified'}</div>
+            <div><strong>Accused:</strong> {(caseRequestDetails as any)?.accusedName || (caseRequestDetails as any)?.accused?.name || 'Not specified'}</div>
           </CardContent>
         </Card>
 
@@ -455,7 +456,7 @@ export default function CaseCreationForm({ caseRequestId, onSuccess, onCancel }:
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {caseRequestDetails.availablePoliceStations?.map((station: any) => (
+                          {(caseRequestDetails as any)?.availablePoliceStations?.map((station: any) => (
                             <SelectItem key={station._id} value={station._id}>
                               {station.name} - {station.code}
                             </SelectItem>

@@ -37,6 +37,7 @@ export interface IStorage {
   
   // Police Stations
   getPoliceStations(city?: string): Promise<PoliceStation[]>;
+  getAllPoliceStations(): Promise<PoliceStation[]>;
   getPoliceStation(id: string): Promise<PoliceStation | null>;
   
   // Messages
@@ -397,6 +398,20 @@ export class MongoStorage implements IStorage {
     }));
   }
 
+  async getAllPoliceStations(): Promise<PoliceStation[]> {
+    const stations = await PoliceStationModel.find({});
+    return stations.map(station => ({
+      _id: station._id.toString(),
+      name: station.name,
+      code: station.code,
+      city: station.city,
+      address: station.address,
+      phone: station.phone,
+      email: station.email,
+      createdAt: station.createdAt,
+    }));
+  }
+
   async getPoliceStation(id: string): Promise<PoliceStation | null> {
     const station = await PoliceStationModel.findById(id);
     if (!station) return null;
@@ -657,6 +672,10 @@ class StorageManager implements IStorage {
 
   async getPoliceStations(city?: string): Promise<PoliceStation[]> {
     return this.getStorage().getPoliceStations(city);
+  }
+
+  async getAllPoliceStations(): Promise<PoliceStation[]> {
+    return this.getStorage().getAllPoliceStations();
   }
 
   async getPoliceStation(id: string): Promise<PoliceStation | null> {

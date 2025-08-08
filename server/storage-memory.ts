@@ -319,6 +319,10 @@ export class MemoryStorage implements IStorage {
     return result;
   }
 
+  async getAllPoliceStations(): Promise<PoliceStation[]> {
+    return [...this.policeStations];
+  }
+
   async getPoliceStation(id: string): Promise<PoliceStation | null> {
     return this.policeStations.find(ps => ps._id === id) || null;
   }

@@ -550,10 +550,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           throw new Error('Client not found');
         }
 
-        // Find a police station in the client's city
-        const policeStations = await storage.getPoliceStations(client.city);
+        // Find a police station in the client's city, or use any available station
+        let policeStations = await storage.getPoliceStations(client.city);
         if (policeStations.length === 0) {
-          throw new Error(`No police stations found in ${client.city}`);
+          // If no stations in client's city, get all available stations
+          policeStations = await storage.getAllPoliceStations();
+          if (policeStations.length === 0) {
+            throw new Error('No police stations available in the system');
+          }
         }
 
         const caseData = {
