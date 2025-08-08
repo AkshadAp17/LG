@@ -594,5 +594,110 @@ export class MongoStorage implements IStorage {
   }
 }
 
-// Use memory storage for now since MongoDB connection is failing
-export const storage = new MemoryStorage();
+// Storage instance that dynamically switches based on MongoDB connection
+class StorageManager implements IStorage {
+  private mongoStorage = new MongoStorage();
+  private memoryStorage = new MemoryStorage();
+
+  private getStorage(): IStorage {
+    return mongoose.connection.readyState === 1 ? this.mongoStorage : this.memoryStorage;
+  }
+
+  async login(data: LoginData): Promise<AuthResponse> {
+    return this.getStorage().login(data);
+  }
+
+  async register(user: InsertUser): Promise<User> {
+    return this.getStorage().register(user);
+  }
+
+  async getUser(id: string): Promise<User | null> {
+    return this.getStorage().getUser(id);
+  }
+
+  async getUserByEmail(email: string): Promise<User | null> {
+    return this.getStorage().getUserByEmail(email);
+  }
+
+  async updateUser(id: string, data: Partial<User>): Promise<User | null> {
+    return this.getStorage().updateUser(id, data);
+  }
+
+  async getUsersByRole(role: string): Promise<User[]> {
+    return this.getStorage().getUsersByRole(role);
+  }
+
+  async getLawyers(filters?: { city?: string; caseType?: string }): Promise<Lawyer[]> {
+    return this.getStorage().getLawyers(filters);
+  }
+
+  async getLawyer(id: string): Promise<Lawyer | null> {
+    return this.getStorage().getLawyer(id);
+  }
+
+  async createLawyer(lawyer: InsertLawyer): Promise<Lawyer> {
+    return this.getStorage().createLawyer(lawyer);
+  }
+
+  async getCases(filters?: { clientId?: string; lawyerId?: string; status?: string }): Promise<Case[]> {
+    return this.getStorage().getCases(filters);
+  }
+
+  async getCase(id: string): Promise<Case | null> {
+    return this.getStorage().getCase(id);
+  }
+
+  async createCase(caseData: InsertCase): Promise<Case> {
+    return this.getStorage().createCase(caseData);
+  }
+
+  async updateCase(id: string, data: Partial<Case>): Promise<Case | null> {
+    return this.getStorage().updateCase(id, data);
+  }
+
+  async getPoliceStations(city?: string): Promise<PoliceStation[]> {
+    return this.getStorage().getPoliceStations(city);
+  }
+
+  async getPoliceStation(id: string): Promise<PoliceStation | null> {
+    return this.getStorage().getPoliceStation(id);
+  }
+
+  async getMessages(userId: string, otherUserId?: string): Promise<Message[]> {
+    return this.getStorage().getMessages(userId, otherUserId);
+  }
+
+  async createMessage(message: InsertMessage): Promise<Message> {
+    return this.getStorage().createMessage(message);
+  }
+
+  async getNotifications(userId: string): Promise<Notification[]> {
+    return this.getStorage().getNotifications(userId);
+  }
+
+  async createNotification(notification: InsertNotification): Promise<Notification> {
+    return this.getStorage().createNotification(notification);
+  }
+
+  async markNotificationAsRead(id: string): Promise<void> {
+    return this.getStorage().markNotificationAsRead(id);
+  }
+
+  async getCaseRequests(filters?: { clientId?: string; lawyerId?: string; status?: string }): Promise<CaseRequest[]> {
+    return this.getStorage().getCaseRequests(filters);
+  }
+
+  async getCaseRequest(id: string): Promise<CaseRequest | null> {
+    return this.getStorage().getCaseRequest(id);
+  }
+
+  async createCaseRequest(caseRequest: InsertCaseRequest): Promise<CaseRequest> {
+    return this.getStorage().createCaseRequest(caseRequest);
+  }
+
+  async updateCaseRequest(id: string, data: Partial<CaseRequest>): Promise<CaseRequest | null> {
+    return this.getStorage().updateCaseRequest(id, data);
+  }
+}
+
+export const storage = new StorageManager();
