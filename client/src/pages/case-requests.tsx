@@ -327,15 +327,17 @@ export default function CaseRequests() {
                   <div className="mt-2 space-y-1">
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4 text-gray-400" />
-                      <span>{selectedRequest.accusedName || selectedRequest.accused?.name || 'Not specified'}</span>
+                      <span className="font-medium text-red-600">
+                        {selectedRequest.accusedName || selectedRequest.accused?.name || 'Name not specified'}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4 text-gray-400" />
-                      <span>{selectedRequest.accused?.phone || 'Not provided'}</span>
+                      <span>{selectedRequest.accused?.phone || 'Phone not provided'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-gray-400" />
-                      <span>{selectedRequest.accused?.address || 'Not provided'}</span>
+                      <span>{selectedRequest.accused?.address || 'Address not provided'}</span>
                     </div>
                   </div>
                 </div>
