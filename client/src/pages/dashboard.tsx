@@ -439,7 +439,7 @@ export default function Dashboard() {
                             <h4 className="font-medium text-gray-900">{notif.title}</h4>
                             <p className="text-sm text-gray-600 mt-1">{notif.message}</p>
                             <p className="text-xs text-gray-400 mt-2">
-                              {new Date(notif.createdAt).toLocaleDateString()}
+                              {notif.createdAt ? new Date(notif.createdAt).toLocaleDateString() : 'Just now'}
                             </p>
                           </div>
                           {!notif.read && (

@@ -112,12 +112,26 @@ export default function FindLawyers() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl p-6">
-        <h1 className="text-3xl font-bold mb-2">Find Expert Lawyers</h1>
-        <p className="text-green-100 text-lg">
-          Connect with qualified legal professionals specialized in your case type
-        </p>
+      {/* Enhanced Header */}
+      <div className="bg-gradient-to-r from-slate-900 via-emerald-900 to-teal-900 text-white rounded-xl p-6 shadow-2xl border border-emerald-300/20">
+        <div className="flex items-center space-x-4">
+          <div className="p-3 bg-emerald-500/20 rounded-lg backdrop-blur-sm">
+            <Users className="w-8 h-8 text-emerald-300" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold mb-1 bg-gradient-to-r from-white to-emerald-100 bg-clip-text text-transparent">
+              Legal Expert Network
+            </h1>
+            <p className="text-emerald-200 text-lg flex items-center space-x-2">
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-sm">Verified lawyers</span>
+              </div>
+              <span>•</span>
+              <span>Connect with qualified legal professionals</span>
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Search and Filters */}

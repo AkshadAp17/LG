@@ -40,7 +40,7 @@ export default function Documents() {
   const user = authService.getUser();
   const queryClient = useQueryClient();
 
-  const { data: cases = [], isLoading: casesLoading } = useQuery({
+  const { data: cases = [], isLoading: casesLoading } = useQuery<Case[]>({
     queryKey: ['/api/cases'],
   });
 
@@ -160,17 +160,33 @@ export default function Documents() {
     }
     acc[doc.caseId].documents.push(doc);
     return acc;
-  }, {} as Record<string, { case: Case; documents: DocumentFile[] }>);
+  }, {} as Record<string, { case: Case | undefined; documents: DocumentFile[] }>);
 
   if (casesLoading) {
     return <div className="p-6">Loading documents...</div>;
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">Documents</h2>
-        <p className="text-gray-600">Manage case documents and files</p>
+    <div className="space-y-6">
+      {/* Modern Header */}
+      <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white rounded-xl p-6 shadow-2xl">
+        <div className="flex items-center space-x-3">
+          <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
+            <FileText className="w-8 h-8 text-white" />
+          </div>
+          <div>
+            <h2 className="text-3xl font-bold mb-1">Document Vault</h2>
+            <p className="text-emerald-100 text-lg">Secure document management for legal cases</p>
+            <div className="flex items-center mt-2 space-x-4 text-sm">
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span>Encrypted Storage</span>
+              </div>
+              <span>•</span>
+              <span>{mockDocuments.length} Documents</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Upload Section */}

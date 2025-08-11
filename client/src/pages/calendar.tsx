@@ -7,7 +7,7 @@ import { format, isToday, isTomorrow, addDays } from "date-fns";
 import type { Case } from "@shared/schema";
 
 export default function CalendarPage() {
-  const { data: cases = [], isLoading } = useQuery({
+  const { data: cases = [], isLoading } = useQuery<Case[]>({
     queryKey: ['/api/cases'],
   });
 
@@ -34,10 +34,18 @@ export default function CalendarPage() {
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">Calendar</h2>
-        <p className="text-gray-600">Manage your hearing dates and case schedules</p>
+    <div className="space-y-6">
+      {/* Modern Header */}
+      <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl p-6 shadow-2xl">
+        <div className="flex items-center space-x-3">
+          <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
+            <Calendar className="w-8 h-8 text-white" />
+          </div>
+          <div>
+            <h2 className="text-3xl font-bold mb-1">Legal Calendar</h2>
+            <p className="text-blue-100 text-lg">Manage your hearing dates and case schedules</p>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">

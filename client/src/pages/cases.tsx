@@ -158,16 +158,30 @@ export default function Cases() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-6">
+      {/* Enhanced Header */}
+      <div className="bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 text-white rounded-xl p-6 shadow-2xl border border-blue-300/20">
         <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">My Cases</h1>
-            <p className="text-blue-100 text-lg">
-              {user?.role === 'client' && "Track and manage your legal cases efficiently"}
-              {user?.role === 'lawyer' && "Manage your assigned cases and client relationships"}
-              {user?.role === 'police' && "Review case submissions and approve/reject requests"}
-            </p>
+          <div className="flex items-center space-x-4">
+            <div className="p-3 bg-blue-500/20 rounded-lg backdrop-blur-sm">
+              <Scale className="w-8 h-8 text-blue-300" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold mb-1 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                Case Management Hub
+              </h1>
+              <p className="text-blue-200 text-lg flex items-center space-x-2">
+                <div className="flex items-center space-x-1">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-sm">Live system</span>
+                </div>
+                <span>•</span>
+                <span>
+                  {user?.role === 'client' && "Track and manage your legal cases efficiently"}
+                  {user?.role === 'lawyer' && "Manage your assigned cases and client relationships"}
+                  {user?.role === 'police' && "Review case submissions and approve/reject requests"}
+                </span>
+              </p>
+            </div>
           </div>
           {user?.role === 'client' && (
             <Button className="bg-white text-blue-600 hover:bg-blue-50 h-12 px-6">
