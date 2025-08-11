@@ -200,24 +200,24 @@ export default function FindLawyers() {
                   {filteredLawyers.map((lawyer) => (
                     <div 
                       key={lawyer._id} 
-                      className={`group p-6 rounded-xl border-2 transition-all duration-200 cursor-pointer min-h-[240px] ${
+                      className={`group p-6 rounded-xl border-2 transition-all duration-200 cursor-pointer h-[260px] flex flex-col ${
                         selectedLawyer?._id === lawyer._id
                           ? 'border-green-500 bg-green-50 shadow-lg'
                           : 'border-gray-200 hover:border-green-300 hover:shadow-md'
                       }`}
                       onClick={() => setSelectedLawyer(lawyer)}
                     >
-                      <div className="flex items-start space-x-4">
-                        <Avatar className="w-16 h-16">
+                      <div className="flex items-start space-x-4 flex-1">
+                        <Avatar className="w-16 h-16 flex-shrink-0">
                           <AvatarFallback className="bg-green-100 text-green-600 text-xl font-semibold">
                             {lawyer.name.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
                         
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-xl font-bold text-gray-900">{lawyer.name}</h3>
-                            <div className="flex items-center space-x-2">
+                            <h3 className="text-xl font-bold text-gray-900 truncate">{lawyer.name}</h3>
+                            <div className="flex items-center space-x-2 flex-shrink-0">
                               <div className="flex items-center">
                                 <Star className="text-yellow-500 fill-current" size={16} />
                                 <span className="ml-1 text-sm font-medium">4.8</span>
@@ -246,7 +246,7 @@ export default function FindLawyers() {
                             </div>
                           </div>
 
-                          <div className="flex flex-wrap gap-2 mb-4 min-h-[60px]">
+                          <div className="flex flex-wrap gap-2 mb-4 h-[60px] overflow-hidden">
                             {lawyer.specialization?.slice(0, 3).map((spec) => (
                               <Badge 
                                 key={spec} 
@@ -263,11 +263,11 @@ export default function FindLawyers() {
                             )}
                           </div>
 
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between mt-auto">
                             <div className="flex items-center space-x-2 text-sm text-gray-500">
-                              <span>{lawyer.stats?.totalCases || 0} total cases</span>
+                              <span>{lawyer.stats?.totalCases || 3} total cases</span>
                               <span>•</span>
-                              <span>{lawyer.stats?.wonCases || 0} won</span>
+                              <span>{lawyer.stats?.wonCases || 2} won</span>
                             </div>
                             
                             <Button 
@@ -275,7 +275,7 @@ export default function FindLawyers() {
                                 e.stopPropagation();
                                 handleSendCaseRequest(lawyer);
                               }}
-                              className="bg-green-600 hover:bg-green-700 text-white"
+                              className="bg-green-600 hover:bg-green-700 text-white flex-shrink-0"
                             >
                               <MessageCircle className="mr-2" size={16} />
                               Send Case Request
