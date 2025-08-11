@@ -72,6 +72,31 @@ export default function Cases() {
     },
   });
 
+  // Police approval/rejection mutations
+  const approveCaseMutation = useMutation({
+    mutationFn: async (caseId: string) => {
+      const response = await apiRequest("PATCH", `/api/cases/${caseId}/approve`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/cases'] });
+      setSelectedCase(null);
+    },
+  });
+
+  const rejectCaseMutation = useMutation({
+    mutationFn: async (caseId: string) => {
+      const response = await apiRequest("PATCH", `/api/cases/${caseId}/reject`, {
+        reason: "Case rejected by police review"
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/cases'] });
+      setSelectedCase(null);
+    },
+  });
+
   const getStatusIcon = (status: string) => {
     const icons = {
       'approved': <CheckCircle2 className="text-green-600" size={16} />,
@@ -135,7 +160,9 @@ export default function Cases() {
           <div>
             <h1 className="text-3xl font-bold mb-2">My Cases</h1>
             <p className="text-blue-100 text-lg">
-              Track and manage your legal cases efficiently
+              {user?.role === 'client' && "Track and manage your legal cases efficiently"}
+              {user?.role === 'lawyer' && "Manage your assigned cases and client relationships"}
+              {user?.role === 'police' && "Review case submissions and approve/reject requests"}
             </p>
           </div>
           {user?.role === 'client' && (
@@ -271,6 +298,32 @@ export default function Cases() {
                                     Download Documents
                                   </DropdownMenuItem>
                                 )}
+                                {user?.role === 'police' && case_.status === 'under_review' && (
+                                  <>
+                                    <DropdownMenuItem 
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (case_._id) approveCaseMutation.mutate(case_._id);
+                                      }}
+                                      className="text-green-600"
+                                      disabled={approveCaseMutation.isPending}
+                                    >
+                                      <CheckCircle2 className="mr-2 h-4 w-4" />
+                                      Approve Case
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem 
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (case_._id) rejectCaseMutation.mutate(case_._id);
+                                      }}
+                                      className="text-red-600"
+                                      disabled={rejectCaseMutation.isPending}
+                                    >
+                                      <XCircle className="mr-2 h-4 w-4" />
+                                      Reject Case
+                                    </DropdownMenuItem>
+                                  </>
+                                )}
                                 {user?.role === 'lawyer' && (
                                   <DropdownMenuItem 
                                     onClick={(e) => {
@@ -323,6 +376,62 @@ export default function Cases() {
                       <p className="text-gray-600">{selectedCase.description}</p>
                     </div>
 
+                    {/* Police Actions */}
+                    {user?.role === 'police' && selectedCase.status === 'under_review' && (
+                      <>
+                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+                          <h3 className="text-lg font-semibold text-yellow-800 mb-3">
+                            <AlertCircle className="inline mr-2" size={20} />
+                            Case Awaiting Review
+                          </h3>
+                          <div className="space-y-2">
+                            <Button
+                              onClick={() => selectedCase._id && approveCaseMutation.mutate(selectedCase._id)}
+                              disabled={approveCaseMutation.isPending}
+                              className="w-full bg-green-600 hover:bg-green-700 text-white"
+                            >
+                              <CheckCircle2 className="mr-2" size={16} />
+                              {approveCaseMutation.isPending ? 'Approving...' : 'Approve Case'}
+                            </Button>
+                            <Button
+                              onClick={() => selectedCase._id && rejectCaseMutation.mutate(selectedCase._id)}
+                              disabled={rejectCaseMutation.isPending}
+                              variant="destructive"
+                              className="w-full"
+                            >
+                              <XCircle className="mr-2" size={16} />
+                              {rejectCaseMutation.isPending ? 'Rejecting...' : 'Reject Case'}
+                            </Button>
+                          </div>
+                        </div>
+                        <Separator />
+                      </>
+                    )}
+
+                    {/* Case Approval Status */}
+                    {user?.role === 'police' && selectedCase.status === 'approved' && selectedCase.pnr && (
+                      <>
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                          <CheckCircle2 className="inline text-green-600 mb-2" size={24} />
+                          <h3 className="text-lg font-semibold text-green-800">Case Approved</h3>
+                          <p className="text-green-700 mt-1">PNR: {selectedCase.pnr}</p>
+                        </div>
+                        <Separator />
+                      </>
+                    )}
+
+                    {/* Case Rejection Status */}
+                    {user?.role === 'police' && selectedCase.status === 'rejected' && (
+                      <>
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                          <XCircle className="inline text-red-600 mb-2" size={24} />
+                          <h3 className="text-lg font-semibold text-red-800">Case Rejected</h3>
+                          <p className="text-red-700 mt-1">Case has been rejected during review</p>
+                        </div>
+                        <Separator />
+                      </>
+                    )}
+
                     <Separator />
 
                     {/* Case Information */}
@@ -339,7 +448,7 @@ export default function Cases() {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600">FIR Number:</span>
-                          <span className="font-medium">{selectedCase.firNo || 'Not assigned'}</span>
+                          <span className="font-medium">{(selectedCase as any).firNo || 'Not assigned'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600">City:</span>

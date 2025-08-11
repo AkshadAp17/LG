@@ -162,6 +162,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         filters.clientId = req.user._id;
       } else if (req.user.role === 'lawyer') {
         filters.lawyerId = req.user._id;
+      } else if (req.user.role === 'police') {
+        // Police can see all cases for review - no clientId/lawyerId filter
+        // They primarily see cases that need approval
       }
       
       if (status) {
