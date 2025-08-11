@@ -107,7 +107,7 @@ export default function Layout({ children }: LayoutProps) {
                 {unreadCount > 0 && (
                   <Badge 
                     variant="destructive" 
-                    className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs p-0 bg-red-500 animate-pulse"
+                    className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center text-xs p-0 bg-red-500 animate-pulse"
                   >
                     {unreadCount}
                   </Badge>
@@ -149,7 +149,6 @@ export default function Layout({ children }: LayoutProps) {
               <Button variant="ghost" className="w-full justify-start text-slate-300 hover:text-white hover:bg-slate-800/50">
                 <Settings className="mr-3 h-4 w-4" />
                 Settings & More
-                <ChevronDown className="ml-auto h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56 bg-slate-800 border-slate-700">

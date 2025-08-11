@@ -16,7 +16,7 @@ export default function LawyerCard({ lawyer, onSelect }: LawyerCardProps) {
     : 0;
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-r from-white to-gray-50 hover:from-blue-50 hover:to-indigo-50 rounded-2xl overflow-hidden">
+    <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-r from-white to-gray-50 hover:from-blue-50 hover:to-indigo-50 rounded-2xl overflow-hidden min-h-[180px]">
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">

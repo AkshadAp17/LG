@@ -38,7 +38,7 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
   const markAllAsReadMutation = useMutation({
     mutationFn: async () => {
       // First mark all unread notifications as read
-      const unreadNotifications = notifications.filter((n: Notification) => !n.read);
+      const unreadNotifications = (notifications as Notification[]).filter((n: Notification) => !n.read);
       await Promise.all(
         unreadNotifications.map((n: Notification) =>
           apiRequest('PATCH', `/api/notifications/${n._id}/read`, {})
@@ -100,12 +100,12 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
         <div className="space-y-4 max-h-96 overflow-y-auto">
           {isLoading ? (
             <div className="text-center py-4">Loading notifications...</div>
-          ) : notifications.length === 0 ? (
+          ) : (notifications as Notification[]).length === 0 ? (
             <div className="text-center py-4 text-gray-500">
               No notifications
             </div>
           ) : (
-            notifications.map((notification: Notification) => (
+            (notifications as Notification[]).map((notification: Notification) => (
               <div
                 key={notification._id}
                 className={`p-4 border rounded-lg ${getNotificationBg(notification.type)}`}
