@@ -49,6 +49,7 @@ export interface IStorage {
   getNotifications(userId: string): Promise<Notification[]>;
   createNotification(notification: InsertNotification): Promise<Notification>;
   markNotificationAsRead(id: string): Promise<void>;
+  deleteReadNotifications(userId: string): Promise<void>;
   
   // Case Requests
   getCaseRequests(filters?: { clientId?: string; lawyerId?: string; status?: string }): Promise<CaseRequest[]>;
@@ -556,6 +557,10 @@ export class MongoStorage implements IStorage {
     await NotificationModel.findByIdAndUpdate(id, { read: true });
   }
 
+  async deleteReadNotifications(userId: string): Promise<void> {
+    await NotificationModel.deleteMany({ userId, read: true });
+  }
+
   async getCaseRequests(filters?: { clientId?: string; lawyerId?: string; status?: string }): Promise<CaseRequest[]> {
     const query: any = {};
     
@@ -764,6 +769,10 @@ class StorageManager implements IStorage {
 
   async markNotificationAsRead(id: string): Promise<void> {
     return this.getStorage().markNotificationAsRead(id);
+  }
+
+  async deleteReadNotifications(userId: string): Promise<void> {
+    return this.getStorage().deleteReadNotifications(userId);
   }
 
   async getCaseRequests(filters?: { clientId?: string; lawyerId?: string; status?: string }): Promise<CaseRequest[]> {

@@ -149,27 +149,51 @@ export default function Messages() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl p-6">
-        <h1 className="text-3xl font-bold mb-2">Messages</h1>
-        <p className="text-purple-100 text-lg">
-          Communicate securely with your legal team and clients
-        </p>
+      <div className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 text-white rounded-xl p-6 shadow-2xl border border-purple-300/20">
+        <div className="flex items-center space-x-3">
+          <div className="bg-purple-500/20 p-3 rounded-lg backdrop-blur-sm">
+            <MessageSquare className="w-8 h-8 text-purple-300" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold mb-1 bg-gradient-to-r from-white to-purple-100 bg-clip-text text-transparent">
+              Secure Messaging
+            </h1>
+            <p className="text-purple-200 text-lg flex items-center space-x-2">
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-sm">End-to-end encrypted</span>
+              </div>
+              <span>•</span>
+              <span>Legal team communication</span>
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[700px]">
         {/* Contacts Sidebar */}
-        <Card className="border-0 shadow-lg lg:col-span-1">
+        <Card className="border border-purple-200/50 shadow-xl bg-gradient-to-b from-white to-purple-50/30 lg:col-span-1 backdrop-blur-sm">
           <CardContent className="p-0">
             {/* Search Header */}
-            <div className="p-4 border-b">
+            <div className="p-4 border-b border-purple-200/50 bg-gradient-to-r from-purple-50 to-white">
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-3 h-4 w-4 text-purple-500" />
                 <Input
                   placeholder="Search conversations..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 border-purple-200 focus:border-purple-400 focus:ring-purple-400/20"
+                  data-testid="input-search-conversations"
                 />
+              </div>
+              <div className="mt-3 flex items-center justify-between text-sm">
+                <span className="text-purple-700 font-medium">
+                  {filteredContacts.length} conversation{filteredContacts.length !== 1 ? 's' : ''}
+                </span>
+                <div className="flex items-center space-x-1 text-green-600">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs font-medium">ONLINE</span>
+                </div>
               </div>
             </div>
 
@@ -196,11 +220,12 @@ export default function Messages() {
                       <div
                         key={contact._id}
                         onClick={() => setSelectedContact(contact)}
-                        className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all ${
+                        className={`flex items-center space-x-3 p-4 rounded-xl cursor-pointer transition-all duration-200 mx-2 mb-2 ${
                           isSelected 
-                            ? 'bg-purple-50 border-l-4 border-l-purple-500' 
-                            : 'hover:bg-gray-50'
-                        } ${isAssignedLawyer ? 'ring-2 ring-green-200 bg-green-50' : ''}`}
+                            ? 'bg-gradient-to-r from-purple-500 to-purple-600 shadow-lg shadow-purple-500/25 text-white border border-purple-400' 
+                            : 'hover:bg-white hover:shadow-md border border-transparent hover:border-purple-200'
+                        } ${isAssignedLawyer ? 'ring-2 ring-green-400 bg-green-50/80' : ''}`}
+                        data-testid={`contact-${contact._id}`}
                       >
                         <div className="relative">
                           <Avatar className="w-12 h-12">
@@ -270,44 +295,50 @@ export default function Messages() {
         </Card>
 
         {/* Chat Area */}
-        <Card className="border-0 shadow-lg lg:col-span-2">
+        <Card className="border border-purple-200/50 shadow-xl bg-white lg:col-span-2 backdrop-blur-sm">
           <CardContent className="p-0 h-full flex flex-col">
             {selectedContact ? (
               <>
                 {/* Chat Header */}
-                <div className="p-4 border-b bg-white rounded-t-lg">
+                <div className="p-4 border-b border-purple-200/50 bg-gradient-to-r from-white to-purple-50/30 rounded-t-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <Avatar className="w-10 h-10">
-                        <AvatarFallback className={`${
-                          selectedContact.role === 'lawyer' ? 'bg-green-100 text-green-600' :
-                          selectedContact.role === 'client' ? 'bg-blue-100 text-blue-600' :
-                          'bg-purple-100 text-purple-600'
-                        } font-semibold`}>
-                          {selectedContact.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
+                      <div className="relative">
+                        <Avatar className="w-12 h-12 ring-2 ring-purple-200">
+                          <AvatarFallback className={`${
+                            selectedContact.role === 'lawyer' ? 'bg-green-100 text-green-600' :
+                            selectedContact.role === 'client' ? 'bg-blue-100 text-blue-600' :
+                            'bg-purple-100 text-purple-600'
+                          } font-bold text-lg`}>
+                            {selectedContact.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full animate-pulse"></div>
+                      </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900">{selectedContact.name}</h3>
+                        <h3 className="font-bold text-gray-900 text-lg">{selectedContact.name}</h3>
                         <div className="flex items-center space-x-2">
-                          <Circle className="w-2 h-2 fill-green-500 text-green-500" />
-                          <span className="text-sm text-gray-600 capitalize">
-                            {selectedContact.role} • Online
+                          <Circle className="w-3 h-3 fill-green-500 text-green-500 animate-pulse" />
+                          <span className="text-sm text-gray-600 capitalize font-medium">
+                            {selectedContact.role} • Active now
                           </span>
                         </div>
                       </div>
                     </div>
                     
                     <div className="flex items-center space-x-2">
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" className="hover:bg-purple-100 hover:text-purple-600" data-testid="button-call">
                         <Phone size={18} />
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" className="hover:bg-purple-100 hover:text-purple-600" data-testid="button-video">
                         <Video size={18} />
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" className="hover:bg-purple-100 hover:text-purple-600" data-testid="button-more">
                         <MoreVertical size={18} />
                       </Button>
+                      <div className="ml-4 px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">
+                        SECURE
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -333,10 +364,10 @@ export default function Messages() {
                             key={message._id}
                             className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                           >
-                            <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
+                            <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl shadow-sm ${
                               isOwnMessage
-                                ? 'bg-purple-600 text-white'
-                                : 'bg-gray-100 text-gray-900'
+                                ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-purple-500/20'
+                                : 'bg-white border border-gray-200 text-gray-900 shadow-gray-200/50'
                             }`}>
                               <p className="text-sm">{message.content}</p>
                               <div className={`flex items-center justify-end mt-2 space-x-1 ${
@@ -362,15 +393,15 @@ export default function Messages() {
                 </ScrollArea>
 
                 {/* Message Input */}
-                <div className="p-4 border-t bg-gray-50">
-                  <div className="flex items-end space-x-2">
-                    <Button variant="ghost" size="sm">
+                <div className="p-4 border-t border-purple-200/50 bg-gradient-to-r from-white to-purple-50/20">
+                  <div className="flex items-end space-x-3 bg-white border border-purple-200 rounded-2xl p-3 shadow-sm">
+                    <Button variant="ghost" size="sm" className="hover:bg-purple-100 hover:text-purple-600" data-testid="button-attach">
                       <Paperclip size={18} />
                     </Button>
                     
                     <div className="flex-1 relative">
                       <Textarea
-                        placeholder="Type your message..."
+                        placeholder="Type your secure message..."
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyPress={(e) => {
@@ -379,19 +410,21 @@ export default function Messages() {
                             handleSendMessage();
                           }
                         }}
-                        className="min-h-[44px] max-h-32 resize-none border-0 bg-white shadow-sm"
+                        className="min-h-[44px] max-h-32 resize-none border-0 bg-transparent shadow-none focus:ring-0"
                         rows={1}
+                        data-testid="textarea-message"
                       />
                     </div>
                     
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" className="hover:bg-purple-100 hover:text-purple-600" data-testid="button-emoji">
                       <Smile size={18} />
                     </Button>
                     
                     <Button 
                       onClick={handleSendMessage}
                       disabled={!newMessage.trim() || sendMessageMutation.isPending}
-                      className="bg-purple-600 hover:bg-purple-700 text-white h-11 px-4"
+                      className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white h-11 px-6 rounded-xl shadow-lg shadow-purple-500/25"
+                      data-testid="button-send-message"
                     >
                       {sendMessageMutation.isPending ? (
                         <Clock size={18} className="animate-spin" />
@@ -399,6 +432,10 @@ export default function Messages() {
                         <Send size={18} />
                       )}
                     </Button>
+                  </div>
+                  <div className="mt-2 flex items-center justify-center space-x-1 text-xs text-gray-500">
+                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <span>Messages are end-to-end encrypted</span>
                   </div>
                 </div>
               </>

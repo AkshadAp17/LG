@@ -382,6 +382,10 @@ export class MemoryStorage implements IStorage {
     }
   }
 
+  async deleteReadNotifications(userId: string): Promise<void> {
+    this.notifications = this.notifications.filter(n => !(n.userId === userId && n.read));
+  }
+
   async getCaseRequests(filters?: { clientId?: string; lawyerId?: string; status?: string }): Promise<CaseRequest[]> {
     let result = [...this.caseRequests];
     

@@ -294,15 +294,18 @@ export default function Dashboard() {
                   
                   {user?.role === 'police' && (
                     <>
-                      <Button className="w-full justify-start h-12 bg-purple-600 hover:bg-purple-700 text-white">
+                      <Button 
+                        className="w-full justify-start h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg"
+                        data-testid="button-review-pending-cases"
+                      >
                         <AlertCircle className="mr-2" size={18} />
-                        Review Pending Cases
+                        Review Pending Cases ({(recentCases.filter(c => c.status === 'under_review').length || stats.pendingReview || 0)})
                       </Button>
-                      <Button variant="outline" className="w-full justify-start h-12">
+                      <Button variant="outline" className="w-full justify-start h-12 border-purple-200 hover:bg-purple-50">
                         <FileText className="mr-2" size={18} />
                         Case Reports
                       </Button>
-                      <Button variant="outline" className="w-full justify-start h-12">
+                      <Button variant="outline" className="w-full justify-start h-12 border-purple-200 hover:bg-purple-50">
                         <BarChart3 className="mr-2" size={18} />
                         Station Statistics
                       </Button>

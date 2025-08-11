@@ -273,6 +273,37 @@ export default function Cases() {
                                   </span>
                                 </div>
                               )}
+
+                              {/* Police Quick Actions for under_review cases */}
+                              {user?.role === 'police' && case_.status === 'under_review' && (
+                                <div className="mt-4 flex space-x-3">
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (case_._id) approveCaseMutation.mutate(case_._id);
+                                    }}
+                                    disabled={approveCaseMutation.isPending}
+                                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md flex items-center space-x-2 font-medium"
+                                    data-testid={`button-quick-approve-${case_._id}`}
+                                  >
+                                    <CheckCircle2 size={16} />
+                                    <span>{approveCaseMutation.isPending ? 'Approving...' : 'Approve'}</span>
+                                  </Button>
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (case_._id) rejectCaseMutation.mutate(case_._id);
+                                    }}
+                                    disabled={rejectCaseMutation.isPending}
+                                    variant="outline"
+                                    className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 px-4 py-2 rounded-lg shadow-md flex items-center space-x-2 font-medium"
+                                    data-testid={`button-quick-reject-${case_._id}`}
+                                  >
+                                    <XCircle size={16} />
+                                    <span>{rejectCaseMutation.isPending ? 'Rejecting...' : 'Reject'}</span>
+                                  </Button>
+                                </div>
+                              )}
                             </div>
 
                             <DropdownMenu>
@@ -305,22 +336,24 @@ export default function Cases() {
                                         e.stopPropagation();
                                         if (case_._id) approveCaseMutation.mutate(case_._id);
                                       }}
-                                      className="text-green-600"
+                                      className="text-green-600 bg-green-50 hover:bg-green-100 font-medium"
                                       disabled={approveCaseMutation.isPending}
+                                      data-testid={`button-approve-${case_._id}`}
                                     >
                                       <CheckCircle2 className="mr-2 h-4 w-4" />
-                                      Approve Case
+                                      {approveCaseMutation.isPending ? 'Approving...' : 'Approve Case'}
                                     </DropdownMenuItem>
                                     <DropdownMenuItem 
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         if (case_._id) rejectCaseMutation.mutate(case_._id);
                                       }}
-                                      className="text-red-600"
+                                      className="text-red-600 bg-red-50 hover:bg-red-100 font-medium"
                                       disabled={rejectCaseMutation.isPending}
+                                      data-testid={`button-reject-${case_._id}`}
                                     >
                                       <XCircle className="mr-2 h-4 w-4" />
-                                      Reject Case
+                                      {rejectCaseMutation.isPending ? 'Rejecting...' : 'Reject Case'}
                                     </DropdownMenuItem>
                                   </>
                                 )}

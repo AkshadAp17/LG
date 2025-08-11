@@ -35,6 +35,23 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
     },
   });
 
+  const markAllAsReadMutation = useMutation({
+    mutationFn: async () => {
+      // First mark all unread notifications as read
+      const unreadNotifications = notifications.filter((n: Notification) => !n.read);
+      await Promise.all(
+        unreadNotifications.map((n: Notification) =>
+          apiRequest('PATCH', `/api/notifications/${n._id}/read`, {})
+        )
+      );
+      // Then delete all read notifications
+      return apiRequest('DELETE', `/api/notifications/read/all`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/notifications'] });
+    },
+  });
+
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'case_approved':
@@ -137,14 +154,10 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
           <Button
             variant="outline"
             className="w-full text-center text-sm text-legal-blue hover:text-blue-700 font-medium"
-            onClick={() => {
-              // Mark all as read functionality
-              notifications
-                .filter((n: Notification) => !n.read)
-                .forEach((n: Notification) => handleMarkAsRead(n._id!));
-            }}
+            onClick={() => markAllAsReadMutation.mutate()}
+            disabled={markAllAsReadMutation.isPending}
           >
-            Mark all as read
+            {markAllAsReadMutation.isPending ? 'Processing...' : 'Mark all as read'}
           </Button>
         </div>
       </DialogContent>

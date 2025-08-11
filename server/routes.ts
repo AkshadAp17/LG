@@ -487,6 +487,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete all read notifications for user
+  app.delete('/api/notifications/read/all', authenticateToken, async (req: any, res) => {
+    try {
+      await storage.deleteReadNotifications(req.user._id);
+      res.json({ message: 'All read notifications deleted' });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || 'Failed to delete read notifications' });
+    }
+  });
+
   // Dashboard stats
   app.get('/api/dashboard/stats', authenticateToken, async (req: any, res) => {
     try {
