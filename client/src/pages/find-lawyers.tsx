@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   Search,
   Filter,
@@ -14,7 +14,8 @@ import {
   ExternalLink,
   Users,
   Briefcase,
-  Clock
+  Clock,
+  X
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 import { authService } from "@/lib/auth";
+import { apiRequest } from "@/lib/queryClient";
+import SimpleCaseForm from "@/components/SimpleCaseForm";
 import type { Lawyer } from "@shared/schema";
 
 export default function FindLawyers() {
@@ -32,8 +37,12 @@ export default function FindLawyers() {
   const [selectedCity, setSelectedCity] = useState("all");
   const [selectedSpecialization, setSelectedSpecialization] = useState("all");
   const [selectedLawyer, setSelectedLawyer] = useState<Lawyer | null>(null);
+  const [showCaseRequestModal, setShowCaseRequestModal] = useState(false);
+  const [requestingLawyer, setRequestingLawyer] = useState<Lawyer | null>(null);
   
   const user = authService.getUser();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: lawyers = [], isLoading } = useQuery<Lawyer[]>({
     queryKey: ['/api/lawyers'],
@@ -52,9 +61,42 @@ export default function FindLawyers() {
     return matchesSearch && matchesCity && matchesSpec;
   });
 
+  // Mutation for creating case request
+  const createCaseRequest = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await apiRequest('POST', '/api/case-requests', data);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Case Request Sent!",
+        description: `Your case request has been sent to ${requestingLawyer?.name}. They will review and respond soon.`,
+      });
+      setShowCaseRequestModal(false);
+      setRequestingLawyer(null);
+      queryClient.invalidateQueries({ queryKey: ['/api/case-requests'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error Sending Request",
+        description: error.message || "Failed to send case request. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleSendCaseRequest = (lawyer: Lawyer) => {
-    // TODO: Implement case request functionality
-    console.log("Sending case request to:", lawyer.name);
+    setRequestingLawyer(lawyer);
+    setShowCaseRequestModal(true);
+  };
+
+  const handleCaseRequestSubmit = (data: any) => {
+    createCaseRequest.mutate(data);
+  };
+
+  const handleCaseRequestCancel = () => {
+    setShowCaseRequestModal(false);
+    setRequestingLawyer(null);
   };
 
   if (isLoading) {
@@ -341,6 +383,35 @@ export default function FindLawyers() {
           </Card>
         </div>
       </div>
+
+      {/* Case Request Modal */}
+      <Dialog open={showCaseRequestModal} onOpenChange={setShowCaseRequestModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              <span>Send Case Request</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCaseRequestCancel}
+                className="h-6 w-6 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </DialogTitle>
+          </DialogHeader>
+          
+          {requestingLawyer && (
+            <SimpleCaseForm
+              lawyerName={requestingLawyer.name}
+              lawyerId={requestingLawyer._id!}
+              onSubmit={handleCaseRequestSubmit}
+              onCancel={handleCaseRequestCancel}
+              isSubmitting={createCaseRequest.isPending}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
