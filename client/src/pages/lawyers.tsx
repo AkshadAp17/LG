@@ -163,60 +163,82 @@ export default function Lawyers() {
 
         {/* Lawyer Profile */}
         <div>
-          <Card className="h-[140px]">
+          <Card className="h-[600px]">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Lawyer Profile</CardTitle>
+              <CardTitle className="text-base">Lawyer Profile</CardTitle>
             </CardHeader>
-            <CardContent className="h-full p-3">
+            <CardContent className="h-full p-0">
+              <ScrollArea className="h-full p-4">
               {selectedLawyer ? (
-                <div className="space-y-2">
+                <div className="space-y-6">
                   <div className="text-center">
-                    <div className="w-8 h-8 bg-legal-blue rounded-full mx-auto mb-1 flex items-center justify-center text-white text-xs font-bold">
+                    <div className="w-20 h-20 bg-legal-blue rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
                       {selectedLawyer.name.split(' ').map(n => n[0]).join('')}
                     </div>
-                    <h4 className="text-xs font-bold text-gray-900">{selectedLawyer.name}</h4>
-                    <p className="text-legal-blue font-medium text-xs">
-                      {selectedLawyer.specialization.join(', ')}
+                    <h4 className="text-lg font-bold text-gray-900">{selectedLawyer.name}</h4>
+                    <p className="text-legal-blue font-medium">
+                      {selectedLawyer.specialization.join(', ')} Law Specialist
                     </p>
-                    <p className="text-xs text-gray-600">
-                      {selectedLawyer.experience}yr exp.
+                    <p className="text-sm text-gray-600 mt-1">
+                      {selectedLawyer.experience} years experience
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-1">
-                    <div className="text-center p-1 bg-blue-50 rounded">
-                      <p className="text-xs font-bold text-legal-blue">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="text-center p-4 bg-blue-50 rounded-lg">
+                      <p className="text-2xl font-bold text-legal-blue">
                         {selectedLawyer.stats.totalCases}
                       </p>
-                      <p className="text-xs text-gray-600">Total</p>
+                      <p className="text-sm text-gray-600">Total Cases</p>
                     </div>
-                    <div className="text-center p-1 bg-green-50 rounded">
-                      <p className="text-xs font-bold text-legal-emerald">
+                    <div className="text-center p-4 bg-green-50 rounded-lg">
+                      <p className="text-2xl font-bold text-legal-emerald">
                         {selectedLawyer.stats.wonCases}
                       </p>
-                      <p className="text-xs text-gray-600">Won</p>
+                      <p className="text-sm text-gray-600">Won Cases</p>
                     </div>
-                    <div className="text-center p-1 bg-red-50 rounded">
-                      <p className="text-xs font-bold text-red-500">
+                    <div className="text-center p-4 bg-red-50 rounded-lg">
+                      <p className="text-2xl font-bold text-red-500">
                         {selectedLawyer.stats.lostCases}
                       </p>
-                      <p className="text-xs text-gray-600">Lost</p>
+                      <p className="text-sm text-gray-600">Lost Cases</p>
                     </div>
                   </div>
 
-                  <div className="flex space-x-1">
+                  <div>
+                    <h5 className="font-medium text-gray-900 mb-3">Win/Loss Statistics</h5>
+                    <WinLossChart 
+                      wonCases={selectedLawyer.stats.wonCases}
+                      lostCases={selectedLawyer.stats.lostCases}
+                    />
+                  </div>
+
+                  <div>
+                    <h5 className="font-medium text-gray-900 mb-3">Specializations</h5>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedLawyer.specialization.map((spec, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-legal-blue text-white text-sm rounded-full"
+                        >
+                          {spec} Law
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex space-x-3">
                     <Button 
                       onClick={() => handleChooseLawyer(selectedLawyer)}
-                      className="flex-1 bg-legal-blue hover:bg-blue-700 text-white text-xs py-1 px-2"
+                      className="flex-1 bg-legal-blue hover:bg-blue-700 text-white"
                     >
-                      Request
+                      Send Case Request
                     </Button>
                     <Button 
                       onClick={() => setShowProfileModal(true)}
-                      variant="outline" 
-                      className="text-xs py-1 px-2"
+                      variant="outline"
                     >
-                      View
+                      View Full Profile
                     </Button>
                   </div>
                 </div>
@@ -225,6 +247,7 @@ export default function Lawyers() {
                   Select a lawyer to view their profile
                 </div>
               )}
+              </ScrollArea>
             </CardContent>
           </Card>
         </div>
