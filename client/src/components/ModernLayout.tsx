@@ -141,7 +141,7 @@ export default function ModernLayout({ children }: LayoutProps) {
         <aside className={`
           ${isMobile ? 'fixed inset-y-0 left-0 z-40 transform transition-transform duration-300' : 'relative'}
           ${isMobile && !sidebarOpen ? '-translate-x-full' : 'translate-x-0'}
-          w-72 bg-white border-r border-gray-200 shadow-lg
+          w-80 bg-white border-r-2 border-gray-300 shadow-xl
         `}>
           {/* Desktop Header */}
           {!isMobile && (

@@ -192,9 +192,168 @@ export default function Cases() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Cases List */}
-        <div className="lg:col-span-2">
+      {selectedCase ? (
+        /* Full Width Case Details View */
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="pb-3 sticky top-0 bg-white z-10 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center">
+                <FileText className="mr-2 text-blue-600" size={20} />
+                Case Details
+              </CardTitle>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setSelectedCase(null)}
+                className="text-gray-600"
+              >
+                ← Back to Cases
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="space-y-6">
+              {/* Case Header */}
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-6 border border-blue-200/50">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">{selectedCase.title}</h2>
+                    <Badge className={getStatusColor(selectedCase.status)} variant="secondary">
+                      {selectedCase.status.replace('_', ' ')}
+                    </Badge>
+                  </div>
+                  <div className="text-right">
+                    {selectedCase.pnr && (
+                      <div className="mb-2">
+                        <span className="text-sm font-medium text-gray-600">PNR: </span>
+                        <span className="font-bold text-blue-600">{selectedCase.pnr}</span>
+                      </div>
+                    )}
+                    {selectedCase.firNumber && (
+                      <div>
+                        <span className="text-sm font-medium text-gray-600">FIR: </span>
+                        <span className="font-bold text-red-600">{selectedCase.firNumber}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div className="flex items-center text-gray-600">
+                    <MapPin size={16} className="mr-2" />
+                    <span>{selectedCase.city}</span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <Calendar size={16} className="mr-2" />
+                    <span>{selectedCase.hearingDate ? new Date(selectedCase.hearingDate).toLocaleDateString() : 'TBD'}</span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <Building size={16} className="mr-2" />
+                    <span>{typeof selectedCase.policeStation === 'string' ? selectedCase.policeStation : selectedCase.policeStation?.name || 'Not assigned'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Case Description */}
+              <div className="bg-gray-50 rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-3">Case Description</h3>
+                <p className="text-gray-700 leading-relaxed">{selectedCase.description}</p>
+              </div>
+
+              {/* Victim & Accused Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-green-50 rounded-2xl p-6 border border-green-200/50">
+                  <h4 className="font-bold text-green-800 mb-3 flex items-center">
+                    <User size={18} className="mr-2" />
+                    Victim Information
+                  </h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Name:</span>
+                      <span className="font-medium">{selectedCase.victim.name}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Phone:</span>
+                      <span className="font-medium">{selectedCase.victim.phone}</span>
+                    </div>
+                    {selectedCase.victim.email && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Email:</span>
+                        <span className="font-medium">{selectedCase.victim.email}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-red-50 rounded-2xl p-6 border border-red-200/50">
+                  <h4 className="font-bold text-red-800 mb-3 flex items-center">
+                    <AlertCircle size={18} className="mr-2" />
+                    Accused Information
+                  </h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Name:</span>
+                      <span className="font-medium">{selectedCase.accused.name}</span>
+                    </div>
+                    {selectedCase.accused.phone && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Phone:</span>
+                        <span className="font-medium">{selectedCase.accused.phone}</span>
+                      </div>
+                    )}
+                    {selectedCase.accused.address && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Address:</span>
+                        <span className="font-medium">{selectedCase.accused.address}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-4 pt-4 border-t border-gray-200">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <Phone className="mr-2" size={16} />
+                  Contact Victim
+                </Button>
+                <Button variant="outline">
+                  <FileText className="mr-2" size={16} />
+                  View Documents
+                </Button>
+                {user?.role === 'police' && (selectedCase.status === 'under_review' || selectedCase.status === 'submitted') && (
+                  <>
+                    <Button
+                      onClick={() => {
+                        if (selectedCase._id) approveCaseMutation.mutate(selectedCase._id);
+                      }}
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                      disabled={approveCaseMutation.isPending}
+                    >
+                      <CheckCircle2 className="mr-2" size={16} />
+                      {approveCaseMutation.isPending ? 'Approving...' : 'Approve Case'}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        if (selectedCase._id) rejectCaseMutation.mutate(selectedCase._id);
+                      }}
+                      variant="outline"
+                      className="border-red-300 text-red-600 hover:bg-red-50"
+                      disabled={rejectCaseMutation.isPending}
+                    >
+                      <XCircle className="mr-2" size={16} />
+                      {rejectCaseMutation.isPending ? 'Rejecting...' : 'Reject Case'}
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Cases List */}
+          <div className="lg:col-span-2">
           <Card className="border-0 shadow-lg">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -508,7 +667,11 @@ export default function Cases() {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600">FIR Number:</span>
-                          <span className="font-medium">{(selectedCase as any).firNo || 'Not assigned'}</span>
+                          <span className="font-medium">{selectedCase.firNumber || 'Not assigned'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">PNR Number:</span>
+                          <span className="font-medium">{selectedCase.pnr || 'Not assigned'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600">City:</span>
@@ -656,7 +819,8 @@ export default function Cases() {
             </CardContent>
           </Card>
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

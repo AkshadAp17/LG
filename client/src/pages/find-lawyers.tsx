@@ -182,19 +182,152 @@ export default function FindLawyers() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Lawyers List */}
-        <div className="lg:col-span-1">
-          <Card className="border-0 shadow-lg">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center justify-between">
-                <span className="flex items-center">
-                  <Users className="mr-2 text-green-600" size={20} />
-                  Available Lawyers ({filteredLawyers.length})
-                </span>
+      {selectedLawyer ? (
+        /* Full Width Lawyer Profile View */
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="pb-3 sticky top-0 bg-white z-10 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center">
+                <Award className="mr-2 text-green-600" size={20} />
+                Lawyer Profile
               </CardTitle>
-            </CardHeader>
-            <CardContent>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setSelectedLawyer(null)}
+                className="text-gray-600"
+              >
+                ← Back to List
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="space-y-6">
+              {/* Enhanced Profile Header */}
+              <div className="text-center bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8 border border-blue-200/50">
+                <Avatar className="w-24 h-24 mx-auto mb-4 ring-4 ring-blue-200">
+                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-3xl font-bold">
+                    {selectedLawyer.name.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">{selectedLawyer.name}</h2>
+                <p className="text-gray-600 font-medium mb-4 text-lg">{selectedLawyer.city}</p>
+                <div className="flex items-center justify-center bg-white/70 rounded-full px-6 py-3 backdrop-blur-sm">
+                  <div className="flex items-center">
+                    <Star className="text-yellow-500 fill-current" size={20} />
+                    <span className="ml-2 text-xl font-bold text-gray-900">4.8</span>
+                  </div>
+                  <span className="text-gray-400 mx-3">•</span>
+                  <span className="text-gray-600 font-medium">127 reviews</span>
+                </div>
+              </div>
+
+              {/* Enhanced Quick Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="text-center p-6 bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl border border-emerald-200/50 shadow-sm">
+                  <Briefcase className="w-10 h-10 text-emerald-600 mx-auto mb-3" />
+                  <div className="text-4xl font-bold text-emerald-600 mb-2">{selectedLawyer.stats?.totalCases || 3}</div>
+                  <div className="font-medium text-gray-600">Total Cases</div>
+                </div>
+                <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl border border-blue-200/50 shadow-sm">
+                  <Award className="w-10 h-10 text-blue-600 mx-auto mb-3" />
+                  <div className="text-4xl font-bold text-blue-600 mb-2">{selectedLawyer.stats?.wonCases || 2}</div>
+                  <div className="font-medium text-gray-600">Cases Won</div>
+                </div>
+                <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-violet-100 rounded-2xl border border-purple-200/50 shadow-sm">
+                  <Clock className="w-10 h-10 text-purple-600 mx-auto mb-3" />
+                  <div className="text-4xl font-bold text-purple-600 mb-2">{selectedLawyer.experience || 5}</div>
+                  <div className="font-medium text-gray-600">Years Experience</div>
+                </div>
+                <div className="text-center p-6 bg-gradient-to-br from-amber-50 to-yellow-100 rounded-2xl border border-amber-200/50 shadow-sm">
+                  <Star className="w-10 h-10 text-amber-600 mx-auto mb-3" />
+                  <div className="text-4xl font-bold text-amber-600 mb-2">4.8</div>
+                  <div className="font-medium text-gray-600">Rating</div>
+                </div>
+              </div>
+
+              {/* Specializations */}
+              <div className="bg-gray-50 rounded-2xl p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <Award className="mr-2 text-blue-600" size={20} />
+                  Legal Specializations
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {(selectedLawyer.specialization || ['Criminal Law', 'Corporate Law', 'Civil Rights']).map((spec, index) => (
+                    <div key={index} className="flex items-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                      <span className="font-medium text-gray-700 capitalize">{spec}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Contact Section */}
+              <div className="bg-gradient-to-br from-slate-50 to-gray-100 rounded-2xl p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <Phone className="mr-2 text-green-600" size={20} />
+                  Contact Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  <div className="flex items-center p-4 bg-white rounded-xl border border-gray-200">
+                    <Phone className="text-green-600 mr-3" size={18} />
+                    <div>
+                      <div className="text-sm text-gray-600">Phone</div>
+                      <div className="font-medium">+91 98765 43210</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center p-4 bg-white rounded-xl border border-gray-200">
+                    <Mail className="text-blue-600 mr-3" size={18} />
+                    <div>
+                      <div className="text-sm text-gray-600">Email</div>
+                      <div className="font-medium">{selectedLawyer.email || 'lawyer@example.com'}</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex gap-4">
+                  <Button className="flex-1 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-xl shadow-lg">
+                    <Phone className="mr-2" size={18} />
+                    Call Lawyer
+                  </Button>
+                  <Button variant="outline" className="flex-1 h-12 border-2 border-indigo-200 hover:bg-indigo-50 text-indigo-700 font-medium rounded-xl">
+                    <Mail className="mr-2" size={18} />
+                    Send Email
+                  </Button>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-4 pt-4 border-t border-gray-200">
+                <Button
+                  onClick={() => handleSendCaseRequest(selectedLawyer)}
+                  className="flex-1 h-14 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl shadow-lg text-lg"
+                >
+                  <MessageCircle className="mr-3" size={20} />
+                  Send Case Request
+                </Button>
+                <Button variant="outline" className="h-14 px-6 border-2 border-gray-300 hover:bg-gray-50 rounded-xl">
+                  <Star className="mr-2" size={18} />
+                  Save
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Lawyers List */}
+          <div className="lg:col-span-1">
+            <Card className="border-0 shadow-lg">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center justify-between">
+                  <span className="flex items-center">
+                    <Users className="mr-2 text-green-600" size={20} />
+                    Available Lawyers ({filteredLawyers.length})
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
               <ScrollArea className="h-[600px]">
                 <div className="space-y-4">
                   {filteredLawyers.map((lawyer) => (
@@ -289,10 +422,10 @@ export default function FindLawyers() {
               </ScrollArea>
             </CardContent>
           </Card>
-        </div>
+          </div>
 
-        {/* Lawyer Profile Detail */}
-        <div className="lg:col-span-1">
+          {/* Lawyer Profile Detail */}
+          <div className="lg:col-span-1">
           <Card className="border-0 shadow-lg sticky top-6">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center">
@@ -417,9 +550,10 @@ export default function FindLawyers() {
               )}
               </ScrollArea>
             </CardContent>
-          </Card>
+            </Card>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Case Request Modal */}
       <Dialog open={showCaseRequestModal} onOpenChange={setShowCaseRequestModal}>

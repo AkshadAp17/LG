@@ -70,7 +70,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Modern Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-72 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-r border-slate-700 shadow-2xl z-50">
+      <aside className="fixed left-0 top-0 h-full w-80 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-r-2 border-slate-600 shadow-2xl z-50">
         {/* Logo Section */}
         <div className="p-6 border-b border-slate-700">
           <div className="flex items-center space-x-3">
@@ -170,7 +170,7 @@ export default function Layout({ children }: LayoutProps) {
       </aside>
 
       {/* Main Content */}
-      <main className="ml-72 min-h-screen">
+      <main className="ml-80 min-h-screen">
         <div className="p-6">
           {children}
         </div>

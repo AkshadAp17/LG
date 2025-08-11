@@ -85,15 +85,16 @@ export const caseSchema = z.object({
   policeStationId: z.string(),
   policeStation: policeStationSchema.optional(),
   city: z.string(),
-  status: z.enum(['draft', 'submitted', 'under_review', 'approved', 'rejected']),
+  status: z.enum(['draft', 'submitted', 'under_review', 'approved', 'rejected', 'in_progress']),
   pnr: z.string().optional(),
+  firNumber: z.string().optional(),
   hearingDate: z.date().optional(),
   documents: z.array(z.string()).optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });
 
-export const insertCaseSchema = caseSchema.omit({ _id: true, createdAt: true, updatedAt: true, pnr: true, policeStation: true });
+export const insertCaseSchema = caseSchema.omit({ _id: true, createdAt: true, updatedAt: true, pnr: true, firNumber: true, policeStation: true });
 export type Case = z.infer<typeof caseSchema>;
 export type InsertCase = z.infer<typeof insertCaseSchema>;
 
