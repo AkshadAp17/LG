@@ -143,27 +143,27 @@ export default function Layout({ children }: LayoutProps) {
         </nav>
 
         {/* Bottom Section - Settings and Logout */}
-        <div className="absolute bottom-2 left-0 right-0 p-4 space-y-2">
+        <div className="absolute bottom-0 left-0 right-0 p-2 space-y-1 bg-slate-900/50">
           <Link href="/settings">
             <Button 
               variant="ghost" 
-              className={`w-full justify-start h-11 ${
+              className={`w-full justify-start h-9 text-sm ${
                 location === '/settings' 
                   ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg' 
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
               }`}
             >
-              <Settings className="mr-3 h-5 w-5" />
+              <Settings className="mr-3 h-4 w-4" />
               <span className="font-medium">Settings</span>
             </Button>
           </Link>
           
           <Button 
             variant="ghost" 
-            className="w-full justify-start h-11 text-red-400 hover:text-red-300 hover:bg-red-900/20"
+            className="w-full justify-start h-9 text-sm text-red-400 hover:text-red-300 hover:bg-red-900/20"
             onClick={handleLogout}
           >
-            <LogOut className="mr-3 h-5 w-5" />
+            <LogOut className="mr-3 h-4 w-4" />
             <span className="font-medium">Logout</span>
           </Button>
         </div>

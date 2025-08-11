@@ -221,29 +221,29 @@ export default function ModernLayout({ children }: LayoutProps) {
           </div>
           
           {/* Bottom Section - Settings and Logout */}
-          <div className="mt-auto p-3 border-t border-gray-200">
+          <div className="mt-auto p-2 border-t border-gray-200">
             <div className="space-y-1">
               <Link href="/settings">
                 <Button
                   variant={location === '/settings' ? "default" : "ghost"}
-                  className={`w-full justify-start h-10 text-sm ${
+                  className={`w-full justify-start h-8 text-xs ${
                     location === '/settings'
                       ? "bg-blue-600 text-white shadow-md" 
                       : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                   }`}
                   onClick={() => isMobile && setSidebarOpen(false)}
                 >
-                  <Settings className={`mr-3 h-4 w-4 ${location === '/settings' ? 'text-white' : 'text-gray-600'}`} />
+                  <Settings className={`mr-2 h-3 w-3 ${location === '/settings' ? 'text-white' : 'text-gray-600'}`} />
                   <span className="font-medium">Settings</span>
                 </Button>
               </Link>
               
               <Button
                 variant="ghost"
-                className="w-full justify-start h-10 text-sm text-red-600 hover:bg-red-50 hover:text-red-700"
+                className="w-full justify-start h-8 text-xs text-red-600 hover:bg-red-50 hover:text-red-700"
                 onClick={handleLogout}
               >
-                <LogOut className="mr-3 h-4 w-4" />
+                <LogOut className="mr-2 h-3 w-3" />
                 <span className="font-medium">Logout</span>
               </Button>
             </div>

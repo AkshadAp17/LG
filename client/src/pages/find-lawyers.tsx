@@ -182,9 +182,9 @@ export default function FindLawyers() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Lawyers List */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-1">
           <Card className="border-0 shadow-lg">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center justify-between">
@@ -301,7 +301,8 @@ export default function FindLawyers() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {selectedLawyer ? (
+              <ScrollArea className="h-[600px]">
+                {selectedLawyer ? (
                 <div className="space-y-6">
                   {/* Enhanced Profile Header */}
                   <div className="text-center bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-6 border border-blue-200/50">
@@ -414,6 +415,7 @@ export default function FindLawyers() {
                   <p className="text-gray-500">Select a lawyer to view their profile</p>
                 </div>
               )}
+              </ScrollArea>
             </CardContent>
           </Card>
         </div>
