@@ -225,8 +225,62 @@ export default function Login() {
                 <p className="text-gray-600 mt-2">Join our legal case management platform</p>
               </div>
 
-              <div className="max-w-2xl mx-auto">
-                <form onSubmit={handleSignup} className="space-y-6">
+              {!selectedRole ? (
+                <div className="max-w-2xl mx-auto">
+                  <h3 className="text-lg font-medium text-center mb-6">Select Your Role</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Card 
+                      className="cursor-pointer hover:shadow-lg transition-all border-2 hover:border-blue-500"
+                      onClick={() => handleRoleSelect('client')}
+                    >
+                      <CardContent className="p-6 text-center">
+                        <User className="text-blue-500 mx-auto mb-4" size={48} />
+                        <h4 className="font-semibold text-lg mb-2">Client</h4>
+                        <p className="text-sm text-gray-600">Need legal assistance? Find and connect with lawyers for your case.</p>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card 
+                      className="cursor-pointer hover:shadow-lg transition-all border-2 hover:border-green-500"
+                      onClick={() => handleRoleSelect('lawyer')}
+                    >
+                      <CardContent className="p-6 text-center">
+                        <UserCheck className="text-green-500 mx-auto mb-4" size={48} />
+                        <h4 className="font-semibold text-lg mb-2">Lawyer</h4>
+                        <p className="text-sm text-gray-600">Legal professional? Manage cases and connect with clients.</p>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card 
+                      className="cursor-pointer hover:shadow-lg transition-all border-2 hover:border-purple-500"
+                      onClick={() => handleRoleSelect('police')}
+                    >
+                      <CardContent className="p-6 text-center">
+                        <Shield className="text-purple-500 mx-auto mb-4" size={48} />
+                        <h4 className="font-semibold text-lg mb-2">Police Officer</h4>
+                        <p className="text-sm text-gray-600">Law enforcement officer? Review and approve case submissions.</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              ) : (
+                <div className="max-w-2xl mx-auto">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-medium">
+                      Registration as {selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}
+                    </h3>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedRole('');
+                        setSignupData(prev => ({ ...prev, role: undefined }));
+                      }}
+                    >
+                      Change Role
+                    </Button>
+                  </div>
+
+                  <form onSubmit={handleSignup} className="space-y-6">
                     {signupMutation.error && (
                       <Alert variant="destructive">
                         <AlertDescription>
@@ -242,30 +296,6 @@ export default function Login() {
                         </AlertDescription>
                       </Alert>
                     )}
-
-                    {/* Role Selection */}
-                    <div className="space-y-2">
-                      <Label className="text-base font-medium flex items-center gap-2">
-                        <UserCheck size={16} />
-                        User Type
-                      </Label>
-                      <Select
-                        value={signupData.role}
-                        onValueChange={(value: 'client' | 'lawyer' | 'police') => {
-                          handleSignupChange('role', value);
-                          setSelectedRole(value);
-                        }}
-                      >
-                        <SelectTrigger className="h-12 text-base">
-                          <SelectValue placeholder="Select your role" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="client">Client - Need legal assistance</SelectItem>
-                          <SelectItem value="lawyer">Lawyer - Legal professional</SelectItem>
-                          <SelectItem value="police">Police Officer - Law enforcement</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
@@ -411,6 +441,7 @@ export default function Login() {
                     </Button>
                   </form>
                 </div>
+              )}
             </TabsContent>
             </Tabs>
           </CardContent>
