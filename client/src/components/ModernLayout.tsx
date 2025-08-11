@@ -221,8 +221,8 @@ export default function ModernLayout({ children }: LayoutProps) {
           </div>
           
           {/* Bottom Section - Settings and Logout */}
-          <div className="mt-auto p-4 border-t border-gray-200">
-            <div className="space-y-2">
+          <div className="mt-auto p-3 border-t border-gray-200">
+            <div className="space-y-1">
               <Link href="/settings">
                 <Button
                   variant={location === '/settings' ? "default" : "ghost"}

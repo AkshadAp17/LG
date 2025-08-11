@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { authService } from "@/lib/auth";
 import { apiRequest } from "@/lib/queryClient";
 import type { Message, User } from "@shared/schema";
+import { formatDistanceToNow } from 'date-fns';
 
 export default function Messages() {
   const [selectedContact, setSelectedContact] = useState<User | null>(null);
@@ -250,10 +251,7 @@ export default function Messages() {
                             <h3 className="font-semibold text-gray-900 truncate">{contact.name}</h3>
                             {lastMessage && (
                               <span className="text-xs text-gray-500">
-                                {new Date(lastMessage.timestamp || 0).toLocaleTimeString([], {
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
+                                {lastMessage.timestamp ? formatDistanceToNow(new Date(lastMessage.timestamp), { addSuffix: true }) : 'Just now'}
                               </span>
                             )}
                           </div>
@@ -374,10 +372,7 @@ export default function Messages() {
                                 isOwnMessage ? 'text-purple-200' : 'text-gray-500'
                               }`}>
                                 <span className="text-xs">
-                                  {new Date(message.timestamp || 0).toLocaleTimeString([], {
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                  })}
+                                  {message.timestamp ? formatDistanceToNow(new Date(message.timestamp), { addSuffix: true }) : 'Just now'}
                                 </span>
                                 {isOwnMessage && (
                                   <CheckCheck size={14} className="text-purple-300" />
