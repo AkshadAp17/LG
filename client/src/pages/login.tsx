@@ -115,7 +115,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl max-h-[95vh] overflow-y-auto">
+      <div className="w-full max-w-md mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-6">
@@ -127,7 +127,7 @@ export default function Login() {
           <p className="text-gray-600 text-lg">Professional Legal Case Management System</p>
         </div>
 
-        <Card className="shadow-lg border-0 backdrop-blur-sm bg-white/90 w-full max-w-md">
+        <Card className="shadow-lg border-0 backdrop-blur-sm bg-white/90 w-full max-w-md mx-auto">
           <CardContent className="p-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
               <TabsList className="grid w-full grid-cols-2 h-10 bg-gray-100 rounded-lg p-1">
@@ -236,7 +236,7 @@ export default function Login() {
                       <CardContent className="p-4 text-center">
                         <User className="text-blue-500 mx-auto mb-3" size={36} />
                         <h4 className="font-semibold text-base mb-2">Client</h4>
-                        <p className="text-xs text-gray-600">Need legal assistance? Find and connect with lawyers for your case.</p>
+
                       </CardContent>
                     </Card>
                     
@@ -247,7 +247,7 @@ export default function Login() {
                       <CardContent className="p-4 text-center">
                         <UserCheck className="text-green-500 mx-auto mb-3" size={36} />
                         <h4 className="font-semibold text-base mb-2">Lawyer</h4>
-                        <p className="text-xs text-gray-600">Legal professional? Manage cases and connect with clients.</p>
+
                       </CardContent>
                     </Card>
                     
@@ -258,7 +258,7 @@ export default function Login() {
                       <CardContent className="p-4 text-center">
                         <Shield className="text-purple-500 mx-auto mb-3" size={36} />
                         <h4 className="font-semibold text-base mb-2">Police Officer</h4>
-                        <p className="text-xs text-gray-600">Law enforcement officer? Review and approve case submissions.</p>
+
                       </CardContent>
                     </Card>
                   </div>
