@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Scale, LayoutDashboard, FolderOpen, Users, Calendar, FileText, MessageSquare, Bell, Settings } from "lucide-react";
+import { Scale, LayoutDashboard, FolderOpen, Users, Calendar, FileText, MessageSquare, Bell, Settings, LogOut } from "lucide-react";
 import { authService } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -142,25 +142,30 @@ export default function Layout({ children }: LayoutProps) {
           })}
         </nav>
 
-        {/* Bottom Section */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-full justify-start text-slate-300 hover:text-white hover:bg-slate-800/50">
-                <Settings className="mr-3 h-4 w-4" />
-                Settings & More
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 bg-slate-800 border-slate-700">
-              <DropdownMenuItem className="text-slate-300 hover:text-white hover:bg-slate-700">
-                <Settings className="mr-2 h-4 w-4" />
-                Preferences
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout} className="text-red-400 hover:text-red-300 hover:bg-red-900/20">
-                Logout
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        {/* Bottom Section - Settings and Logout */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700 space-y-2">
+          <Link href="/settings">
+            <Button 
+              variant="ghost" 
+              className={`w-full justify-start ${
+                location === '/settings' 
+                  ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg' 
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+              }`}
+            >
+              <Settings className="mr-3 h-4 w-4" />
+              Settings
+            </Button>
+          </Link>
+          
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20"
+            onClick={handleLogout}
+          >
+            <LogOut className="mr-3 h-4 w-4" />
+            Logout
+          </Button>
         </div>
       </aside>
 

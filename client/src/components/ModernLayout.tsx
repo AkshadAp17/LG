@@ -13,6 +13,7 @@ import {
   Bell, 
   ChevronDown, 
   Settings,
+  LogOut,
   Menu,
   X,
   Home
@@ -129,22 +130,7 @@ export default function ModernLayout({ children }: LayoutProps) {
                 )}
               </Button>
               
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <Avatar className="w-6 h-6">
-                      <AvatarFallback className={`${roleColor} text-white text-xs`}>
-                        {user?.name?.charAt(0) || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleLogout}>
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+
             </div>
           </div>
         </header>
@@ -168,46 +154,22 @@ export default function ModernLayout({ children }: LayoutProps) {
                 </div>
               </div>
               
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowNotifications(true)}
-                  className="relative"
-                >
-                  <Bell size={18} />
-                  {unreadCount > 0 && (
-                    <Badge 
-                      variant="destructive" 
-                      className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center text-xs p-0"
-                    >
-                      {unreadCount}
-                    </Badge>
-                  )}
-                </Button>
-                
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      <Avatar className="w-7 h-7">
-                        <AvatarFallback className={`${roleColor} text-white text-sm`}>
-                          {user?.name?.charAt(0) || 'U'}
-                        </AvatarFallback>
-                      </Avatar>
-                      <ChevronDown size={14} className="ml-1" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <Settings className="mr-2 h-4 w-4" />
-                      Settings
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleLogout}>
-                      Logout
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowNotifications(true)}
+                className="relative"
+              >
+                <Bell size={18} />
+                {unreadCount > 0 && (
+                  <Badge 
+                    variant="destructive" 
+                    className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center text-xs p-0"
+                  >
+                    {unreadCount}
+                  </Badge>
+                )}
+              </Button>
             </div>
           )}
 
@@ -230,31 +192,62 @@ export default function ModernLayout({ children }: LayoutProps) {
           </div>
 
           {/* Navigation */}
-          <ScrollArea className="flex-1 px-4 py-6">
-            <nav className="space-y-2">
-              {sidebarItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = location === item.path;
-                
-                return (
-                  <Link key={item.path} href={item.path}>
-                    <Button
-                      variant={isActive ? "default" : "ghost"}
-                      className={`w-full justify-start h-12 ${
-                        isActive 
-                          ? "bg-blue-600 text-white shadow-md" 
-                          : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                      }`}
-                      onClick={() => isMobile && setSidebarOpen(false)}
-                    >
-                      <Icon className={`mr-3 h-5 w-5 ${isActive ? 'text-white' : item.color}`} />
-                      <span className="font-medium">{item.label}</span>
-                    </Button>
-                  </Link>
-                );
-              })}
-            </nav>
-          </ScrollArea>
+          <div className="flex-1 px-4 py-6">
+            <ScrollArea className="h-full">
+              <nav className="space-y-2">
+                {sidebarItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = location === item.path;
+                  
+                  return (
+                    <Link key={item.path} href={item.path}>
+                      <Button
+                        variant={isActive ? "default" : "ghost"}
+                        className={`w-full justify-start h-12 ${
+                          isActive 
+                            ? "bg-blue-600 text-white shadow-md" 
+                            : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                        }`}
+                        onClick={() => isMobile && setSidebarOpen(false)}
+                      >
+                        <Icon className={`mr-3 h-5 w-5 ${isActive ? 'text-white' : item.color}`} />
+                        <span className="font-medium">{item.label}</span>
+                      </Button>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </ScrollArea>
+          </div>
+          
+          {/* Bottom Section - Settings and Logout */}
+          <div className="p-4 border-t border-gray-200">
+            <div className="space-y-2">
+              <Link href="/settings">
+                <Button
+                  variant={location === '/settings' ? "default" : "ghost"}
+                  className={`w-full justify-start h-12 ${
+                    location === '/settings'
+                      ? "bg-blue-600 text-white shadow-md" 
+                      : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  }`}
+                  onClick={() => isMobile && setSidebarOpen(false)}
+                >
+                  <Settings className={`mr-3 h-5 w-5 ${location === '/settings' ? 'text-white' : 'text-gray-600'}`} />
+                  <span className="font-medium">Settings</span>
+                </Button>
+              </Link>
+              
+              <Button
+                variant="ghost"
+                className="w-full justify-start h-12 text-red-600 hover:bg-red-50 hover:text-red-700"
+                onClick={handleLogout}
+              >
+                <LogOut className="mr-3 h-5 w-5" />
+                <span className="font-medium">Logout</span>
+              </Button>
+            </div>
+          </div>
         </aside>
 
         {/* Mobile Overlay */}

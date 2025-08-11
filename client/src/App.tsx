@@ -14,6 +14,7 @@ import Cases from "@/pages/cases";
 import Calendar from "@/pages/calendar";
 import Messages from "@/pages/messages";
 import Documents from "@/pages/documents";
+import Settings from "@/pages/settings";
 import ModernLayout from "@/components/ModernLayout";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -99,6 +100,14 @@ function Router() {
         <ProtectedRoute>
           <ModernLayout>
             <Documents />
+          </ModernLayout>
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/settings">
+        <ProtectedRoute>
+          <ModernLayout>
+            <Settings />
           </ModernLayout>
         </ProtectedRoute>
       </Route>
