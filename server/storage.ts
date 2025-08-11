@@ -44,6 +44,7 @@ export interface IStorage {
   // Messages
   getMessages(userId: string, otherUserId?: string): Promise<Message[]>;
   createMessage(message: InsertMessage): Promise<Message>;
+  deleteAllMessages(): Promise<void>;
   
   // Notifications
   getNotifications(userId: string): Promise<Notification[]>;
@@ -517,6 +518,10 @@ export class MongoStorage implements IStorage {
       timestamp: savedMessage.timestamp,
       read: savedMessage.read,
     };
+  }
+
+  async deleteAllMessages(): Promise<void> {
+    await MessageModel.deleteMany({});
   }
 
   async getNotifications(userId: string): Promise<Notification[]> {

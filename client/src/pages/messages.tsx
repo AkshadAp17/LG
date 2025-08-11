@@ -407,7 +407,7 @@ export default function Messages() {
                           setNewMessage(e.target.value);
                           // Auto-resize functionality
                           e.target.style.height = 'auto';
-                          e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+                          e.target.style.height = Math.min(e.target.scrollHeight, 80) + 'px';
                         }}
                         onKeyPress={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
@@ -415,7 +415,7 @@ export default function Messages() {
                             handleSendMessage();
                           }
                         }}
-                        className="w-full min-h-[48px] max-h-30 resize-none border-0 bg-gray-50 rounded-xl px-4 py-3 focus:bg-white focus:ring-2 focus:ring-purple-300 focus:outline-none font-medium placeholder:text-gray-500 text-gray-900 text-base leading-relaxed transition-all duration-200"
+                        className="w-full min-h-[36px] max-h-20 resize-none border-0 bg-gray-50 rounded-lg px-3 py-2 focus:bg-white focus:ring-2 focus:ring-purple-300 focus:outline-none font-medium placeholder:text-gray-500 text-gray-900 text-sm leading-normal transition-all duration-200"
                         rows={1}
                         data-testid="textarea-message"
                       />
@@ -438,10 +438,7 @@ export default function Messages() {
                       )}
                     </Button>
                   </div>
-                  <div className="mt-3 flex items-center justify-center space-x-2 text-sm text-gray-600">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span>Secure & Encrypted Messaging</span>
-                  </div>
+
                 </div>
               </>
             ) : (

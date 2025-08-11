@@ -174,16 +174,16 @@ export default function ModernLayout({ children }: LayoutProps) {
           )}
 
           {/* User Info Card */}
-          <div className="p-6 border-b border-gray-100">
+          <div className="p-4 border-b border-gray-100">
             <div className="flex items-center space-x-3">
-              <Avatar className="w-12 h-12">
-                <AvatarFallback className={`${roleColor} text-white text-lg font-semibold`}>
+              <Avatar className="w-10 h-10">
+                <AvatarFallback className={`${roleColor} text-white text-sm font-semibold`}>
                   {user?.name?.charAt(0) || 'U'}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">{user?.name}</h3>
-                <p className="text-sm text-gray-500 capitalize">{user?.role}</p>
+                <h3 className="font-medium text-gray-900 text-sm">{user?.name}</h3>
+                <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
                 {user?.city && (
                   <p className="text-xs text-gray-400">{user.city}</p>
                 )}
@@ -192,9 +192,9 @@ export default function ModernLayout({ children }: LayoutProps) {
           </div>
 
           {/* Navigation */}
-          <div className="flex-1 px-4 py-6">
+          <div className="flex-1 px-3 py-4">
             <ScrollArea className="h-full">
-              <nav className="space-y-2">
+              <nav className="space-y-1">
                 {sidebarItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = location === item.path;
@@ -203,14 +203,14 @@ export default function ModernLayout({ children }: LayoutProps) {
                     <Link key={item.path} href={item.path}>
                       <Button
                         variant={isActive ? "default" : "ghost"}
-                        className={`w-full justify-start h-12 ${
+                        className={`w-full justify-start h-10 text-sm ${
                           isActive 
                             ? "bg-blue-600 text-white shadow-md" 
                             : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                         }`}
                         onClick={() => isMobile && setSidebarOpen(false)}
                       >
-                        <Icon className={`mr-3 h-5 w-5 ${isActive ? 'text-white' : item.color}`} />
+                        <Icon className={`mr-3 h-4 w-4 ${isActive ? 'text-white' : item.color}`} />
                         <span className="font-medium">{item.label}</span>
                       </Button>
                     </Link>
@@ -221,29 +221,29 @@ export default function ModernLayout({ children }: LayoutProps) {
           </div>
           
           {/* Bottom Section - Settings and Logout */}
-          <div className="mt-auto p-6 border-t border-gray-200">
-            <div className="space-y-3">
+          <div className="mt-auto p-4 border-t border-gray-200">
+            <div className="space-y-2">
               <Link href="/settings">
                 <Button
                   variant={location === '/settings' ? "default" : "ghost"}
-                  className={`w-full justify-start h-12 ${
+                  className={`w-full justify-start h-10 text-sm ${
                     location === '/settings'
                       ? "bg-blue-600 text-white shadow-md" 
                       : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                   }`}
                   onClick={() => isMobile && setSidebarOpen(false)}
                 >
-                  <Settings className={`mr-3 h-5 w-5 ${location === '/settings' ? 'text-white' : 'text-gray-600'}`} />
+                  <Settings className={`mr-3 h-4 w-4 ${location === '/settings' ? 'text-white' : 'text-gray-600'}`} />
                   <span className="font-medium">Settings</span>
                 </Button>
               </Link>
               
               <Button
                 variant="ghost"
-                className="w-full justify-start h-12 text-red-600 hover:bg-red-50 hover:text-red-700"
+                className="w-full justify-start h-10 text-sm text-red-600 hover:bg-red-50 hover:text-red-700"
                 onClick={handleLogout}
               >
-                <LogOut className="mr-3 h-5 w-5" />
+                <LogOut className="mr-3 h-4 w-4" />
                 <span className="font-medium">Logout</span>
               </Button>
             </div>

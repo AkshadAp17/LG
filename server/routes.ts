@@ -468,6 +468,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/messages', authenticateToken, async (req: any, res) => {
+    try {
+      await storage.deleteAllMessages();
+      res.json({ message: 'All messages deleted successfully' });
+    } catch (error: any) {
+      console.error('Message deletion error:', error);
+      res.status(500).json({ message: error.message || 'Failed to delete messages' });
+    }
+  });
+
   // Notifications routes
   app.get('/api/notifications', authenticateToken, async (req: any, res) => {
     try {
