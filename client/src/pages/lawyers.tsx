@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search } from "lucide-react";
 import LawyerCard from "@/components/LawyerCard";
 import LawyerProfileModal from "@/components/LawyerProfileModal";
@@ -132,11 +133,11 @@ export default function Lawyers() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Lawyers List */}
         <div className="lg:col-span-2">
-          <Card>
+          <Card className="h-[600px]">
             <CardHeader>
               <CardTitle>Available Lawyers</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="h-full p-0">
               {isLoading ? (
                 <div className="text-center py-8">Loading lawyers...</div>
               ) : lawyers.length === 0 ? (
@@ -144,15 +145,17 @@ export default function Lawyers() {
                   No lawyers found matching your criteria
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {lawyers.map((lawyer: Lawyer) => (
-                    <LawyerCard
-                      key={lawyer._id}
-                      lawyer={lawyer}
-                      onSelect={handleSelectLawyer}
-                    />
-                  ))}
-                </div>
+                <ScrollArea className="h-full p-6">
+                  <div className="space-y-4">
+                    {lawyers.map((lawyer: Lawyer) => (
+                      <LawyerCard
+                        key={lawyer._id}
+                        lawyer={lawyer}
+                        onSelect={handleSelectLawyer}
+                      />
+                    ))}
+                  </div>
+                </ScrollArea>
               )}
             </CardContent>
           </Card>
@@ -160,7 +163,7 @@ export default function Lawyers() {
 
         {/* Lawyer Profile */}
         <div>
-          <Card className="h-[140px]">
+          <Card className="h-[600px]">
             <CardHeader className="pb-2">
               <CardTitle className="text-base">Lawyer Profile</CardTitle>
             </CardHeader>

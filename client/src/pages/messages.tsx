@@ -170,7 +170,7 @@ export default function Messages() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-280px)]">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
         {/* Contacts Sidebar */}
         <Card className="border border-purple-200/50 shadow-xl bg-gradient-to-b from-white to-purple-50/30 lg:col-span-1 backdrop-blur-sm h-full">
           <CardContent className="p-0">
@@ -198,7 +198,7 @@ export default function Messages() {
             </div>
 
             {/* Conversations List */}
-            <ScrollArea className="h-[600px]">
+            <ScrollArea className="h-[calc(100%-120px)]">
               <div className="p-2">
                 {contactsLoading ? (
                   <div className="flex items-center justify-center py-8">
@@ -296,7 +296,7 @@ export default function Messages() {
 
         {/* Chat Area */}
         <Card className="border border-purple-200/50 shadow-xl bg-white lg:col-span-2 backdrop-blur-sm h-full">
-          <CardContent className="p-0 h-full flex flex-col">
+          <CardContent className="p-0 h-full flex flex-col overflow-hidden">
             {selectedContact ? (
               <>
                 {/* Chat Header */}
