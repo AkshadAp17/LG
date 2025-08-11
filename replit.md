@@ -21,6 +21,9 @@ Preferred communication style: Simple, everyday language.
 ✓ Enhanced police case management with prominent approve/reject functionality directly on case cards for under_review status cases
 ✓ Added quick action buttons for police officers to approve/reject cases without using dropdown menus
 ✓ Improved dashboard buttons for police users showing pending case counts and better visual styling
+✓ Fixed case status display system - now shows "IN PROGRESS" for active cases and "SUBMITTED" only for newly submitted cases
+✓ Enhanced police approve/reject functionality to work with both 'submitted' and 'under_review' status cases
+✓ Added debug information to help police users identify cases awaiting their action
 ✓ Fixed document management system - PDFs and documents now properly display in case details
 ✓ Added document download functionality with static file serving for uploads
 ✓ Fixed lawyer card layout consistency with uniform heights and better specialization display

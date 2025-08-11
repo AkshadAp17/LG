@@ -103,6 +103,7 @@ export default function Cases() {
       'under_review': <Clock className="text-yellow-600" size={16} />,
       'rejected': <XCircle className="text-red-600" size={16} />,
       'submitted': <AlertCircle className="text-blue-600" size={16} />,
+      'in_progress': <Clock className="text-blue-600" size={16} />,
       'draft': <FileText className="text-gray-600" size={16} />
     };
     return icons[status as keyof typeof icons] || icons.draft;
@@ -113,7 +114,8 @@ export default function Cases() {
       'approved': 'bg-green-100 text-green-800 border-green-200',
       'under_review': 'bg-yellow-100 text-yellow-800 border-yellow-200',
       'rejected': 'bg-red-100 text-red-800 border-red-200',
-      'submitted': 'bg-blue-100 text-blue-800 border-blue-200',
+      'submitted': 'bg-orange-100 text-orange-800 border-orange-200',
+      'in_progress': 'bg-blue-100 text-blue-800 border-blue-200',
       'draft': 'bg-gray-100 text-gray-800 border-gray-200'
     };
     return colors[status as keyof typeof colors] || colors.draft;
@@ -127,7 +129,8 @@ export default function Cases() {
     all: cases.length,
     pending: cases.filter(c => c.status === 'under_review').length,
     approved: cases.filter(c => c.status === 'approved').length,
-    rejected: cases.filter(c => c.status === 'rejected').length
+    rejected: cases.filter(c => c.status === 'rejected').length,
+    in_progress: cases.filter(c => c.status === 'in_progress').length
   };
 
   const handleDeleteCase = (case_: Case) => {
@@ -241,7 +244,7 @@ export default function Cases() {
                                 {getStatusIcon(case_.status)}
                                 <h3 className="text-xl font-bold text-gray-900">{case_.title}</h3>
                                 <Badge className={`${getStatusColor(case_.status)}`}>
-                                  {case_.status.replace('_', ' ').toUpperCase()}
+                                  {case_.status === 'in_progress' ? 'IN PROGRESS' : case_.status === 'submitted' ? 'SUBMITTED' : case_.status.replace('_', ' ').toUpperCase()}
                                 </Badge>
                               </div>
                               
@@ -275,7 +278,7 @@ export default function Cases() {
                               )}
 
                               {/* Police Quick Actions for under_review cases */}
-                              {user?.role === 'police' && case_.status === 'under_review' && (
+                              {(user?.role === 'police' && (case_.status === 'under_review' || case_.status === 'submitted')) && (
                                 <div className="mt-4 flex space-x-3">
                                   <Button
                                     onClick={(e) => {
@@ -308,7 +311,7 @@ export default function Cases() {
                               {/* Debug info for police users */}
                               {user?.role === 'police' && (
                                 <div className="mt-2 text-xs text-gray-500 bg-gray-100 p-2 rounded">
-                                  Debug: User role: {user?.role}, Case status: {case_.status}, Case ID: {case_._id}
+                                  Debug: User role: {user?.role}, Case status: {case_.status}, Show buttons: {((case_.status === 'under_review' || case_.status === 'submitted')).toString()}
                                 </div>
                               )}
                             </div>
@@ -336,7 +339,7 @@ export default function Cases() {
                                     Download Documents
                                   </DropdownMenuItem>
                                 )}
-                                {user?.role === 'police' && case_.status === 'under_review' && (
+                                {user?.role === 'police' && (case_.status === 'under_review' || case_.status === 'submitted') && (
                                   <>
                                     <DropdownMenuItem 
                                       onClick={(e) => {
@@ -406,7 +409,9 @@ export default function Cases() {
                     <div className="text-center">
                       <Badge className={`text-sm ${getStatusColor(selectedCase.status)} px-4 py-2`}>
                         {getStatusIcon(selectedCase.status)}
-                        <span className="ml-2">{selectedCase.status.replace('_', ' ').toUpperCase()}</span>
+                        <span className="ml-2">
+                          {selectedCase.status === 'in_progress' ? 'IN PROGRESS' : selectedCase.status === 'submitted' ? 'SUBMITTED' : selectedCase.status.replace('_', ' ').toUpperCase()}
+                        </span>
                       </Badge>
                     </div>
 
@@ -417,7 +422,7 @@ export default function Cases() {
                     </div>
 
                     {/* Police Actions */}
-                    {user?.role === 'police' && selectedCase.status === 'under_review' && (
+                    {user?.role === 'police' && (selectedCase.status === 'under_review' || selectedCase.status === 'submitted') && (
                       <>
                         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
                           <h3 className="text-lg font-semibold text-yellow-800 mb-3">
