@@ -295,12 +295,12 @@ export default function Messages() {
         </Card>
 
         {/* Chat Area */}
-        <Card className="border border-purple-200/50 shadow-xl bg-white lg:col-span-2 backdrop-blur-sm h-full">
+        <Card className="border border-purple-200/50 shadow-xl bg-white lg:col-span-2 backdrop-blur-sm h-[140px]">
           <CardContent className="p-0 h-full flex flex-col overflow-hidden">
             {selectedContact ? (
               <>
                 {/* Chat Header */}
-                <div className="p-4 border-b border-purple-200/50 bg-gradient-to-r from-white to-purple-50/30 rounded-t-lg">
+                <div className="p-2 border-b border-purple-200/50 bg-gradient-to-r from-white to-purple-50/30 rounded-t-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div className="relative">
@@ -344,7 +344,7 @@ export default function Messages() {
                 </div>
 
                 {/* Messages */}
-                <ScrollArea className="flex-1 p-2">
+                <ScrollArea className="h-[80px] p-1">
                   <div className="space-y-2">
                     {messagesLoading ? (
                       <div className="flex items-center justify-center py-8">
@@ -393,8 +393,8 @@ export default function Messages() {
                 </ScrollArea>
 
                 {/* Message Input */}
-                <div className="p-3 border-t border-purple-200/50 bg-gradient-to-r from-white to-purple-50/20">
-                  <div className="flex items-end space-x-2 bg-white border-2 border-purple-300 rounded-2xl p-3 shadow-lg">
+                <div className="p-1 border-t border-purple-200/50 bg-gradient-to-r from-white to-purple-50/20">
+                  <div className="flex items-end space-x-1 bg-white border border-purple-300 rounded-lg p-1 shadow-lg">
                     <Button variant="ghost" size="sm" className="hover:bg-purple-100 hover:text-purple-600" data-testid="button-attach">
                       <Paperclip size={18} />
                     </Button>

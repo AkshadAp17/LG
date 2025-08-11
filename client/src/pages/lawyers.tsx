@@ -204,34 +204,19 @@ export default function Lawyers() {
                     </div>
                   </div>
 
-                  <div>
-                    <h5 className="font-medium text-gray-900 mb-3">Win/Loss Statistics</h5>
-                    <WinLossChart 
-                      wonCases={selectedLawyer.stats.wonCases}
-                      lostCases={selectedLawyer.stats.lostCases}
-                    />
-                  </div>
-
-                  <div>
-                    <h5 className="font-medium text-gray-900 mb-3">Specializations</h5>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedLawyer.specialization.map((spec, index) => (
-                        <span
-                          key={index}
-                          className="px-3 py-1 bg-legal-blue text-white text-sm rounded-full"
-                        >
-                          {spec} Law
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex space-x-3">
-                    <Button className="flex-1 bg-legal-blue hover:bg-blue-700 text-white">
-                      Contact Lawyer
+                  <div className="flex space-x-1">
+                    <Button 
+                      onClick={() => handleChooseLawyer(selectedLawyer)}
+                      className="flex-1 bg-legal-blue hover:bg-blue-700 text-white text-xs py-1 px-2"
+                    >
+                      Request
                     </Button>
-                    <Button variant="outline">
-                      View Profile
+                    <Button 
+                      onClick={() => setShowProfileModal(true)}
+                      variant="outline" 
+                      className="text-xs py-1 px-2"
+                    >
+                      View
                     </Button>
                   </div>
                 </div>
