@@ -170,9 +170,9 @@ export default function Messages() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[700px]">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-280px)]">
         {/* Contacts Sidebar */}
-        <Card className="border border-purple-200/50 shadow-xl bg-gradient-to-b from-white to-purple-50/30 lg:col-span-1 backdrop-blur-sm">
+        <Card className="border border-purple-200/50 shadow-xl bg-gradient-to-b from-white to-purple-50/30 lg:col-span-1 backdrop-blur-sm h-full">
           <CardContent className="p-0">
             {/* Search Header */}
             <div className="p-4 border-b border-purple-200/50 bg-gradient-to-r from-purple-50 to-white">
@@ -295,7 +295,7 @@ export default function Messages() {
         </Card>
 
         {/* Chat Area */}
-        <Card className="border border-purple-200/50 shadow-xl bg-white lg:col-span-2 backdrop-blur-sm">
+        <Card className="border border-purple-200/50 shadow-xl bg-white lg:col-span-2 backdrop-blur-sm h-full">
           <CardContent className="p-0 h-full flex flex-col">
             {selectedContact ? (
               <>

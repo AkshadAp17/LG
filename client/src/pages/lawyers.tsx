@@ -160,11 +160,11 @@ export default function Lawyers() {
 
         {/* Lawyer Profile */}
         <div>
-          <Card>
+          <Card className="h-[200px]">
             <CardHeader>
               <CardTitle>Lawyer Profile</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="h-full">
               {selectedLawyer ? (
                 <div className="space-y-6">
                   <div className="text-center">
