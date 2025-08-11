@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { 
   Plus, 
   FolderOpen, 
@@ -260,55 +261,112 @@ export default function Dashboard() {
                 <div className="space-y-3">
                   {user?.role === 'client' && (
                     <>
-                      <Button className="w-full justify-start h-12 bg-blue-600 hover:bg-blue-700 text-white">
-                        <Plus className="mr-2" size={18} />
-                        Create New Case
-                      </Button>
-                      <Button variant="outline" className="w-full justify-start h-12">
-                        <Users className="mr-2" size={18} />
-                        Find Lawyers
-                      </Button>
-                      <Button variant="outline" className="w-full justify-start h-12">
-                        <Calendar className="mr-2" size={18} />
-                        Schedule Consultation
-                      </Button>
+                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                        <Button 
+                          className="w-full justify-start h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg"
+                          onClick={() => window.location.href = '/cases'}
+                          data-testid="button-create-case"
+                        >
+                          <Plus className="mr-2" size={18} />
+                          Create New Case
+                        </Button>
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                        <Button 
+                          variant="outline" 
+                          className="w-full justify-start h-12 border-blue-200 hover:bg-blue-50 hover:border-blue-300"
+                          onClick={() => window.location.href = '/find-lawyers'}
+                          data-testid="button-find-lawyers"
+                        >
+                          <Users className="mr-2" size={18} />
+                          Find Lawyers
+                        </Button>
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                        <Button 
+                          variant="outline" 
+                          className="w-full justify-start h-12 border-purple-200 hover:bg-purple-50 hover:border-purple-300"
+                          onClick={() => window.location.href = '/calendar'}
+                          data-testid="button-schedule-consultation"
+                        >
+                          <Calendar className="mr-2" size={18} />
+                          Schedule Consultation
+                        </Button>
+                      </motion.div>
                     </>
                   )}
                   
                   {user?.role === 'lawyer' && (
                     <>
-                      <Button className="w-full justify-start h-12 bg-green-600 hover:bg-green-700 text-white">
-                        <FolderOpen className="mr-2" size={18} />
-                        Review Case Requests
-                      </Button>
-                      <Button variant="outline" className="w-full justify-start h-12">
-                        <MessageSquare className="mr-2" size={18} />
-                        Client Messages
-                      </Button>
-                      <Button variant="outline" className="w-full justify-start h-12">
-                        <Calendar className="mr-2" size={18} />
-                        Upcoming Hearings
-                      </Button>
+                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                        <Button 
+                          className="w-full justify-start h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg"
+                          onClick={() => window.location.href = '/case-requests'}
+                          data-testid="button-review-case-requests"
+                        >
+                          <FolderOpen className="mr-2" size={18} />
+                          Review Case Requests
+                        </Button>
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                        <Button 
+                          variant="outline" 
+                          className="w-full justify-start h-12 border-purple-200 hover:bg-purple-50 hover:border-purple-300"
+                          onClick={() => window.location.href = '/messages'}
+                          data-testid="button-client-messages"
+                        >
+                          <MessageSquare className="mr-2" size={18} />
+                          Client Messages
+                        </Button>
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                        <Button 
+                          variant="outline" 
+                          className="w-full justify-start h-12 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300"
+                          onClick={() => window.location.href = '/calendar'}
+                          data-testid="button-upcoming-hearings"
+                        >
+                          <Calendar className="mr-2" size={18} />
+                          Upcoming Hearings
+                        </Button>
+                      </motion.div>
                     </>
                   )}
                   
                   {user?.role === 'police' && (
                     <>
-                      <Button 
-                        className="w-full justify-start h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg"
-                        data-testid="button-review-pending-cases"
-                      >
-                        <AlertCircle className="mr-2" size={18} />
-                        Review Pending Cases ({(recentCases.filter(c => c.status === 'under_review').length || stats.pendingReview || 0)})
-                      </Button>
-                      <Button variant="outline" className="w-full justify-start h-12 border-purple-200 hover:bg-purple-50">
-                        <FileText className="mr-2" size={18} />
-                        Case Reports
-                      </Button>
-                      <Button variant="outline" className="w-full justify-start h-12 border-purple-200 hover:bg-purple-50">
-                        <BarChart3 className="mr-2" size={18} />
-                        Station Statistics
-                      </Button>
+                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                        <Button 
+                          className="w-full justify-start h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg"
+                          onClick={() => window.location.href = '/cases'}
+                          data-testid="button-review-pending-cases"
+                        >
+                          <AlertCircle className="mr-2" size={18} />
+                          Review Pending Cases ({(recentCases.filter(c => c.status === 'under_review' || c.status === 'submitted').length || stats.pendingReview || 0)})
+                        </Button>
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                        <Button 
+                          variant="outline" 
+                          className="w-full justify-start h-12 border-purple-200 hover:bg-purple-50 hover:border-purple-300"
+                          onClick={() => window.location.href = '/documents'}
+                          data-testid="button-case-reports"
+                        >
+                          <FileText className="mr-2" size={18} />
+                          Case Reports
+                        </Button>
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                        <Button 
+                          variant="outline" 
+                          className="w-full justify-start h-12 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300"
+                          onClick={() => window.location.href = '/dashboard'}
+                          data-testid="button-station-statistics"
+                        >
+                          <BarChart3 className="mr-2" size={18} />
+                          Station Statistics
+                        </Button>
+                      </motion.div>
                     </>
                   )}
                 </div>

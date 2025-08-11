@@ -400,17 +400,22 @@ export default function Messages() {
                     </Button>
                     
                     <div className="flex-1 relative">
-                      <Textarea
+                      <textarea
                         placeholder="Type your secure message..."
                         value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
+                        onChange={(e) => {
+                          setNewMessage(e.target.value);
+                          // Auto-resize functionality
+                          e.target.style.height = 'auto';
+                          e.target.style.height = Math.min(e.target.scrollHeight, 128) + 'px';
+                        }}
                         onKeyPress={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
                             handleSendMessage();
                           }
                         }}
-                        className="min-h-[44px] max-h-32 resize-none border-0 bg-transparent shadow-none focus:ring-0"
+                        className="flex-1 min-h-[44px] max-h-32 resize-none border-0 bg-transparent shadow-none focus:ring-0 focus:outline-none font-medium placeholder:text-gray-500"
                         rows={1}
                         data-testid="textarea-message"
                       />
