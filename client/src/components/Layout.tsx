@@ -143,7 +143,7 @@ export default function Layout({ children }: LayoutProps) {
         </nav>
 
         {/* Bottom Section - Settings and Logout */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700 space-y-2">
+        <div className="absolute bottom-4 left-0 right-0 p-6 space-y-2">
           <Link href="/settings">
             <Button 
               variant="ghost" 

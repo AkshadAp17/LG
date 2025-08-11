@@ -221,7 +221,7 @@ export default function ModernLayout({ children }: LayoutProps) {
           </div>
           
           {/* Bottom Section - Settings and Logout */}
-          <div className="p-4 border-t border-gray-200">
+          <div className="p-6 border-t border-gray-200">
             <div className="space-y-2">
               <Link href="/settings">
                 <Button

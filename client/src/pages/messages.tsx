@@ -393,21 +393,21 @@ export default function Messages() {
                 </ScrollArea>
 
                 {/* Message Input */}
-                <div className="p-4 border-t border-purple-200/50 bg-gradient-to-r from-white to-purple-50/20">
-                  <div className="flex items-end space-x-3 bg-white border border-purple-300 rounded-lg p-3 shadow-lg">
-                    <Button variant="ghost" size="sm" className="hover:bg-purple-100 hover:text-purple-600" data-testid="button-attach">
-                      <Paperclip size={18} />
+                <div className="p-6 border-t border-purple-200/50 bg-gradient-to-r from-white to-purple-50/20">
+                  <div className="flex items-end space-x-4 bg-white border-2 border-purple-200 rounded-2xl p-4 shadow-xl hover:shadow-2xl transition-all duration-300">
+                    <Button variant="ghost" size="sm" className="hover:bg-purple-100 hover:text-purple-600 rounded-xl p-3" data-testid="button-attach">
+                      <Paperclip size={20} />
                     </Button>
                     
                     <div className="flex-1 relative">
                       <textarea
-                        placeholder="Type your secure message..."
+                        placeholder="Type your message here..."
                         value={newMessage}
                         onChange={(e) => {
                           setNewMessage(e.target.value);
-                          // Auto-resize functionality with smaller max height
+                          // Auto-resize functionality
                           e.target.style.height = 'auto';
-                          e.target.style.height = Math.min(e.target.scrollHeight, 128) + 'px';
+                          e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
                         }}
                         onKeyPress={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
@@ -415,32 +415,32 @@ export default function Messages() {
                             handleSendMessage();
                           }
                         }}
-                        className="flex-1 min-h-[50px] max-h-32 resize-none border-0 bg-transparent shadow-none focus:ring-0 focus:outline-none font-medium placeholder:text-gray-400 text-base leading-relaxed px-3 py-3"
-                        rows={2}
+                        className="w-full min-h-[48px] max-h-30 resize-none border-0 bg-gray-50 rounded-xl px-4 py-3 focus:bg-white focus:ring-2 focus:ring-purple-300 focus:outline-none font-medium placeholder:text-gray-500 text-gray-900 text-base leading-relaxed transition-all duration-200"
+                        rows={1}
                         data-testid="textarea-message"
                       />
                     </div>
                     
-                    <Button variant="ghost" size="sm" className="hover:bg-purple-100 hover:text-purple-600" data-testid="button-emoji">
-                      <Smile size={18} />
+                    <Button variant="ghost" size="sm" className="hover:bg-purple-100 hover:text-purple-600 rounded-xl p-3" data-testid="button-emoji">
+                      <Smile size={20} />
                     </Button>
                     
                     <Button 
                       onClick={handleSendMessage}
                       disabled={!newMessage.trim() || sendMessageMutation.isPending}
-                      className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white h-12 px-8 rounded-xl shadow-lg shadow-purple-500/25 font-semibold"
+                      className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white h-12 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 font-semibold"
                       data-testid="button-send-message"
                     >
                       {sendMessageMutation.isPending ? (
-                        <Clock size={18} className="animate-spin" />
+                        <Clock size={20} className="animate-spin" />
                       ) : (
-                        <Send size={18} />
+                        <Send size={20} />
                       )}
                     </Button>
                   </div>
-                  <div className="mt-2 flex items-center justify-center space-x-1 text-xs text-gray-500">
-                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                    <span>Messages are end-to-end encrypted</span>
+                  <div className="mt-3 flex items-center justify-center space-x-2 text-sm text-gray-600">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span>Secure & Encrypted Messaging</span>
                   </div>
                 </div>
               </>
