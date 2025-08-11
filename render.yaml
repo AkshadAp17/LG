@@ -7,17 +7,17 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: MONGODB_URI
+      - key: mongodb+srv://akmnop001:PSJeQE4XmC2mp60p@cluster0.qg6k5aj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
         sync: false
-      - key: JWT_SECRET
+      - key: your_secret_key
         generateValue: true
       - key: SESSION_SECRET
         generateValue: true
       - key: SENDGRID_API_KEY
         sync: false
-      - key: CLOUDINARY_CLOUD_NAME
+      - key: dilguh8md
         sync: false
-      - key: CLOUDINARY_API_KEY
+      - key: 132959357398862
         sync: false
-      - key: CLOUDINARY_API_SECRET
+      - key: FLdDMBrp6pGe6BQh9dSkJmGV7_E
         sync: false
