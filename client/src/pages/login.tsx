@@ -127,10 +127,10 @@ export default function Login() {
           <p className="text-gray-600 text-lg">Professional Legal Case Management System</p>
         </div>
 
-        <Card className="shadow-2xl border-0 backdrop-blur-sm bg-white/90 max-h-[85vh] overflow-hidden">
-          <CardContent className="p-8 h-full overflow-y-auto">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-2 h-12 bg-gray-100 rounded-xl p-1">
+        <Card className="shadow-lg border-0 backdrop-blur-sm bg-white/90 w-full max-w-md">
+          <CardContent className="p-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+              <TabsList className="grid w-full grid-cols-2 h-10 bg-gray-100 rounded-lg p-1">
                 <TabsTrigger 
                   value="login" 
                   className="h-10 rounded-lg font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm"
@@ -147,12 +147,12 @@ export default function Login() {
             
             {/* Login Tab */}
             <TabsContent value="login" className="space-y-6">
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
-                <p className="text-gray-600 mt-2">Sign in to access your legal cases</p>
+              <div className="text-center mb-4">
+                <h2 className="text-xl font-semibold text-gray-800">Welcome Back</h2>
+                <p className="text-gray-600 mt-1">Sign in to access your legal cases</p>
               </div>
               
-              <form onSubmit={handleLogin} className="space-y-6">
+              <form onSubmit={handleLogin} className="space-y-4">
                 {loginMutation.error && (
                   <Alert variant="destructive">
                     <AlertDescription>
@@ -174,7 +174,7 @@ export default function Login() {
                     value={loginData.email}
                     onChange={handleLoginChange}
                     required
-                    className="h-12 text-base"
+                    className="h-10 text-sm"
                   />
                 </div>
                 
@@ -192,7 +192,7 @@ export default function Login() {
                       value={loginData.password}
                       onChange={handleLoginChange}
                       required
-                      className="h-12 text-base pr-12"
+                      className="h-10 text-sm pr-10"
                     />
                     <Button
                       type="button"
@@ -208,7 +208,7 @@ export default function Login() {
 
                 <Button
                   type="submit"
-                  className="w-full h-12 text-base bg-blue-600 hover:bg-blue-700"
+                  className="w-full h-10 text-sm bg-blue-600 hover:bg-blue-700"
                   disabled={loginMutation.isPending}
                 >
                   {loginMutation.isPending ? "Signing in..." : "Sign In"}
@@ -219,24 +219,24 @@ export default function Login() {
             </TabsContent>
 
             {/* Signup Tab */}
-            <TabsContent value="signup" className="space-y-6">
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-semibold text-gray-800">Create Account</h2>
-                <p className="text-gray-600 mt-2">Join our legal case management platform</p>
+            <TabsContent value="signup" className="space-y-4">
+              <div className="text-center mb-4">
+                <h2 className="text-xl font-semibold text-gray-800">Create Account</h2>
+                <p className="text-gray-600 mt-1">Join our legal case management platform</p>
               </div>
 
               {!selectedRole ? (
                 <div className="max-w-2xl mx-auto">
-                  <h3 className="text-lg font-medium text-center mb-6">Select Your Role</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <h3 className="text-base font-medium text-center mb-4">Select Your Role</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card 
                       className="cursor-pointer hover:shadow-lg transition-all border-2 hover:border-blue-500"
                       onClick={() => handleRoleSelect('client')}
                     >
-                      <CardContent className="p-6 text-center">
-                        <User className="text-blue-500 mx-auto mb-4" size={48} />
-                        <h4 className="font-semibold text-lg mb-2">Client</h4>
-                        <p className="text-sm text-gray-600">Need legal assistance? Find and connect with lawyers for your case.</p>
+                      <CardContent className="p-4 text-center">
+                        <User className="text-blue-500 mx-auto mb-3" size={36} />
+                        <h4 className="font-semibold text-base mb-2">Client</h4>
+                        <p className="text-xs text-gray-600">Need legal assistance? Find and connect with lawyers for your case.</p>
                       </CardContent>
                     </Card>
                     
@@ -244,10 +244,10 @@ export default function Login() {
                       className="cursor-pointer hover:shadow-lg transition-all border-2 hover:border-green-500"
                       onClick={() => handleRoleSelect('lawyer')}
                     >
-                      <CardContent className="p-6 text-center">
-                        <UserCheck className="text-green-500 mx-auto mb-4" size={48} />
-                        <h4 className="font-semibold text-lg mb-2">Lawyer</h4>
-                        <p className="text-sm text-gray-600">Legal professional? Manage cases and connect with clients.</p>
+                      <CardContent className="p-4 text-center">
+                        <UserCheck className="text-green-500 mx-auto mb-3" size={36} />
+                        <h4 className="font-semibold text-base mb-2">Lawyer</h4>
+                        <p className="text-xs text-gray-600">Legal professional? Manage cases and connect with clients.</p>
                       </CardContent>
                     </Card>
                     
@@ -255,10 +255,10 @@ export default function Login() {
                       className="cursor-pointer hover:shadow-lg transition-all border-2 hover:border-purple-500"
                       onClick={() => handleRoleSelect('police')}
                     >
-                      <CardContent className="p-6 text-center">
-                        <Shield className="text-purple-500 mx-auto mb-4" size={48} />
-                        <h4 className="font-semibold text-lg mb-2">Police Officer</h4>
-                        <p className="text-sm text-gray-600">Law enforcement officer? Review and approve case submissions.</p>
+                      <CardContent className="p-4 text-center">
+                        <Shield className="text-purple-500 mx-auto mb-3" size={36} />
+                        <h4 className="font-semibold text-base mb-2">Police Officer</h4>
+                        <p className="text-xs text-gray-600">Law enforcement officer? Review and approve case submissions.</p>
                       </CardContent>
                     </Card>
                   </div>
