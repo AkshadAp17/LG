@@ -160,44 +160,44 @@ export default function Lawyers() {
 
         {/* Lawyer Profile */}
         <div>
-          <Card className="h-[200px]">
-            <CardHeader>
-              <CardTitle>Lawyer Profile</CardTitle>
+          <Card className="h-[140px]">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">Lawyer Profile</CardTitle>
             </CardHeader>
-            <CardContent className="h-full">
+            <CardContent className="h-full p-4">
               {selectedLawyer ? (
-                <div className="space-y-6">
+                <div className="space-y-3">
                   <div className="text-center">
-                    <div className="w-20 h-20 bg-legal-blue rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
+                    <div className="w-12 h-12 bg-legal-blue rounded-full mx-auto mb-2 flex items-center justify-center text-white text-sm font-bold">
                       {selectedLawyer.name.split(' ').map(n => n[0]).join('')}
                     </div>
-                    <h4 className="text-lg font-bold text-gray-900">{selectedLawyer.name}</h4>
-                    <p className="text-legal-blue font-medium">
-                      {selectedLawyer.specialization.join(', ')} Law Specialist
+                    <h4 className="text-sm font-bold text-gray-900">{selectedLawyer.name}</h4>
+                    <p className="text-legal-blue font-medium text-xs">
+                      {selectedLawyer.specialization.join(', ')} Law
                     </p>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {selectedLawyer.experience} years experience
+                    <p className="text-xs text-gray-600">
+                      {selectedLawyer.experience} years exp.
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="text-center p-4 bg-blue-50 rounded-lg">
-                      <p className="text-2xl font-bold text-legal-blue">
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="text-center p-2 bg-blue-50 rounded">
+                      <p className="text-sm font-bold text-legal-blue">
                         {selectedLawyer.stats.totalCases}
                       </p>
-                      <p className="text-sm text-gray-600">Total Cases</p>
+                      <p className="text-xs text-gray-600">Total</p>
                     </div>
-                    <div className="text-center p-4 bg-green-50 rounded-lg">
-                      <p className="text-2xl font-bold text-legal-emerald">
+                    <div className="text-center p-2 bg-green-50 rounded">
+                      <p className="text-sm font-bold text-legal-emerald">
                         {selectedLawyer.stats.wonCases}
                       </p>
-                      <p className="text-sm text-gray-600">Won Cases</p>
+                      <p className="text-xs text-gray-600">Won</p>
                     </div>
-                    <div className="text-center p-4 bg-red-50 rounded-lg">
-                      <p className="text-2xl font-bold text-red-500">
+                    <div className="text-center p-2 bg-red-50 rounded">
+                      <p className="text-sm font-bold text-red-500">
                         {selectedLawyer.stats.lostCases}
                       </p>
-                      <p className="text-sm text-gray-600">Lost Cases</p>
+                      <p className="text-xs text-gray-600">Lost</p>
                     </div>
                   </div>
 

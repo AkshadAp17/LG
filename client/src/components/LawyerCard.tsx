@@ -16,18 +16,18 @@ export default function LawyerCard({ lawyer, onSelect }: LawyerCardProps) {
     : 0;
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-r from-white to-gray-50 hover:from-blue-50 hover:to-indigo-50 rounded-2xl overflow-hidden h-[200px]">
-      <CardContent className="p-6">
+    <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-r from-white to-gray-50 hover:from-blue-50 hover:to-indigo-50 rounded-2xl overflow-hidden h-[140px]">
+      <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Avatar className="w-16 h-16 ring-4 ring-blue-100 group-hover:ring-blue-200 transition-all">
-              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold text-lg">
+            <Avatar className="w-12 h-12 ring-2 ring-blue-100 group-hover:ring-blue-200 transition-all">
+              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold text-sm">
                 {lawyer.name.split(' ').map(n => n[0]).join('')}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
               <div className="flex items-center space-x-2 mb-1">
-                <h3 className="font-bold text-lg text-gray-900 group-hover:text-blue-900 transition-colors">{lawyer.name}</h3>
+                <h3 className="font-bold text-base text-gray-900 group-hover:text-blue-900 transition-colors">{lawyer.name}</h3>
                 {lawyer.rating > 4.0 && (
                   <Badge className="bg-yellow-100 text-yellow-800 text-xs font-semibold border-0">
                     Top Rated
