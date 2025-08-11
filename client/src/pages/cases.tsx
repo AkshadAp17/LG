@@ -304,6 +304,13 @@ export default function Cases() {
                                   </Button>
                                 </div>
                               )}
+
+                              {/* Debug info for police users */}
+                              {user?.role === 'police' && (
+                                <div className="mt-2 text-xs text-gray-500 bg-gray-100 p-2 rounded">
+                                  Debug: User role: {user?.role}, Case status: {case_.status}, Case ID: {case_._id}
+                                </div>
+                              )}
                             </div>
 
                             <DropdownMenu>
