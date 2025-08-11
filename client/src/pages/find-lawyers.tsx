@@ -303,47 +303,52 @@ export default function FindLawyers() {
             <CardContent>
               {selectedLawyer ? (
                 <div className="space-y-6">
-                  {/* Profile Header */}
-                  <div className="text-center">
-                    <Avatar className="w-24 h-24 mx-auto mb-4">
-                      <AvatarFallback className="bg-green-100 text-green-600 text-3xl font-bold">
+                  {/* Enhanced Profile Header */}
+                  <div className="text-center bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-6 border border-blue-200/50">
+                    <Avatar className="w-20 h-20 mx-auto mb-4 ring-4 ring-blue-200">
+                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-2xl font-bold">
                         {selectedLawyer.name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                     <h3 className="text-2xl font-bold text-gray-900 mb-1">{selectedLawyer.name}</h3>
-                    <p className="text-gray-600 mb-2">{selectedLawyer.city}</p>
-                    <div className="flex items-center justify-center space-x-2">
+                    <p className="text-gray-600 font-medium mb-3">{selectedLawyer.city}</p>
+                    <div className="flex items-center justify-center bg-white/70 rounded-full px-4 py-2 backdrop-blur-sm">
                       <div className="flex items-center">
-                        <Star className="text-yellow-500 fill-current" size={16} />
-                        <span className="ml-1 text-sm font-medium">4.8</span>
+                        <Star className="text-yellow-500 fill-current" size={18} />
+                        <span className="ml-2 text-lg font-bold text-gray-900">4.8</span>
                       </div>
-                      <span className="text-gray-300">•</span>
-                      <span className="text-sm text-gray-600">127 reviews</span>
+                      <span className="text-gray-400 mx-2">•</span>
+                      <span className="text-sm text-gray-600 font-medium">127 reviews</span>
                     </div>
                   </div>
 
                   <Separator />
 
-                  {/* Quick Stats */}
+                  {/* Enhanced Quick Stats */}
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-3 bg-green-50 rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">{selectedLawyer.stats?.totalCases || 3}</div>
-                      <div className="text-xs text-gray-600">Total Cases</div>
+                    <div className="text-center p-5 bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl border border-emerald-200/50 shadow-sm">
+                      <Briefcase className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
+                      <div className="text-3xl font-bold text-emerald-600 mb-1">{selectedLawyer.stats?.totalCases || 3}</div>
+                      <div className="text-sm font-medium text-gray-600">Total Cases</div>
                     </div>
-                    <div className="text-center p-3 bg-blue-50 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">{selectedLawyer.stats?.wonCases || 2}</div>
-                      <div className="text-xs text-gray-600">Cases Won</div>
+                    <div className="text-center p-5 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl border border-blue-200/50 shadow-sm">
+                      <Award className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+                      <div className="text-3xl font-bold text-blue-600 mb-1">{selectedLawyer.stats?.wonCases || 2}</div>
+                      <div className="text-sm font-medium text-gray-600">Cases Won</div>
                     </div>
                   </div>
 
-                  {/* Specializations */}
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-3">Specializations</h4>
-                    <div className="flex flex-wrap gap-2">
+                  {/* Enhanced Specializations */}
+                  <div className="bg-gray-50 rounded-2xl p-5">
+                    <h4 className="font-bold text-gray-900 mb-4 flex items-center">
+                      <Award className="mr-2 text-blue-600" size={18} />
+                      Specializations
+                    </h4>
+                    <div className="flex flex-wrap gap-3">
                       {selectedLawyer.specialization?.map((spec) => (
                         <Badge 
                           key={spec} 
-                          className="bg-green-100 text-green-800 capitalize"
+                          className="bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 border border-blue-200 capitalize px-3 py-2 text-sm font-semibold"
                         >
                           {spec}
                         </Badge>
@@ -351,43 +356,54 @@ export default function FindLawyers() {
                     </div>
                   </div>
 
-                  {/* Contact Actions */}
-                  <div className="space-y-3">
+                  {/* Enhanced Contact Actions */}
+                  <div className="space-y-4">
                     <Button 
-                      className="w-full bg-green-600 hover:bg-green-700 text-white h-12"
+                      className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl"
                       onClick={() => handleSendCaseRequest(selectedLawyer)}
                     >
-                      <MessageCircle className="mr-2" size={18} />
+                      <MessageCircle className="mr-3" size={20} />
                       Send Case Request
                     </Button>
                     
-                    <div className="grid grid-cols-2 gap-2">
-                      <Button variant="outline" className="h-10">
-                        <Phone className="mr-2" size={16} />
+                    <div className="grid grid-cols-2 gap-3">
+                      <Button 
+                        variant="outline" 
+                        className="h-12 border-2 border-blue-200 hover:bg-blue-50 hover:border-blue-300 text-blue-700 font-medium rounded-xl transition-all"
+                      >
+                        <Phone className="mr-2" size={18} />
                         Call
                       </Button>
-                      <Button variant="outline" className="h-10">
-                        <Mail className="mr-2" size={16} />
+                      <Button 
+                        variant="outline" 
+                        className="h-12 border-2 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 text-indigo-700 font-medium rounded-xl transition-all"
+                      >
+                        <Mail className="mr-2" size={18} />
                         Email
                       </Button>
                     </div>
                   </div>
 
-                  {/* Additional Info */}
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <h4 className="font-semibold text-gray-900 mb-2">Quick Facts</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Response Time:</span>
-                        <span className="font-medium">&lt; 2 hours</span>
+                  {/* Enhanced Quick Facts */}
+                  <div className="p-6 bg-gradient-to-br from-slate-50 to-gray-100 rounded-2xl border border-gray-200/50">
+                    <h4 className="font-bold text-gray-900 mb-4 flex items-center">
+                      <Clock className="mr-2 text-purple-600" size={18} />
+                      Quick Facts
+                    </h4>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex justify-between items-center py-2 border-b border-gray-200/50">
+                        <span className="text-gray-600 font-medium">Response Time:</span>
+                        <Badge className="bg-green-100 text-green-700 font-semibold">
+                          &lt; 2 hours
+                        </Badge>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Cases Handled:</span>
-                        <span className="font-medium">{selectedLawyer.stats?.totalCases || 3}+</span>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-200/50">
+                        <span className="text-gray-600 font-medium">Cases Handled:</span>
+                        <span className="font-bold text-gray-900">{selectedLawyer.stats?.totalCases || 3}+</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Languages:</span>
-                        <span className="font-medium">Hindi, English</span>
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-gray-600 font-medium">Languages:</span>
+                        <span className="font-bold text-gray-900">Hindi, English</span>
                       </div>
                     </div>
                   </div>
