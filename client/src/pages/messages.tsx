@@ -407,7 +407,7 @@ export default function Messages() {
                           setNewMessage(e.target.value);
                           // Auto-resize functionality with smaller max height
                           e.target.style.height = 'auto';
-                          e.target.style.height = Math.min(e.target.scrollHeight, 80) + 'px';
+                          e.target.style.height = Math.min(e.target.scrollHeight, 128) + 'px';
                         }}
                         onKeyPress={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
@@ -415,8 +415,8 @@ export default function Messages() {
                             handleSendMessage();
                           }
                         }}
-                        className="flex-1 min-h-[40px] max-h-20 resize-none border-0 bg-transparent shadow-none focus:ring-0 focus:outline-none font-medium placeholder:text-gray-400 text-sm leading-relaxed px-2 py-2"
-                        rows={1}
+                        className="flex-1 min-h-[50px] max-h-32 resize-none border-0 bg-transparent shadow-none focus:ring-0 focus:outline-none font-medium placeholder:text-gray-400 text-base leading-relaxed px-3 py-3"
+                        rows={2}
                         data-testid="textarea-message"
                       />
                     </div>
@@ -428,7 +428,7 @@ export default function Messages() {
                     <Button 
                       onClick={handleSendMessage}
                       disabled={!newMessage.trim() || sendMessageMutation.isPending}
-                      className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white h-10 px-6 rounded-xl shadow-lg shadow-purple-500/25 font-semibold"
+                      className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white h-12 px-8 rounded-xl shadow-lg shadow-purple-500/25 font-semibold"
                       data-testid="button-send-message"
                     >
                       {sendMessageMutation.isPending ? (

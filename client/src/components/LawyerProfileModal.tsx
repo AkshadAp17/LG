@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Star, MapPin, Calendar, Phone, Mail, Award, Briefcase } from "lucide-react";
 import WinLossChart from "./WinLossChart";
 import type { Lawyer } from "@shared/schema";
@@ -28,14 +29,15 @@ export default function LawyerProfileModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-gray-900">
             Lawyer Profile
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <ScrollArea className="h-[75vh]">
+        <div className="space-y-6 pr-4">
           {/* Header Section */}
           <div className="flex flex-col md:flex-row gap-6">
             <div className="flex-shrink-0">
@@ -161,6 +163,7 @@ export default function LawyerProfileModal({
             )}
           </div>
         </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
