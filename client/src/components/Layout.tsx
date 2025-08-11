@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Scale, LayoutDashboard, FolderOpen, Users, Calendar, FileText, MessageSquare, Bell, ChevronDown, Settings } from "lucide-react";
+import { Scale, LayoutDashboard, FolderOpen, Users, Calendar, FileText, MessageSquare, Bell, Settings } from "lucide-react";
 import { authService } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
