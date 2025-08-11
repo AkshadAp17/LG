@@ -68,9 +68,9 @@ export default function Layout({ children }: LayoutProps) {
   const sidebarItems = getSidebarItems();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex">
       {/* Modern Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-72 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-r border-slate-700 shadow-2xl z-50">
+      <aside className="fixed left-0 top-0 h-full w-72 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-r border-slate-700 shadow-2xl z-40">
         {/* Logo Section */}
         <div className="p-6 border-b border-slate-700">
           <div className="flex items-center space-x-3">
@@ -166,8 +166,8 @@ export default function Layout({ children }: LayoutProps) {
       </aside>
 
       {/* Main Content */}
-      <main className="ml-72 min-h-screen p-6">
-        <div className="max-w-7xl mx-auto">
+      <main className="flex-1 ml-72 min-h-screen overflow-hidden">
+        <div className="p-6 h-full max-w-7xl mx-auto">
           {children}
         </div>
       </main>

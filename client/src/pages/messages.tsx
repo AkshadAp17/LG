@@ -415,7 +415,7 @@ export default function Messages() {
                             handleSendMessage();
                           }
                         }}
-                        className="flex-1 min-h-[44px] max-h-32 resize-none border-0 bg-transparent shadow-none focus:ring-0 focus:outline-none font-medium placeholder:text-gray-500"
+                        className="flex-1 min-h-[44px] max-h-32 resize-none border-0 bg-transparent shadow-none focus:ring-0 focus:outline-none font-medium placeholder:text-gray-500 text-base"
                         rows={1}
                         data-testid="textarea-message"
                       />
