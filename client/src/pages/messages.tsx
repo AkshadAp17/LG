@@ -393,8 +393,8 @@ export default function Messages() {
                 </ScrollArea>
 
                 {/* Message Input */}
-                <div className="p-4 border-t border-purple-200/50 bg-gradient-to-r from-white to-purple-50/20">
-                  <div className="flex items-end space-x-3 bg-white border border-purple-200 rounded-2xl p-3 shadow-sm">
+                <div className="p-6 border-t border-purple-200/50 bg-gradient-to-r from-white to-purple-50/20">
+                  <div className="flex items-end space-x-4 bg-white border-2 border-purple-300 rounded-3xl p-4 shadow-lg">
                     <Button variant="ghost" size="sm" className="hover:bg-purple-100 hover:text-purple-600" data-testid="button-attach">
                       <Paperclip size={18} />
                     </Button>
@@ -415,8 +415,8 @@ export default function Messages() {
                             handleSendMessage();
                           }
                         }}
-                        className="flex-1 min-h-[44px] max-h-32 resize-none border-0 bg-transparent shadow-none focus:ring-0 focus:outline-none font-medium placeholder:text-gray-500 text-base"
-                        rows={1}
+                        className="flex-1 min-h-[60px] max-h-32 resize-none border-0 bg-transparent shadow-none focus:ring-0 focus:outline-none font-medium placeholder:text-gray-400 text-lg leading-relaxed px-2 py-2"
+                        rows={2}
                         data-testid="textarea-message"
                       />
                     </div>
@@ -428,7 +428,7 @@ export default function Messages() {
                     <Button 
                       onClick={handleSendMessage}
                       disabled={!newMessage.trim() || sendMessageMutation.isPending}
-                      className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white h-11 px-6 rounded-xl shadow-lg shadow-purple-500/25"
+                      className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white h-14 px-8 rounded-2xl shadow-lg shadow-purple-500/25 font-semibold"
                       data-testid="button-send-message"
                     >
                       {sendMessageMutation.isPending ? (
