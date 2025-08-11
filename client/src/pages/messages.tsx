@@ -344,8 +344,8 @@ export default function Messages() {
                 </div>
 
                 {/* Messages */}
-                <ScrollArea className="flex-1 p-4">
-                  <div className="space-y-4">
+                <ScrollArea className="flex-1 p-2">
+                  <div className="space-y-2">
                     {messagesLoading ? (
                       <div className="flex items-center justify-center py-8">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
@@ -364,13 +364,13 @@ export default function Messages() {
                             key={message._id}
                             className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                           >
-                            <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl shadow-sm ${
+                            <div className={`max-w-xs lg:max-w-md px-3 py-2 rounded-xl shadow-sm ${
                               isOwnMessage
                                 ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-purple-500/20'
                                 : 'bg-white border border-gray-200 text-gray-900 shadow-gray-200/50'
                             }`}>
-                              <p className="text-sm">{message.content}</p>
-                              <div className={`flex items-center justify-end mt-2 space-x-1 ${
+                              <p className="text-xs">{message.content}</p>
+                              <div className={`flex items-center justify-end mt-1 space-x-1 ${
                                 isOwnMessage ? 'text-purple-200' : 'text-gray-500'
                               }`}>
                                 <span className="text-xs">
@@ -393,8 +393,8 @@ export default function Messages() {
                 </ScrollArea>
 
                 {/* Message Input */}
-                <div className="p-6 border-t border-purple-200/50 bg-gradient-to-r from-white to-purple-50/20">
-                  <div className="flex items-end space-x-4 bg-white border-2 border-purple-300 rounded-3xl p-4 shadow-lg">
+                <div className="p-3 border-t border-purple-200/50 bg-gradient-to-r from-white to-purple-50/20">
+                  <div className="flex items-end space-x-2 bg-white border-2 border-purple-300 rounded-2xl p-3 shadow-lg">
                     <Button variant="ghost" size="sm" className="hover:bg-purple-100 hover:text-purple-600" data-testid="button-attach">
                       <Paperclip size={18} />
                     </Button>

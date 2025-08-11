@@ -163,41 +163,41 @@ export default function Lawyers() {
 
         {/* Lawyer Profile */}
         <div>
-          <Card className="h-[600px]">
+          <Card className="h-[140px]">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base">Lawyer Profile</CardTitle>
+              <CardTitle className="text-sm">Lawyer Profile</CardTitle>
             </CardHeader>
-            <CardContent className="h-full p-4">
+            <CardContent className="h-full p-3">
               {selectedLawyer ? (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-legal-blue rounded-full mx-auto mb-2 flex items-center justify-center text-white text-sm font-bold">
+                    <div className="w-8 h-8 bg-legal-blue rounded-full mx-auto mb-1 flex items-center justify-center text-white text-xs font-bold">
                       {selectedLawyer.name.split(' ').map(n => n[0]).join('')}
                     </div>
-                    <h4 className="text-sm font-bold text-gray-900">{selectedLawyer.name}</h4>
+                    <h4 className="text-xs font-bold text-gray-900">{selectedLawyer.name}</h4>
                     <p className="text-legal-blue font-medium text-xs">
-                      {selectedLawyer.specialization.join(', ')} Law
+                      {selectedLawyer.specialization.join(', ')}
                     </p>
                     <p className="text-xs text-gray-600">
-                      {selectedLawyer.experience} years exp.
+                      {selectedLawyer.experience}yr exp.
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="text-center p-2 bg-blue-50 rounded">
-                      <p className="text-sm font-bold text-legal-blue">
+                  <div className="grid grid-cols-3 gap-1">
+                    <div className="text-center p-1 bg-blue-50 rounded">
+                      <p className="text-xs font-bold text-legal-blue">
                         {selectedLawyer.stats.totalCases}
                       </p>
                       <p className="text-xs text-gray-600">Total</p>
                     </div>
-                    <div className="text-center p-2 bg-green-50 rounded">
-                      <p className="text-sm font-bold text-legal-emerald">
+                    <div className="text-center p-1 bg-green-50 rounded">
+                      <p className="text-xs font-bold text-legal-emerald">
                         {selectedLawyer.stats.wonCases}
                       </p>
                       <p className="text-xs text-gray-600">Won</p>
                     </div>
-                    <div className="text-center p-2 bg-red-50 rounded">
-                      <p className="text-sm font-bold text-red-500">
+                    <div className="text-center p-1 bg-red-50 rounded">
+                      <p className="text-xs font-bold text-red-500">
                         {selectedLawyer.stats.lostCases}
                       </p>
                       <p className="text-xs text-gray-600">Lost</p>
