@@ -9,7 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Scale, User, UserCheck, Shield, Mail, Lock, Phone, MapPin, Briefcase, GraduationCap } from "lucide-react";
+import { Scale, User, UserCheck, Shield, Mail, Lock, Phone, MapPin, Briefcase, GraduationCap, Eye, EyeOff } from "lucide-react";
 import { authService } from "@/lib/auth";
 import { apiRequest } from "@/lib/queryClient";
 import type { LoginData, AuthResponse, InsertUser } from "@shared/schema";
@@ -31,6 +31,8 @@ export default function Login() {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
 
   // Signup state
   const [selectedRole, setSelectedRole] = useState<'client' | 'lawyer' | 'police' | ''>('');
@@ -181,16 +183,27 @@ export default function Login() {
                     <Lock size={16} />
                     Password
                   </Label>
-                  <Input
-                    id="login-password"
-                    name="password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={loginData.password}
-                    onChange={handleLoginChange}
-                    required
-                    className="h-12 text-base"
-                  />
+                  <div className="relative">
+                    <Input
+                      id="login-password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      value={loginData.password}
+                      onChange={handleLoginChange}
+                      required
+                      className="h-12 text-base pr-12"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-1 top-1 h-10 w-10 p-0 hover:bg-gray-100"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </Button>
+                  </div>
                 </div>
 
                 <Button
@@ -321,15 +334,26 @@ export default function Login() {
                           <Lock size={16} />
                           Password
                         </Label>
-                        <Input
-                          id="signup-password"
-                          type="password"
-                          placeholder="Create a password"
-                          value={signupData.password}
-                          onChange={(e) => handleSignupChange('password', e.target.value)}
-                          required
-                          className="h-12 text-base"
-                        />
+                        <div className="relative">
+                          <Input
+                            id="signup-password"
+                            type={showSignupPassword ? "text" : "password"}
+                            placeholder="Create a password"
+                            value={signupData.password}
+                            onChange={(e) => handleSignupChange('password', e.target.value)}
+                            required
+                            className="h-12 text-base pr-12"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-1 top-1 h-10 w-10 p-0 hover:bg-gray-100"
+                            onClick={() => setShowSignupPassword(!showSignupPassword)}
+                          >
+                            {showSignupPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </Button>
+                        </div>
                       </div>
 
                       <div className="space-y-2">

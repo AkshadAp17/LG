@@ -327,12 +327,12 @@ export default function FindLawyers() {
                   {/* Quick Stats */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center p-3 bg-green-50 rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">{selectedLawyer.experience}</div>
-                      <div className="text-xs text-gray-600">Years Experience</div>
+                      <div className="text-2xl font-bold text-green-600">{selectedLawyer.stats?.totalCases || 3}</div>
+                      <div className="text-xs text-gray-600">Total Cases</div>
                     </div>
                     <div className="text-center p-3 bg-blue-50 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">85%</div>
-                      <div className="text-xs text-gray-600">Success Rate</div>
+                      <div className="text-2xl font-bold text-blue-600">{selectedLawyer.stats?.wonCases || 2}</div>
+                      <div className="text-xs text-gray-600">Cases Won</div>
                     </div>
                   </div>
 
@@ -383,7 +383,7 @@ export default function FindLawyers() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Cases Handled:</span>
-                        <span className="font-medium">200+</span>
+                        <span className="font-medium">{selectedLawyer.stats?.totalCases || 3}+</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Languages:</span>
