@@ -115,7 +115,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-lg">
+      <div className="w-full max-w-4xl max-h-[95vh] overflow-y-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-6">
@@ -127,8 +127,8 @@ export default function Login() {
           <p className="text-gray-600 text-lg">Professional Legal Case Management System</p>
         </div>
 
-        <Card className="shadow-2xl border-0 backdrop-blur-sm bg-white/90">
-          <CardContent className="p-8">
+        <Card className="shadow-2xl border-0 backdrop-blur-sm bg-white/90 max-h-[85vh] overflow-hidden">
+          <CardContent className="p-8 h-full overflow-y-auto">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
               <TabsList className="grid w-full grid-cols-2 h-12 bg-gray-100 rounded-xl p-1">
                 <TabsTrigger 
