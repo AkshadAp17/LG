@@ -50,6 +50,9 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Static file serving for uploads
+  app.use('/uploads', express.static('uploads'));
+  
   // Initialize database connection and seed data
   await connectDB();
   await seedDatabase();

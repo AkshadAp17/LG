@@ -454,9 +454,20 @@ export default function Cases() {
                               <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                 <div className="flex items-center">
                                   <FileText size={16} className="mr-2 text-gray-500" />
-                                  <span className="text-sm">Document {index + 1}</span>
+                                  <div className="flex flex-col">
+                                    <span className="text-sm font-medium">
+                                      {typeof doc === 'string' ? doc.split('-').pop() || `Document ${index + 1}` : `Document ${index + 1}`}
+                                    </span>
+                                    <span className="text-xs text-gray-500">
+                                      {typeof doc === 'string' ? doc.split('.').pop()?.toUpperCase() : 'PDF'}
+                                    </span>
+                                  </div>
                                 </div>
-                                <Button variant="ghost" size="sm">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => window.open(`/uploads/${typeof doc === 'string' ? doc : doc}`, '_blank')}
+                                >
                                   <Download size={14} />
                                 </Button>
                               </div>
