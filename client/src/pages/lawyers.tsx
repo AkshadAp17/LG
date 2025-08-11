@@ -130,14 +130,14 @@ export default function Lawyers() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[600px]">
         {/* Lawyers List */}
         <div className="lg:col-span-2">
           <Card className="h-[600px]">
-            <CardHeader>
+            <CardHeader className="pb-3">
               <CardTitle>Available Lawyers</CardTitle>
             </CardHeader>
-            <CardContent className="h-full p-0">
+            <CardContent className="p-0">
               {isLoading ? (
                 <div className="text-center py-8">Loading lawyers...</div>
               ) : lawyers.length === 0 ? (
@@ -145,8 +145,8 @@ export default function Lawyers() {
                   No lawyers found matching your criteria
                 </div>
               ) : (
-                <ScrollArea className="h-full p-6">
-                  <div className="space-y-4">
+                <ScrollArea className="h-[520px] px-6">
+                  <div className="space-y-4 py-2">
                     {lawyers.map((lawyer: Lawyer) => (
                       <LawyerCard
                         key={lawyer._id}
@@ -162,13 +162,13 @@ export default function Lawyers() {
         </div>
 
         {/* Lawyer Profile */}
-        <div>
+        <div className="h-[600px]">
           <Card className="h-[600px]">
-            <CardHeader className="pb-2">
+            <CardHeader className="pb-3">
               <CardTitle className="text-base">Lawyer Profile</CardTitle>
             </CardHeader>
-            <CardContent className="h-full p-0">
-              <ScrollArea className="h-full p-4">
+            <CardContent className="p-0">
+              <ScrollArea className="h-[520px] px-4">
               {selectedLawyer ? (
                 <div className="space-y-6">
                   <div className="text-center">

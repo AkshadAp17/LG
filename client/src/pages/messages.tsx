@@ -172,7 +172,7 @@ export default function Messages() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
         {/* Contacts Sidebar */}
-        <Card className="border border-purple-200/50 shadow-xl bg-gradient-to-b from-white to-purple-50/30 lg:col-span-1 backdrop-blur-sm h-full">
+        <Card className="border border-purple-200/50 shadow-xl bg-gradient-to-b from-white to-purple-50/30 lg:col-span-1 backdrop-blur-sm h-[600px]">
           <CardContent className="p-0">
             {/* Search Header */}
             <div className="p-4 border-b border-purple-200/50 bg-gradient-to-r from-purple-50 to-white">
@@ -295,7 +295,7 @@ export default function Messages() {
         </Card>
 
         {/* Chat Area */}
-        <Card className="border border-purple-200/50 shadow-xl bg-white lg:col-span-2 backdrop-blur-sm h-[140px]">
+        <Card className="border border-purple-200/50 shadow-xl bg-white lg:col-span-2 backdrop-blur-sm h-[600px]">
           <CardContent className="p-0 h-full flex flex-col overflow-hidden">
             {selectedContact ? (
               <>
@@ -344,7 +344,7 @@ export default function Messages() {
                 </div>
 
                 {/* Messages */}
-                <ScrollArea className="h-[80px] p-1">
+                <ScrollArea className="h-[420px] p-4">
                   <div className="space-y-2">
                     {messagesLoading ? (
                       <div className="flex items-center justify-center py-8">
@@ -364,12 +364,12 @@ export default function Messages() {
                             key={message._id}
                             className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                           >
-                            <div className={`max-w-xs lg:max-w-md px-3 py-2 rounded-xl shadow-sm ${
+                            <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-xl shadow-sm ${
                               isOwnMessage
                                 ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-purple-500/20'
                                 : 'bg-white border border-gray-200 text-gray-900 shadow-gray-200/50'
                             }`}>
-                              <p className="text-xs">{message.content}</p>
+                              <p className="text-sm">{message.content}</p>
                               <div className={`flex items-center justify-end mt-1 space-x-1 ${
                                 isOwnMessage ? 'text-purple-200' : 'text-gray-500'
                               }`}>
@@ -393,8 +393,8 @@ export default function Messages() {
                 </ScrollArea>
 
                 {/* Message Input */}
-                <div className="p-1 border-t border-purple-200/50 bg-gradient-to-r from-white to-purple-50/20">
-                  <div className="flex items-end space-x-1 bg-white border border-purple-300 rounded-lg p-1 shadow-lg">
+                <div className="p-4 border-t border-purple-200/50 bg-gradient-to-r from-white to-purple-50/20">
+                  <div className="flex items-end space-x-3 bg-white border border-purple-300 rounded-lg p-3 shadow-lg">
                     <Button variant="ghost" size="sm" className="hover:bg-purple-100 hover:text-purple-600" data-testid="button-attach">
                       <Paperclip size={18} />
                     </Button>
