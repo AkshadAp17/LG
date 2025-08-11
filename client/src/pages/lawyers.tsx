@@ -168,7 +168,8 @@ export default function Lawyers() {
               <CardTitle className="text-base">Lawyer Profile</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <ScrollArea className="h-[520px] px-4">
+              <ScrollArea className="h-[520px]">
+              <div className="px-4 py-2">
               {selectedLawyer ? (
                 <div className="space-y-6">
                   <div className="text-center">
@@ -247,6 +248,7 @@ export default function Lawyers() {
                   Select a lawyer to view their profile
                 </div>
               )}
+              </div>
               </ScrollArea>
             </CardContent>
           </Card>
