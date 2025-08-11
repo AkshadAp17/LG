@@ -702,6 +702,10 @@ class StorageManager implements IStorage {
     return this.getStorage().getUsersByRole(role);
   }
 
+  async getAllUsers(): Promise<User[]> {
+    return this.getStorage().getAllUsers();
+  }
+
   async getLawyers(filters?: { city?: string; caseType?: string }): Promise<Lawyer[]> {
     return this.getStorage().getLawyers(filters);
   }

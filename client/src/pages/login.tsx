@@ -202,20 +202,7 @@ export default function Login() {
                 </Button>
               </form>
 
-              <div className="mt-8 p-6 bg-blue-50 rounded-lg max-w-md mx-auto">
-                <p className="text-sm font-medium text-blue-700 mb-3">Demo Accounts:</p>
-                <div className="text-xs text-gray-700 space-y-2">
-                  <div className="bg-white p-2 rounded border">
-                    <strong className="text-blue-600">Client:</strong> john.smith@email.com / password123
-                  </div>
-                  <div className="bg-white p-2 rounded border">
-                    <strong className="text-green-600">Lawyer:</strong> sarah.johnson@lawfirm.com / password123
-                  </div>
-                  <div className="bg-white p-2 rounded border">
-                    <strong className="text-purple-600">Police:</strong> cp.delhi@police.gov.in / password123
-                  </div>
-                </div>
-              </div>
+
             </TabsContent>
 
             {/* Signup Tab */}

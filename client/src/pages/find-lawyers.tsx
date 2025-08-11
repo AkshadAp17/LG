@@ -186,7 +186,7 @@ export default function FindLawyers() {
                   {filteredLawyers.map((lawyer) => (
                     <div 
                       key={lawyer._id} 
-                      className={`group p-6 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
+                      className={`group p-6 rounded-xl border-2 transition-all duration-200 cursor-pointer min-h-[240px] ${
                         selectedLawyer?._id === lawyer._id
                           ? 'border-green-500 bg-green-50 shadow-lg'
                           : 'border-gray-200 hover:border-green-300 hover:shadow-md'
@@ -232,23 +232,28 @@ export default function FindLawyers() {
                             </div>
                           </div>
 
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {lawyer.specialization?.slice(0, 4).map((spec) => (
+                          <div className="flex flex-wrap gap-2 mb-4 min-h-[60px]">
+                            {lawyer.specialization?.slice(0, 3).map((spec) => (
                               <Badge 
                                 key={spec} 
                                 variant="outline" 
-                                className="bg-green-50 text-green-700 border-green-200 capitalize"
+                                className="bg-green-50 text-green-700 border-green-200 capitalize text-xs"
                               >
                                 {spec}
                               </Badge>
                             ))}
+                            {lawyer.specialization && lawyer.specialization.length > 3 && (
+                              <Badge variant="outline" className="bg-gray-50 text-gray-600 border-gray-200 text-xs">
+                                +{lawyer.specialization.length - 3} more
+                              </Badge>
+                            )}
                           </div>
 
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2 text-sm text-gray-500">
-                              <span>0 total cases</span>
+                              <span>{lawyer.stats?.totalCases || 0} total cases</span>
                               <span>•</span>
-                              <span>0 won</span>
+                              <span>{lawyer.stats?.wonCases || 0} won</span>
                             </div>
                             
                             <Button 

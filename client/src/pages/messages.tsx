@@ -94,11 +94,27 @@ export default function Messages() {
 
   // Filter and sort contacts - prioritize assigned lawyers for clients
   const filteredContacts = contacts
-    .filter(contact => 
-      contact._id !== user?._id &&
-      (contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       contact.email?.toLowerCase().includes(searchTerm.toLowerCase()))
-    )
+    .filter(contact => {
+      // Exclude self
+      if (contact._id === user?._id) return false;
+      
+      // Apply search filter
+      const matchesSearch = contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        contact.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      // For clients, show lawyers they have cases with + all lawyers
+      if (user?.role === 'client') {
+        return matchesSearch && contact.role === 'lawyer';
+      }
+      
+      // For lawyers, show clients they have cases with + all clients
+      if (user?.role === 'lawyer') {
+        return matchesSearch && contact.role === 'client';
+      }
+      
+      // For police, show all users
+      return matchesSearch;
+    })
     .sort((a, b) => {
       // For clients, sort assigned lawyers to the top
       if (user?.role === 'client') {
