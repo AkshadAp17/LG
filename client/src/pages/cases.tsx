@@ -221,121 +221,256 @@ export default function Cases() {
         </CardContent>
       </Card>
 
-      {/* Cases List - Full Width */}
-      <Card className="border-0 shadow-lg">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center justify-between">
-            <span className="flex items-center">
-              <Scale className="mr-2 text-blue-600" size={20} />
-              All Cases ({filteredCases.length})
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-[600px]">
-            <div className="space-y-4">
-              {filteredCases.length === 0 ? (
-                <div className="text-center py-12">
-                  <Scale className="mx-auto text-gray-400 mb-4" size={48} />
-                  <p className="text-gray-500">No cases found matching your filters</p>
+      {selectedCase ? (
+        /* Full Width Case Detail View */
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="pb-3 sticky top-0 bg-white z-10 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center">
+                <Scale className="mr-2 text-blue-600" size={20} />
+                Case Details
+              </CardTitle>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setSelectedCase(null)}
+                className="text-gray-600"
+                data-testid="button-back-to-list"
+              >
+                ← Back to Cases
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="space-y-6">
+              {/* Enhanced Case Header */}
+              <div className="text-center bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8 border border-blue-200/50">
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">{selectedCase.title}</h2>
+                <p className="text-gray-600 font-medium mb-4 text-lg">{selectedCase.city}</p>
+                <div className="flex items-center justify-center bg-white/70 rounded-full px-6 py-3 backdrop-blur-sm">
+                  <Badge className={`${getStatusColor(selectedCase.status)} px-4 py-2 text-base`}>
+                    {getStatusIcon(selectedCase.status)}
+                    <span className="ml-2 font-medium">
+                      {selectedCase.status === 'in_progress' ? 'IN PROGRESS' : 
+                       selectedCase.status === 'submitted' ? 'SUBMITTED' : 
+                       selectedCase.status === 'under_review' ? 'UNDER REVIEW' :
+                       selectedCase.status.replace('_', ' ').toUpperCase()}
+                    </span>
+                  </Badge>
                 </div>
-              ) : (
-                filteredCases.map((case_) => (
-                  <div 
-                    key={case_._id} 
-                    className="group p-6 rounded-xl border-2 transition-all duration-200 hover:shadow-md border-gray-200 hover:border-blue-300"
-                    data-testid={`case-card-${case_._id}`}
+              </div>
+
+              {/* Case Information Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="text-center p-6 bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl border border-emerald-200/50 shadow-sm">
+                  <FileText className="w-10 h-10 text-emerald-600 mx-auto mb-3" />
+                  <div className="text-2xl font-bold text-emerald-600 mb-2 capitalize">{selectedCase.caseType}</div>
+                  <div className="font-medium text-gray-600">Case Type</div>
+                </div>
+                <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl border border-blue-200/50 shadow-sm">
+                  <MapPin className="w-10 h-10 text-blue-600 mx-auto mb-3" />
+                  <div className="text-2xl font-bold text-blue-600 mb-2">{selectedCase.city}</div>
+                  <div className="font-medium text-gray-600">Location</div>
+                </div>
+                <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-violet-100 rounded-2xl border border-purple-200/50 shadow-sm">
+                  <Calendar className="w-10 h-10 text-purple-600 mx-auto mb-3" />
+                  <div className="text-2xl font-bold text-purple-600 mb-2">
+                    {selectedCase.hearingDate ? new Date(selectedCase.hearingDate).toLocaleDateString() : 'TBD'}
+                  </div>
+                  <div className="font-medium text-gray-600">Hearing Date</div>
+                </div>
+                <div className="text-center p-6 bg-gradient-to-br from-amber-50 to-yellow-100 rounded-2xl border border-amber-200/50 shadow-sm">
+                  <Users className="w-10 h-10 text-amber-600 mx-auto mb-3" />
+                  <div className="text-2xl font-bold text-amber-600 mb-2">
+                    {selectedCase.lawyerId ? 'Assigned' : 'Pending'}
+                  </div>
+                  <div className="font-medium text-gray-600">Lawyer Status</div>
+                </div>
+              </div>
+
+              {/* Case Details */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Description */}
+                <div className="bg-gray-50 rounded-2xl p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                    <FileText className="mr-2 text-blue-600" size={20} />
+                    Case Description
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed">{selectedCase.description}</p>
+                </div>
+
+                {/* Victim & Accused Information */}
+                <div className="space-y-4">
+                  <div className="bg-blue-50 rounded-2xl p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
+                      <Users className="mr-2 text-blue-600" size={18} />
+                      Victim Information
+                    </h3>
+                    <div className="space-y-2 text-sm">
+                      <div><span className="font-medium">Name:</span> {selectedCase.victim?.name}</div>
+                      <div><span className="font-medium">Phone:</span> {selectedCase.victim?.phone}</div>
+                      {selectedCase.victim?.email && (
+                        <div><span className="font-medium">Email:</span> {selectedCase.victim.email}</div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="bg-red-50 rounded-2xl p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
+                      <AlertCircle className="mr-2 text-red-600" size={18} />
+                      Accused Information
+                    </h3>
+                    <div className="space-y-2 text-sm">
+                      <div><span className="font-medium">Name:</span> {selectedCase.accused?.name}</div>
+                      {selectedCase.accused?.phone && (
+                        <div><span className="font-medium">Phone:</span> {selectedCase.accused.phone}</div>
+                      )}
+                      {selectedCase.accused?.address && (
+                        <div><span className="font-medium">Address:</span> {selectedCase.accused.address}</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Information */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-green-50 rounded-2xl p-6 text-center">
+                  <h4 className="font-bold text-gray-900 mb-2">PNR Number</h4>
+                  <p className="text-green-700 font-mono">{selectedCase.pnr || 'Not Assigned'}</p>
+                </div>
+                <div className="bg-purple-50 rounded-2xl p-6 text-center">
+                  <h4 className="font-bold text-gray-900 mb-2">FIR Number</h4>
+                  <p className="text-purple-700 font-mono">{selectedCase.firNumber || 'Not Filed'}</p>
+                </div>
+                <div className="bg-orange-50 rounded-2xl p-6 text-center">
+                  <h4 className="font-bold text-gray-900 mb-2">Police Station</h4>
+                  <p className="text-orange-700">
+                    {typeof selectedCase.policeStation === 'string' 
+                      ? selectedCase.policeStation 
+                      : selectedCase.policeStation?.name || 'Not Assigned'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-4 pt-4 border-t border-gray-200">
+                {user?.role === 'police' && (selectedCase.status === 'under_review' || selectedCase.status === 'submitted') && (
+                  <>
+                    <Button
+                      onClick={() => selectedCase._id && approveCaseMutation.mutate(selectedCase._id)}
+                      disabled={approveCaseMutation.isPending}
+                      className="flex-1 h-14 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl shadow-lg text-lg"
+                      data-testid="button-approve-case"
+                    >
+                      <CheckCircle2 className="mr-3" size={20} />
+                      {approveCaseMutation.isPending ? 'Approving...' : 'Approve Case'}
+                    </Button>
+                    <Button
+                      onClick={() => selectedCase._id && rejectCaseMutation.mutate(selectedCase._id)}
+                      disabled={rejectCaseMutation.isPending}
+                      variant="outline"
+                      className="flex-1 h-14 border-2 border-red-300 hover:bg-red-50 text-red-700 font-medium rounded-xl"
+                      data-testid="button-reject-case"
+                    >
+                      <XCircle className="mr-3" size={20} />
+                      {rejectCaseMutation.isPending ? 'Rejecting...' : 'Reject Case'}
+                    </Button>
+                  </>
+                )}
+                {user?.role === 'lawyer' && (
+                  <Button 
+                    onClick={() => handleDeleteCase(selectedCase)}
+                    variant="outline" 
+                    className="h-14 px-6 border-2 border-red-300 hover:bg-red-50 text-red-700 rounded-xl"
+                    data-testid="button-delete-case"
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 space-y-3">
-                        {/* Header Row */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <h3 className="text-lg font-semibold text-gray-900">{case_.title}</h3>
-                            <Badge className={`${getStatusColor(case_.status)} px-3 py-1`}>
-                              {getStatusIcon(case_.status)}
-                              <span className="ml-2 text-sm font-medium">
-                                {case_.status === 'in_progress' ? 'IN PROGRESS' : 
-                                 case_.status === 'submitted' ? 'SUBMITTED' : 
-                                 case_.status === 'under_review' ? 'UNDER REVIEW' :
-                                 case_.status.replace('_', ' ').toUpperCase()}
-                              </span>
-                            </Badge>
+                    <Trash2 className="mr-2" size={18} />
+                    Delete Case
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        /* Cases List */
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center justify-between">
+              <span className="flex items-center">
+                <Scale className="mr-2 text-blue-600" size={20} />
+                All Cases ({filteredCases.length})
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[600px]">
+              <div className="space-y-4">
+                {filteredCases.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Scale className="mx-auto text-gray-400 mb-4" size={48} />
+                    <p className="text-gray-500">No cases found matching your filters</p>
+                  </div>
+                ) : (
+                  filteredCases.map((case_) => (
+                    <div 
+                      key={case_._id} 
+                      className="group p-6 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:shadow-md border-gray-200 hover:border-blue-300"
+                      onClick={() => setSelectedCase(case_)}
+                      data-testid={`case-card-${case_._id}`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 space-y-3">
+                          {/* Header Row */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                              <h3 className="text-lg font-semibold text-gray-900">{case_.title}</h3>
+                              <Badge className={`${getStatusColor(case_.status)} px-3 py-1`}>
+                                {getStatusIcon(case_.status)}
+                                <span className="ml-2 text-sm font-medium">
+                                  {case_.status === 'in_progress' ? 'IN PROGRESS' : 
+                                   case_.status === 'submitted' ? 'SUBMITTED' : 
+                                   case_.status === 'under_review' ? 'UNDER REVIEW' :
+                                   case_.status.replace('_', ' ').toUpperCase()}
+                                </span>
+                              </Badge>
+                            </div>
+                            <ChevronRight className="text-gray-400" size={20} />
                           </div>
-                          
-                          {/* Action Buttons */}
-                          <div className="flex gap-2">
-                            {user?.role === 'police' && (case_.status === 'under_review' || case_.status === 'submitted') && (
-                              <>
-                                <Button
-                                  onClick={() => case_._id && approveCaseMutation.mutate(case_._id)}
-                                  disabled={approveCaseMutation.isPending}
-                                  size="sm"
-                                  className="bg-green-600 hover:bg-green-700 text-white"
-                                  data-testid="button-approve-case"
-                                >
-                                  <CheckCircle2 className="mr-1" size={16} />
-                                  {approveCaseMutation.isPending ? 'Approving...' : 'Approve'}
-                                </Button>
-                                <Button
-                                  onClick={() => case_._id && rejectCaseMutation.mutate(case_._id)}
-                                  disabled={rejectCaseMutation.isPending}
-                                  size="sm"
-                                  variant="outline"
-                                  className="border-red-300 hover:bg-red-50 text-red-700"
-                                  data-testid="button-reject-case"
-                                >
-                                  <XCircle className="mr-1" size={16} />
-                                  {rejectCaseMutation.isPending ? 'Rejecting...' : 'Reject'}
-                                </Button>
-                              </>
-                            )}
-                            {user?.role === 'lawyer' && (
-                              <Button 
-                                onClick={() => handleDeleteCase(case_)}
-                                size="sm"
-                                variant="outline" 
-                                className="border-red-300 hover:bg-red-50 text-red-700"
-                                data-testid="button-delete-case"
-                              >
-                                <Trash2 className="mr-1" size={16} />
-                                Delete
-                              </Button>
-                            )}
-                          </div>
-                        </div>
 
-                        {/* Description */}
-                        <p className="text-gray-600 text-sm leading-relaxed">{case_.description}</p>
+                          {/* Description */}
+                          <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">{case_.description}</p>
 
-                        {/* Info Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                          <div className="flex items-center text-gray-600">
-                            <FileText className="mr-2 text-blue-500" size={16} />
-                            <span className="capitalize font-medium">{case_.caseType}</span>
-                          </div>
-                          <div className="flex items-center text-gray-600">
-                            <MapPin className="mr-2 text-green-500" size={16} />
-                            <span>{case_.city}</span>
-                          </div>
-                          <div className="flex items-center text-gray-600">
-                            <Calendar className="mr-2 text-purple-500" size={16} />
-                            <span>{case_.hearingDate ? new Date(case_.hearingDate).toLocaleDateString() : 'TBD'}</span>
-                          </div>
-                          <div className="flex items-center text-gray-600">
-                            <Users className="mr-2 text-orange-500" size={16} />
-                            <span>{case_.lawyerId ? 'Lawyer Assigned' : 'No Lawyer'}</span>
+                          {/* Info Grid */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                            <div className="flex items-center text-gray-600">
+                              <FileText className="mr-2 text-blue-500" size={16} />
+                              <span className="capitalize font-medium">{case_.caseType}</span>
+                            </div>
+                            <div className="flex items-center text-gray-600">
+                              <MapPin className="mr-2 text-green-500" size={16} />
+                              <span>{case_.city}</span>
+                            </div>
+                            <div className="flex items-center text-gray-600">
+                              <Calendar className="mr-2 text-purple-500" size={16} />
+                              <span>{case_.hearingDate ? new Date(case_.hearingDate).toLocaleDateString() : 'TBD'}</span>
+                            </div>
+                            <div className="flex items-center text-gray-600">
+                              <Users className="mr-2 text-orange-500" size={16} />
+                              <span>{case_.lawyerId ? 'Lawyer Assigned' : 'No Lawyer'}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </ScrollArea>
-        </CardContent>
-      </Card>
+                  ))
+                )}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

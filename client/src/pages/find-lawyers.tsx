@@ -182,94 +182,249 @@ export default function FindLawyers() {
         </CardContent>
       </Card>
 
-      {/* Lawyers List - Full Width */}
-      <Card className="border-0 shadow-lg">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center justify-between">
-            <span className="flex items-center">
-              <Users className="mr-2 text-green-600" size={20} />
-              Available Lawyers ({filteredLawyers.length})
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-[600px]">
-            <div className="space-y-4">
-              {filteredLawyers.map((lawyer) => (
-                <div 
-                  key={lawyer._id} 
-                  className="group p-6 rounded-xl border-2 transition-all duration-200 hover:shadow-md border-gray-200 hover:border-green-300"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 space-y-3">
-                      {/* Header Row */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <h3 className="text-xl font-bold text-gray-900">{lawyer.name}</h3>
-                          <div className="flex items-center">
-                            <Star className="text-yellow-500 fill-current" size={16} />
-                            <span className="ml-1 text-sm font-medium">4.8</span>
-                          </div>
-                        </div>
-                        
-                        {/* Action Button */}
-                        <Button 
-                          onClick={() => handleSendCaseRequest(lawyer)}
-                          className="bg-green-600 hover:bg-green-700 text-white"
-                        >
-                          <MessageCircle className="mr-2" size={16} />
-                          Send Case Request
-                        </Button>
-                      </div>
-                      
-                      {/* Info Row */}
-                      <div className="flex items-center space-x-4 text-sm text-gray-600">
-                        <div className="flex items-center">
-                          <MapPin size={14} className="mr-1" />
-                          {lawyer.city}
-                        </div>
-                        <div className="flex items-center">
-                          <Clock size={14} className="mr-1" />
-                          {lawyer.experience} years exp.
-                        </div>
-                        <div className="flex items-center">
-                          <Award size={14} className="mr-1" />
-                          85% Success Rate
-                        </div>
-                      </div>
+      {selectedLawyer ? (
+        /* Full Width Lawyer Profile View */
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="pb-3 sticky top-0 bg-white z-10 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center">
+                <Award className="mr-2 text-green-600" size={20} />
+                Lawyer Profile
+              </CardTitle>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setSelectedLawyer(null)}
+                className="text-gray-600"
+              >
+                ← Back to List
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="space-y-6">
+              {/* Enhanced Profile Header */}
+              <div className="text-center bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8 border border-blue-200/50">
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">{selectedLawyer.name}</h2>
+                <p className="text-gray-600 font-medium mb-4 text-lg">{selectedLawyer.city}</p>
+                <div className="flex items-center justify-center bg-white/70 rounded-full px-6 py-3 backdrop-blur-sm">
+                  <div className="flex items-center">
+                    <Star className="text-yellow-500 fill-current" size={20} />
+                    <span className="ml-2 text-xl font-bold text-gray-900">4.8</span>
+                  </div>
+                  <span className="text-gray-400 mx-3">•</span>
+                  <span className="text-gray-600 font-medium">127 reviews</span>
+                </div>
+              </div>
 
-                      {/* Specializations */}
-                      <div className="flex flex-wrap gap-2">
-                        {lawyer.specialization?.slice(0, 4).map((spec) => (
-                          <Badge 
-                            key={spec} 
-                            variant="outline" 
-                            className="bg-green-50 text-green-700 border-green-200 capitalize text-xs"
-                          >
-                            {spec}
-                          </Badge>
-                        ))}
-                        {lawyer.specialization && lawyer.specialization.length > 4 && (
-                          <Badge variant="outline" className="bg-gray-50 text-gray-600 border-gray-200 text-xs">
-                            +{lawyer.specialization.length - 4} more
-                          </Badge>
-                        )}
-                      </div>
+              {/* Enhanced Quick Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="text-center p-6 bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl border border-emerald-200/50 shadow-sm">
+                  <Briefcase className="w-10 h-10 text-emerald-600 mx-auto mb-3" />
+                  <div className="text-4xl font-bold text-emerald-600 mb-2">{selectedLawyer.stats?.totalCases || 3}</div>
+                  <div className="font-medium text-gray-600">Total Cases</div>
+                </div>
+                <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl border border-blue-200/50 shadow-sm">
+                  <Award className="w-10 h-10 text-blue-600 mx-auto mb-3" />
+                  <div className="text-4xl font-bold text-blue-600 mb-2">{selectedLawyer.stats?.wonCases || 2}</div>
+                  <div className="font-medium text-gray-600">Cases Won</div>
+                </div>
+                <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-violet-100 rounded-2xl border border-purple-200/50 shadow-sm">
+                  <Clock className="w-10 h-10 text-purple-600 mx-auto mb-3" />
+                  <div className="text-4xl font-bold text-purple-600 mb-2">{selectedLawyer.experience || 5}</div>
+                  <div className="font-medium text-gray-600">Years Experience</div>
+                </div>
+                <div className="text-center p-6 bg-gradient-to-br from-amber-50 to-yellow-100 rounded-2xl border border-amber-200/50 shadow-sm">
+                  <Star className="w-10 h-10 text-amber-600 mx-auto mb-3" />
+                  <div className="text-4xl font-bold text-amber-600 mb-2">4.8</div>
+                  <div className="font-medium text-gray-600">Rating</div>
+                </div>
+              </div>
 
-                      {/* Stats */}
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <span>{lawyer.stats?.totalCases || 3} total cases</span>
-                        <span>•</span>
-                        <span>{lawyer.stats?.wonCases || 2} won</span>
+              {/* Detailed Information Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Specializations */}
+                <div className="bg-gray-50 rounded-2xl p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                    <Award className="mr-2 text-blue-600" size={20} />
+                    Legal Specializations
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {(selectedLawyer.specialization || ['Criminal Law', 'Corporate Law', 'Civil Rights']).map((spec, index) => (
+                      <div key={index} className="flex items-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                        <span className="font-medium text-gray-700 capitalize">{spec}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Contact Information */}
+                <div className="bg-gradient-to-br from-slate-50 to-gray-100 rounded-2xl p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                    <Phone className="mr-2 text-green-600" size={20} />
+                    Contact Information
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center p-4 bg-white rounded-xl border border-gray-200">
+                      <Phone className="text-green-600 mr-3" size={18} />
+                      <div>
+                        <div className="text-sm text-gray-600">Phone</div>
+                        <div className="font-medium">{selectedLawyer.phone || '+91 98765 43210'}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center p-4 bg-white rounded-xl border border-gray-200">
+                      <Mail className="text-blue-600 mr-3" size={18} />
+                      <div>
+                        <div className="text-sm text-gray-600">Email</div>
+                        <div className="font-medium">{selectedLawyer.email || 'lawyer@example.com'}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center p-4 bg-white rounded-xl border border-gray-200">
+                      <MapPin className="text-purple-600 mr-3" size={18} />
+                      <div>
+                        <div className="text-sm text-gray-600">Location</div>
+                        <div className="font-medium">{selectedLawyer.city}</div>
                       </div>
                     </div>
                   </div>
                 </div>
-              ))}
+              </div>
+
+              {/* Professional Details */}
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <Briefcase className="mr-2 text-indigo-600" size={20} />
+                  Professional Summary
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-indigo-600 mb-1">
+                      {Math.round(((selectedLawyer.stats?.wonCases || 2) / (selectedLawyer.stats?.totalCases || 3)) * 100)}%
+                    </div>
+                    <div className="text-sm text-gray-600">Success Rate</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-indigo-600 mb-1">&lt; 2hr</div>
+                    <div className="text-sm text-gray-600">Response Time</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-indigo-600 mb-1">Hindi, English</div>
+                    <div className="text-sm text-gray-600">Languages</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-4 pt-4 border-t border-gray-200">
+                <Button
+                  onClick={() => handleSendCaseRequest(selectedLawyer)}
+                  className="flex-1 h-14 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl shadow-lg text-lg"
+                >
+                  <MessageCircle className="mr-3" size={20} />
+                  Send Case Request
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-14 px-8 border-2 border-blue-300 hover:bg-blue-50 text-blue-700 font-medium rounded-xl"
+                >
+                  <Phone className="mr-2" size={18} />
+                  Call
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-14 px-8 border-2 border-gray-300 hover:bg-gray-50 rounded-xl"
+                >
+                  <Star className="mr-2" size={18} />
+                  Save
+                </Button>
+              </div>
             </div>
-          </ScrollArea>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      ) : (
+        /* Lawyers List */
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center justify-between">
+              <span className="flex items-center">
+                <Users className="mr-2 text-green-600" size={20} />
+                Available Lawyers ({filteredLawyers.length})
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[600px]">
+              <div className="space-y-4">
+                {filteredLawyers.map((lawyer) => (
+                  <div 
+                    key={lawyer._id} 
+                    className="group p-6 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:shadow-md border-gray-200 hover:border-green-300"
+                    onClick={() => setSelectedLawyer(lawyer)}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 space-y-3">
+                        {/* Header Row */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <h3 className="text-xl font-bold text-gray-900">{lawyer.name}</h3>
+                            <div className="flex items-center">
+                              <Star className="text-yellow-500 fill-current" size={16} />
+                              <span className="ml-1 text-sm font-medium">4.8</span>
+                            </div>
+                          </div>
+                          <ChevronRight className="text-gray-400" size={20} />
+                        </div>
+                        
+                        {/* Info Row */}
+                        <div className="flex items-center space-x-4 text-sm text-gray-600">
+                          <div className="flex items-center">
+                            <MapPin size={14} className="mr-1" />
+                            {lawyer.city}
+                          </div>
+                          <div className="flex items-center">
+                            <Clock size={14} className="mr-1" />
+                            {lawyer.experience} years exp.
+                          </div>
+                          <div className="flex items-center">
+                            <Award size={14} className="mr-1" />
+                            85% Success Rate
+                          </div>
+                        </div>
+
+                        {/* Specializations */}
+                        <div className="flex flex-wrap gap-2">
+                          {lawyer.specialization?.slice(0, 4).map((spec) => (
+                            <Badge 
+                              key={spec} 
+                              variant="outline" 
+                              className="bg-green-50 text-green-700 border-green-200 capitalize text-xs"
+                            >
+                              {spec}
+                            </Badge>
+                          ))}
+                          {lawyer.specialization && lawyer.specialization.length > 4 && (
+                            <Badge variant="outline" className="bg-gray-50 text-gray-600 border-gray-200 text-xs">
+                              +{lawyer.specialization.length - 4} more
+                            </Badge>
+                          )}
+                        </div>
+
+                        {/* Stats */}
+                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                          <span>{lawyer.stats?.totalCases || 3} total cases</span>
+                          <span>•</span>
+                          <span>{lawyer.stats?.wonCases || 2} won</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Case Request Modal */}
       <Dialog open={showCaseRequestModal} onOpenChange={setShowCaseRequestModal}>
