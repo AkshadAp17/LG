@@ -205,14 +205,14 @@ export default function DocumentsPage() {
             <h1 className="text-3xl font-bold mb-1 bg-gradient-to-r from-white to-purple-100 bg-clip-text text-transparent">
               Secure Document Vault
             </h1>
-            <p className="text-purple-200 text-lg flex items-center space-x-2">
+            <div className="text-purple-200 text-lg flex items-center space-x-2">
               <div className="flex items-center space-x-1">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 <span className="text-sm">End-to-end encrypted storage</span>
               </div>
               <span>•</span>
               <span>Professional case documents</span>
-            </p>
+            </div>
           </div>
         </div>
       </div>
