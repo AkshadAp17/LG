@@ -6,18 +6,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import LegalSidebar from '@/components/LegalSidebar';
 import { apiRequest } from '@/lib/queryClient';
 import { 
   FileIcon, 
-  DownloadIcon, 
-  EyeIcon, 
-  TrashIcon, 
-  UploadIcon,
-  FolderIcon,
-  ShieldIcon
+  Download, 
+  Eye, 
+  Trash2, 
+  Upload,
+  FolderOpen,
+  Shield,
+  Search
 } from 'lucide-react';
 
 interface Document {
@@ -49,15 +49,13 @@ export default function DocumentsPage() {
   const queryClient = useQueryClient();
 
   // Fetch documents
-  const { data: documents = [], isLoading: documentsLoading } = useQuery({
+  const { data: documents = [], isLoading: documentsLoading } = useQuery<Document[]>({
     queryKey: ['/api/documents'],
-    queryFn: () => apiRequest('/api/documents')
   });
 
   // Fetch user cases for upload dropdown
   const { data: cases = [] } = useQuery<Case[]>({
     queryKey: ['/api/cases'],
-    queryFn: () => apiRequest('/api/cases')
   });
 
   // Upload mutation
@@ -99,7 +97,7 @@ export default function DocumentsPage() {
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: (documentId: string) => 
-      apiRequest(`/api/documents/${documentId}`, { method: 'DELETE' }),
+      apiRequest('DELETE', `/api/documents/${documentId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
       toast({
@@ -196,136 +194,142 @@ export default function DocumentsPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900">
-      <LegalSidebar />
-      
-      <main className="flex-1 p-6 lg:p-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg">
-              <ShieldIcon className="h-6 w-6 text-white" />
-            </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Document Vault
-            </h1>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 text-white rounded-xl p-6 shadow-2xl border border-purple-300/20">
+        <div className="flex items-center space-x-3">
+          <div className="bg-purple-500/20 p-3 rounded-lg backdrop-blur-sm">
+            <Shield className="w-8 h-8 text-purple-300" />
           </div>
-          <p className="text-slate-600 dark:text-slate-400">
-            Secure document management for your legal cases
-          </p>
+          <div>
+            <h1 className="text-3xl font-bold mb-1 bg-gradient-to-r from-white to-purple-100 bg-clip-text text-transparent">
+              Secure Document Vault
+            </h1>
+            <p className="text-purple-200 text-lg flex items-center space-x-2">
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-sm">End-to-end encrypted storage</span>
+              </div>
+              <span>•</span>
+              <span>Professional case documents</span>
+            </p>
+          </div>
         </div>
+      </div>
 
-        {/* Upload Section */}
-        <Card className="mb-8 border-indigo-200 dark:border-indigo-800 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/50 dark:to-purple-900/50">
-            <CardTitle className="flex items-center gap-2">
-              <UploadIcon className="h-5 w-5" />
-              Upload Document
-            </CardTitle>
-            <CardDescription>
-              Add documents to your cases (PDF, DOC, DOCX, JPG, PNG - Max 10MB)
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="file-upload">Select File</Label>
-                <Input
-                  id="file-upload"
-                  type="file"
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                  onChange={handleFileSelect}
-                  data-testid="input-file-upload"
-                />
-                {selectedFile && (
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Selected: {selectedFile.name} ({formatFileSize(selectedFile.size)})
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="case-select">Select Case</Label>
-                <Select value={selectedCase} onValueChange={setSelectedCase}>
-                  <SelectTrigger data-testid="select-case">
-                    <SelectValue placeholder="Choose a case" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {cases.map((case_) => (
-                      <SelectItem key={case_._id} value={case_._id}>
-                        {case_.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-end">
-                <Button
-                  onClick={handleUpload}
-                  disabled={!selectedFile || !selectedCase || uploading}
-                  className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
-                  data-testid="button-upload"
-                >
-                  {uploading ? 'Uploading...' : 'Upload Document'}
-                </Button>
-              </div>
+      {/* Upload Section */}
+      <Card className="border border-purple-200/50 shadow-xl bg-gradient-to-b from-white to-purple-50/30 backdrop-blur-sm">
+        <CardHeader className="bg-gradient-to-r from-purple-50 to-white border-b border-purple-200/50">
+          <CardTitle className="flex items-center space-x-2 text-purple-900">
+            <Upload className="h-5 w-5 text-purple-600" />
+            <span>Upload Document</span>
+          </CardTitle>
+          <CardDescription className="text-purple-700">
+            Add documents to your cases (PDF, DOC, DOCX, JPG, PNG - Max 10MB)
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="file-upload" className="text-purple-900">Select File</Label>
+              <Input
+                id="file-upload"
+                type="file"
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                onChange={handleFileSelect}
+                className="border-purple-200 focus:border-purple-400 focus:ring-purple-400/20"
+                data-testid="input-file-upload"
+              />
+              {selectedFile && (
+                <p className="text-sm text-purple-700">
+                  Selected: {selectedFile.name} ({formatFileSize(selectedFile.size)})
+                </p>
+              )}
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Documents List */}
-        <Card className="border-slate-200 dark:border-slate-800 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-slate-50 to-indigo-50 dark:from-slate-900/50 dark:to-indigo-900/50">
-            <CardTitle className="flex items-center gap-2">
-              <FolderIcon className="h-5 w-5" />
-              Your Documents ({documents.length})
-            </CardTitle>
-            <CardDescription>
-              Access and manage all your case documents
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
+            <div className="space-y-2">
+              <Label htmlFor="case-select" className="text-purple-900">Select Case</Label>
+              <Select value={selectedCase} onValueChange={setSelectedCase}>
+                <SelectTrigger className="border-purple-200 focus:border-purple-400" data-testid="select-case">
+                  <SelectValue placeholder="Choose a case" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.isArray(cases) && cases.map((caseItem) => (
+                    <SelectItem key={caseItem._id} value={caseItem._id}>
+                      {caseItem.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-end">
+              <Button
+                onClick={handleUpload}
+                disabled={!selectedFile || !selectedCase || uploading}
+                className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white"
+                data-testid="button-upload"
+              >
+                {uploading ? 'Uploading...' : 'Upload Document'}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Documents List */}
+      <Card className="border border-purple-200/50 shadow-xl bg-gradient-to-b from-white to-purple-50/30 backdrop-blur-sm h-[600px]">
+        <CardHeader className="bg-gradient-to-r from-purple-50 to-white border-b border-purple-200/50">
+          <CardTitle className="flex items-center space-x-2 text-purple-900">
+            <FolderOpen className="h-5 w-5 text-purple-600" />
+            <span>Your Documents ({Array.isArray(documents) ? documents.length : 0})</span>
+          </CardTitle>
+          <CardDescription className="text-purple-700">
+            Access and manage all your case documents
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-0 h-[calc(100%-140px)]">
+          <ScrollArea className="h-full">
             {documentsLoading ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
-                <p className="mt-2 text-slate-600 dark:text-slate-400">Loading documents...</p>
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                <p className="mt-2 text-purple-700">Loading documents...</p>
               </div>
-            ) : documents.length === 0 ? (
+            ) : !Array.isArray(documents) || documents.length === 0 ? (
               <div className="text-center py-12">
-                <FileIcon className="h-12 w-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-slate-600 dark:text-slate-400 mb-2">
+                <FileIcon className="h-12 w-12 text-purple-300 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-purple-600 mb-2">
                   No Documents Found
                 </h3>
-                <p className="text-slate-500 dark:text-slate-500">
+                <p className="text-purple-500">
                   Upload your first document to get started
                 </p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="p-4 space-y-3">
                 {documents.map((doc: Document) => (
                   <div 
                     key={doc._id} 
-                    className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:shadow-md transition-shadow"
+                    className="flex items-center justify-between p-4 border border-purple-200 rounded-lg hover:bg-purple-50 hover:shadow-md transition-all duration-200 bg-white"
                   >
                     <div className="flex items-center gap-4 flex-1">
                       <div className="text-2xl">{getFileIcon(doc.type)}</div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-slate-900 dark:text-slate-100 truncate">
+                        <h4 className="font-semibold text-purple-900 truncate">
                           {doc.originalName}
                         </h4>
                         <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs border-purple-200 text-purple-700">
                             {doc.caseTitle}
                           </Badge>
-                          <span className="text-xs text-slate-500 dark:text-slate-400">
+                          <span className="text-xs text-purple-600">
                             {formatFileSize(doc.size)}
                           </span>
-                          <span className="text-xs text-slate-500 dark:text-slate-400">
+                          <span className="text-xs text-purple-600">
                             by {doc.uploadedBy}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                        <p className="text-xs text-purple-500 mt-1">
                           {new Date(doc.createdAt).toLocaleDateString()}
                         </p>
                       </div>
@@ -336,36 +340,38 @@ export default function DocumentsPage() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleView(doc.filename)}
+                        className="border-purple-200 hover:bg-purple-100 hover:text-purple-700"
                         data-testid={`button-view-${doc._id}`}
                       >
-                        <EyeIcon className="h-4 w-4" />
+                        <Eye className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleDownload(doc.filename, doc.originalName)}
+                        className="border-purple-200 hover:bg-purple-100 hover:text-purple-700"
                         data-testid={`button-download-${doc._id}`}
                       >
-                        <DownloadIcon className="h-4 w-4" />
+                        <Download className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => deleteMutation.mutate(doc._id)}
                         disabled={deleteMutation.isPending}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
                         data-testid={`button-delete-${doc._id}`}
                       >
-                        <TrashIcon className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
-      </main>
+          </ScrollArea>
+        </CardContent>
+      </Card>
     </div>
   );
 }
