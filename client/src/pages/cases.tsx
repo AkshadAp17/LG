@@ -18,7 +18,13 @@ import {
   MapPin,
   Users,
   Clock,
-  ChevronRight
+  ChevronRight,
+  Upload,
+  Download,
+  Eye,
+  FolderOpen,
+  Plus,
+  X
 } from 'lucide-react';
 import { authService } from '@/lib/auth';
 import { toast } from '@/hooks/use-toast';
@@ -53,10 +59,65 @@ interface Case {
 export default function Cases() {
   const user = authService.getUser();
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showDocumentUpload, setShowDocumentUpload] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [caseToDelete, setCaseToDelete] = useState<Case | null>(null);
   const queryClient = useQueryClient();
+
+  // Document upload mutation
+  const uploadDocumentMutation = useMutation({
+    mutationFn: async ({ caseId, formData }: { caseId: string; formData: FormData }) => {
+      const response = await fetch(`/api/cases/${caseId}/documents`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${authService.getToken()}`
+        },
+        body: formData
+      });
+      if (!response.ok) throw new Error('Failed to upload document');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/cases'] });
+      toast({ title: 'Document uploaded successfully' });
+      setShowDocumentUpload(false);
+      setSelectedFile(null);
+    },
+    onError: () => {
+      toast({ title: 'Failed to upload document', variant: 'destructive' });
+    }
+  });
+
+  // Handle file selection
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
+  // Handle document upload
+  const handleDocumentUpload = () => {
+    if (!selectedFile || !selectedCase?._id) return;
+    
+    const formData = new FormData();
+    formData.append('document', selectedFile);
+    formData.append('caseId', selectedCase._id);
+    
+    uploadDocumentMutation.mutate({ caseId: selectedCase._id, formData });
+  };
+
+  // Handle document download
+  const handleDocumentDownload = (filename: string) => {
+    const link = document.createElement('a');
+    link.href = `/api/documents/${filename}`;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   // Fetch cases
   const { data: cases = [], isLoading } = useQuery<Case[]>({
@@ -353,6 +414,77 @@ export default function Cases() {
                 </div>
               </div>
 
+              {/* Documents Section */}
+              <div className="bg-gradient-to-br from-indigo-50 to-blue-100 rounded-2xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                    <FolderOpen className="mr-2 text-indigo-600" size={20} />
+                    Case Documents
+                  </h3>
+                  <Button
+                    onClick={() => setShowDocumentUpload(true)}
+                    size="sm"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                  >
+                    <Plus className="mr-2" size={16} />
+                    Upload Document
+                  </Button>
+                </div>
+                
+                {selectedCase.documents && selectedCase.documents.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {selectedCase.documents.map((doc, index) => (
+                      <div key={index} className="bg-white rounded-xl p-4 border border-indigo-200 shadow-sm">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="p-2 bg-indigo-100 rounded-lg">
+                              <FileText className="w-5 h-5 text-indigo-600" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium text-gray-900 truncate">
+                                {doc.split('/').pop() || `Document ${index + 1}`}
+                              </p>
+                              <p className="text-xs text-gray-500">PDF Document</p>
+                            </div>
+                          </div>
+                          <div className="flex space-x-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(`/api/documents/${doc}`, '_blank')}
+                              className="text-gray-600 hover:text-indigo-600"
+                            >
+                              <Eye size={16} />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDocumentDownload(doc)}
+                              className="text-gray-600 hover:text-indigo-600"
+                            >
+                              <Download size={16} />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <FolderOpen className="mx-auto text-gray-400 mb-4" size={48} />
+                    <p className="text-gray-500 mb-4">No documents uploaded yet</p>
+                    <Button
+                      onClick={() => setShowDocumentUpload(true)}
+                      variant="outline"
+                      className="border-indigo-300 text-indigo-700 hover:bg-indigo-50"
+                    >
+                      <Upload className="mr-2" size={16} />
+                      Upload First Document
+                    </Button>
+                  </div>
+                )}
+              </div>
+
               {/* Action Buttons */}
               <div className="flex gap-4 pt-4 border-t border-gray-200">
                 {user?.role === 'police' && (selectedCase.status === 'under_review' || selectedCase.status === 'submitted') && (
@@ -471,6 +603,81 @@ export default function Cases() {
           </CardContent>
         </Card>
       )}
+
+      {/* Document Upload Modal */}
+      <Dialog open={showDocumentUpload} onOpenChange={setShowDocumentUpload}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
+              <Upload className="mr-2 text-indigo-600" size={20} />
+              Upload Document
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+              <Upload className="mx-auto text-gray-400 mb-4" size={48} />
+              <input
+                type="file"
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                onChange={handleFileSelect}
+                className="hidden"
+                id="file-upload"
+              />
+              <label
+                htmlFor="file-upload"
+                className="cursor-pointer text-sm text-gray-600 hover:text-indigo-600"
+              >
+                Click to select a file or drag and drop
+              </label>
+              <p className="text-xs text-gray-500 mt-2">
+                PDF, DOC, DOCX, JPG, PNG up to 10MB
+              </p>
+            </div>
+            
+            {selectedFile && (
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <FileText className="text-indigo-600" size={20} />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      {selectedFile.name}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedFile(null)}
+                  className="text-gray-400 hover:text-red-600"
+                >
+                  <X size={16} />
+                </Button>
+              </div>
+            )}
+            
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowDocumentUpload(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDocumentUpload}
+                disabled={!selectedFile || uploadDocumentMutation.isPending}
+                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+              >
+                {uploadDocumentMutation.isPending ? 'Uploading...' : 'Upload'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
