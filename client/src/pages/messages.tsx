@@ -265,12 +265,12 @@ export default function Messages() {
                           )}
                           
                           <div className="flex items-center justify-between">
-                            <p className="text-sm text-gray-600 truncate">
+                            <span className="text-sm text-gray-600 truncate">
                               {lastMessage 
                                 ? (lastMessage.senderId === user?._id ? 'You: ' : '') + lastMessage.content
                                 : 'No messages yet'
                               }
-                            </p>
+                            </span>
                             <Badge 
                               variant="outline" 
                               className={`text-xs capitalize ${

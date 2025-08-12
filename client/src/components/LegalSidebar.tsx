@@ -54,7 +54,7 @@ export default function LegalSidebar({ collapsed = false, onToggle }: SidebarPro
         icon: FileText,
         label: 'Cases',
         href: '/cases',
-        badge: '3',
+        badge: null,
         description: 'Manage Legal Cases'
       },
       {
@@ -68,7 +68,7 @@ export default function LegalSidebar({ collapsed = false, onToggle }: SidebarPro
         icon: MessageSquare,
         label: 'Messages',
         href: '/messages',
-        badge: '2',
+        badge: null,
         description: 'Communications'
       },
       {
@@ -96,7 +96,7 @@ export default function LegalSidebar({ collapsed = false, onToggle }: SidebarPro
         icon: Briefcase,
         label: 'Case Requests',
         href: '/case-requests',
-        badge: '1',
+        badge: null,
         description: 'Client Requests'
       });
     }
@@ -106,7 +106,7 @@ export default function LegalSidebar({ collapsed = false, onToggle }: SidebarPro
         icon: Shield,
         label: 'Approvals',
         href: '/case-requests',
-        badge: '2',
+        badge: null,
         description: 'Case Approvals'
       });
     }

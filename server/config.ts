@@ -11,6 +11,12 @@ export const config = {
     apiKey: process.env.SENDGRID_API_KEY || '',
   },
   
+  // Gmail configuration
+  gmail: {
+    user: process.env.EMAIL_USER || '',
+    password: process.env.EMAIL_PASSWORD || '',
+  },
+  
   // Cloudinary configuration
   cloudinary: {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME || '',

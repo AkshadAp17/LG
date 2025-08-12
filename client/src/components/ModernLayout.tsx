@@ -79,7 +79,7 @@ export default function ModernLayout({ children }: LayoutProps) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Top Header Bar */}
-        <header className="bg-white border-b border-gray-200 shadow-sm h-16 flex items-center justify-between px-4 lg:px-6">
+        <header className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 border-b border-purple-300/20 shadow-2xl h-16 flex items-center justify-between px-4 lg:px-6">
           <div className="flex items-center space-x-4">
             {/* Mobile Menu Button */}
             {isMobile && (
@@ -87,19 +87,19 @@ export default function ModernLayout({ children }: LayoutProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => setMobileSidebarOpen(true)}
-                className="lg:hidden"
+                className="lg:hidden text-white hover:bg-white/10"
               >
                 <Menu size={20} />
               </Button>
             )}
             
             {/* Search Bar */}
-            <div className="hidden md:flex items-center bg-gray-100 rounded-lg px-3 py-2 w-64">
-              <Search className="text-gray-400 mr-2" size={18} />
+            <div className="hidden md:flex items-center bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 w-64 border border-purple-300/20">
+              <Search className="text-purple-300 mr-2" size={18} />
               <input
                 type="text"
                 placeholder="Search cases, lawyers..."
-                className="bg-transparent border-none outline-none text-sm w-full"
+                className="bg-transparent border-none outline-none text-sm w-full text-white placeholder:text-purple-200"
               />
             </div>
           </div>
@@ -110,13 +110,13 @@ export default function ModernLayout({ children }: LayoutProps) {
               variant="ghost"
               size="sm"
               onClick={() => setShowNotifications(true)}
-              className="relative"
+              className="relative text-white hover:bg-white/10"
             >
               <Bell size={18} />
               {unreadCount > 0 && (
                 <Badge 
                   variant="destructive" 
-                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs p-0"
+                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs p-0 bg-red-500 text-white"
                 >
                   {unreadCount}
                 </Badge>
@@ -126,10 +126,10 @@ export default function ModernLayout({ children }: LayoutProps) {
             {/* User Info */}
             <div className="flex items-center space-x-3">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-                <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+                <p className="text-sm font-medium text-white">{user?.name}</p>
+                <p className="text-xs text-purple-200 capitalize">{user?.role}</p>
               </div>
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center ring-2 ring-purple-300/20">
                 <span className="text-sm font-bold text-white">
                   {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                 </span>
@@ -148,8 +148,8 @@ export default function ModernLayout({ children }: LayoutProps) {
 
       {/* Notification Modal */}
       <NotificationModal 
-        open={showNotifications} 
-        onOpenChange={setShowNotifications} 
+        isOpen={showNotifications} 
+        onClose={() => setShowNotifications(false)} 
       />
     </div>
   );
