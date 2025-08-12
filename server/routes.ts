@@ -13,6 +13,8 @@ import {
   insertMessageSchema, insertNotificationSchema, insertCaseRequestSchema
 } from "@shared/schema.js";
 import { sendCaseApprovalEmail, sendCaseRejectionEmail } from './email.js';
+import notificationRoutes from "./routes/notifications.js";
+import documentRoutes from "./routes/documents.js";
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(process.cwd(), 'uploads');
@@ -871,6 +873,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: 'Failed to fetch case request details' });
     }
   });
+
+  // Add new routes
+  app.use('/api/notifications', notificationRoutes);
+  app.use('/api/documents', documentRoutes);
 
   // Serve uploaded files
   app.use('/api/uploads', express.static(path.join(process.cwd(), 'uploads')));

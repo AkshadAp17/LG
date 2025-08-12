@@ -231,7 +231,8 @@ export default function LegalSidebar({ collapsed = false, onToggle }: SidebarPro
                           )}>
                             {item.label}
                           </span>
-                          {item.badge && (
+                          {/* Hide badge when on notifications page */}
+                          {item.badge && location !== '/notifications' && (
                             <Badge 
                               variant="secondary" 
                               className="bg-blue-600 text-blue-100 text-xs px-2 py-0.5"
