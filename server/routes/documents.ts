@@ -5,7 +5,7 @@ import fs from 'fs';
 import { EmailService } from '../services/emailService.js';
 import { authenticateToken } from '../middleware/auth.js';
 import { storage } from '../storage.js';
-import { NotificationModel } from '../db.js';
+import { NotificationModel, CaseModel } from '../db.js';
 import mongoose from 'mongoose';
 
 // Document schema for file tracking
@@ -26,7 +26,7 @@ const Document = mongoose.models.Document || mongoose.model('Document', document
 const router = express.Router();
 
 // Configure multer for file uploads
-const storage = multer.diskStorage({
+const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadDir = 'uploads/documents';
     if (!fs.existsSync(uploadDir)) {
@@ -41,7 +41,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({
-  storage: storage,
+  storage: multerStorage,
   limits: {
     fileSize: 10 * 1024 * 1024 // 10MB limit
   },
@@ -66,12 +66,12 @@ router.get('/', authenticateToken, async (req: any, res) => {
     // Filter documents based on user role
     if (req.user.role === 'client') {
       // Clients can only see documents for their cases
-      const userCases = await storage.getCases({ clientId: req.user._id });
+      const userCases = await CaseModel.find({ clientId: req.user._id });
       const caseIds = userCases.map(case_ => case_._id);
       filter = { caseId: { $in: caseIds } };
     } else if (req.user.role === 'lawyer') {
       // Lawyers can see documents for cases they're assigned to
-      const lawyerCases = await storage.getCases({ lawyerId: req.user._id });
+      const lawyerCases = await CaseModel.find({ lawyerId: req.user._id });
       const caseIds = lawyerCases.map(case_ => case_._id);
       filter = { caseId: { $in: caseIds } };
     }
@@ -101,7 +101,7 @@ router.post('/upload', authenticateToken, upload.single('document'), async (req:
     }
 
     // Get case details
-    const case_ = await storage.getCase(caseId);
+    const case_ = await CaseModel.findById(caseId);
     if (!case_) {
       return res.status(404).json({ error: 'Case not found' });
     }

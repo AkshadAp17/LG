@@ -61,17 +61,25 @@ export default function DocumentsPage() {
   // Upload mutation
   const uploadMutation = useMutation({
     mutationFn: async (formData: FormData) => {
+      const token = localStorage.getItem('token');
       const response = await fetch('/api/documents/upload', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: formData
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Upload failed');
+        const errorText = await response.text();
+        let errorMessage = 'Upload failed';
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.error || errorJson.message || 'Upload failed';
+        } catch {
+          errorMessage = errorText || 'Upload failed';
+        }
+        throw new Error(errorMessage);
       }
 
       return response.json();

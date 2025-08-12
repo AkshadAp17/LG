@@ -118,7 +118,7 @@ export default function LegalSidebar({ collapsed = false, onToggle }: SidebarPro
 
   return (
     <div className={cn(
-      "flex flex-col h-full bg-gradient-to-b from-slate-900 to-slate-800 text-white transition-all duration-300",
+      "fixed left-0 top-0 z-30 flex flex-col h-full bg-gradient-to-b from-slate-900 to-slate-800 text-white transition-all duration-300",
       collapsed ? "w-16" : "w-72"
     )}>
       {/* Header */}

@@ -79,7 +79,7 @@ export default function ModernLayout({ children }: LayoutProps) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Top Header Bar */}
-        <header className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 border-b border-purple-300/20 shadow-2xl h-16 flex items-center justify-between px-4 lg:px-6">
+        <header className="fixed top-0 right-0 left-0 z-40 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 border-b border-purple-300/20 shadow-2xl h-16 flex items-center justify-between px-4 lg:px-6" style={{ left: isMobile ? '0' : (sidebarCollapsed ? '4rem' : '18rem') }}>
           <div className="flex items-center space-x-4">
             {/* Mobile Menu Button */}
             {isMobile && (
@@ -139,7 +139,7 @@ export default function ModernLayout({ children }: LayoutProps) {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto pt-16">
           <div className="p-4 lg:p-6">
             {children}
           </div>
