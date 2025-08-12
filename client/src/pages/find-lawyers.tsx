@@ -205,11 +205,6 @@ export default function FindLawyers() {
             <div className="space-y-6">
               {/* Enhanced Profile Header */}
               <div className="text-center bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8 border border-blue-200/50">
-                <Avatar className="w-24 h-24 mx-auto mb-4 ring-4 ring-blue-200">
-                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-3xl font-bold">
-                    {selectedLawyer.name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">{selectedLawyer.name}</h2>
                 <p className="text-gray-600 font-medium mb-4 text-lg">{selectedLawyer.city}</p>
                 <div className="flex items-center justify-center bg-white/70 rounded-full px-6 py-3 backdrop-blur-sm">
@@ -340,13 +335,7 @@ export default function FindLawyers() {
                       }`}
                       onClick={() => setSelectedLawyer(lawyer)}
                     >
-                      <div className="flex items-start space-x-4 flex-1">
-                        <Avatar className="w-16 h-16 flex-shrink-0">
-                          <AvatarFallback className="bg-green-100 text-green-600 text-xl font-semibold">
-                            {lawyer.name.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        
+                      <div className="flex items-start flex-1">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-2">
                             <h3 className="text-xl font-bold text-gray-900 truncate">{lawyer.name}</h3>
@@ -439,11 +428,6 @@ export default function FindLawyers() {
                 <div className="space-y-6">
                   {/* Enhanced Profile Header */}
                   <div className="text-center bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-6 border border-blue-200/50">
-                    <Avatar className="w-20 h-20 mx-auto mb-4 ring-4 ring-blue-200">
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-2xl font-bold">
-                        {selectedLawyer.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
                     <h3 className="text-2xl font-bold text-gray-900 mb-1">{selectedLawyer.name}</h3>
                     <p className="text-gray-600 font-medium mb-3">{selectedLawyer.city}</p>
                     <div className="flex items-center justify-center bg-white/70 rounded-full px-4 py-2 backdrop-blur-sm">
