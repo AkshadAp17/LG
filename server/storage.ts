@@ -18,7 +18,7 @@ export interface IStorage {
   login(data: LoginData): Promise<AuthResponse>;
   register(user: InsertUser): Promise<User>;
   createPasswordResetToken(email: string): Promise<{ token: string } | null>;
-  resetPassword(token: string, newPassword: string): Promise<boolean>;
+  resetPassword(email: string, otp: string, newPassword: string): Promise<boolean>;
   
   // Users
   getUser(id: string): Promise<User | null>;
@@ -106,24 +106,25 @@ export class MongoStorage implements IStorage {
     const user = await UserModel.findOne({ email });
     if (!user) return null;
     
-    // Generate a random token
-    const token = Math.random().toString(36).substr(2, 15) + Math.random().toString(36).substr(2, 15);
-    const expires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+    // Generate a 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     
-    // In a real app, you'd save this to a separate collection
-    // For demo purposes, we'll just return the token
-    return { token };
+    // In a real app, you'd save this OTP to database with expiration
+    // For demo purposes, we'll return the OTP
+    return { token: otp };
   }
 
-  async resetPassword(token: string, newPassword: string): Promise<boolean> {
-    // In a real app, you'd validate the token against your database
-    // For demo purposes, we'll just update any user's password if they provide a token
-    // This is NOT secure and should not be used in production
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    
-    // For demo, let's just return true if token exists
-    if (token) {
-      return true;
+  async resetPassword(email: string, otp: string, newPassword: string): Promise<boolean> {
+    // In a real app, you'd validate the OTP against your database
+    // For demo purposes, we'll validate the OTP format and update password
+    if (otp && otp.length === 6 && /^\d{6}$/.test(otp)) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const result = await UserModel.updateOne(
+        { email }, 
+        { password: hashedPassword }
+      );
+      return result.modifiedCount > 0;
     }
     return false;
   }
@@ -727,8 +728,8 @@ class StorageManager implements IStorage {
     return this.getStorage().createPasswordResetToken(email);
   }
 
-  async resetPassword(token: string, newPassword: string): Promise<boolean> {
-    return this.getStorage().resetPassword(token, newPassword);
+  async resetPassword(email: string, otp: string, newPassword: string): Promise<boolean> {
+    return this.getStorage().resetPassword(email, otp, newPassword);
   }
 
   async getUser(id: string): Promise<User | null> {

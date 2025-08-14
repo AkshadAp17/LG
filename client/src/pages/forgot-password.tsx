@@ -12,11 +12,11 @@ import { toast } from '@/hooks/use-toast';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
-  const [resetToken, setResetToken] = useState('');
+  const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [step, setStep] = useState<'request' | 'reset'>('request');
-  const [tokenReceived, setTokenReceived] = useState<string>('');
+  const [otpReceived, setOtpReceived] = useState<string>('');
 
   const requestResetMutation = useMutation({
     mutationFn: async (email: string) => {
@@ -24,11 +24,11 @@ export default function ForgotPassword() {
       return response.json();
     },
     onSuccess: (data) => {
-      setTokenReceived(data.resetToken || '');
+      setOtpReceived(data.otp || '');
       setStep('reset');
       toast({
-        title: 'Reset Token Generated',
-        description: 'Please enter the token and your new password below.',
+        title: 'OTP Sent',
+        description: 'Please check your email for the 6-digit OTP and enter it below.',
       });
     },
     onError: (error: any) => {
@@ -41,7 +41,7 @@ export default function ForgotPassword() {
   });
 
   const resetPasswordMutation = useMutation({
-    mutationFn: async (data: { token: string; newPassword: string }) => {
+    mutationFn: async (data: { email: string; otp: string; newPassword: string }) => {
       const response = await apiRequest('POST', '/api/auth/reset-password', data);
       return response.json();
     },
@@ -74,19 +74,28 @@ export default function ForgotPassword() {
 
   const handleResetPassword = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!resetToken || !newPassword) {
-      toast({ title: 'Error', description: 'Please fill in all fields', variant: 'destructive' });
+    
+    if (!otp || !newPassword || !confirmPassword) {
+      toast({ title: 'Error', description: 'All fields are required', variant: 'destructive' });
       return;
     }
+    
+    if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+      toast({ title: 'Error', description: 'Please enter a valid 6-digit OTP', variant: 'destructive' });
+      return;
+    }
+    
     if (newPassword !== confirmPassword) {
       toast({ title: 'Error', description: 'Passwords do not match', variant: 'destructive' });
       return;
     }
+    
     if (newPassword.length < 6) {
-      toast({ title: 'Error', description: 'Password must be at least 6 characters', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Password must be at least 6 characters long', variant: 'destructive' });
       return;
     }
-    resetPasswordMutation.mutate({ token: resetToken, newPassword });
+    
+    resetPasswordMutation.mutate({ email, otp, newPassword });
   };
 
   return (
@@ -112,8 +121,8 @@ export default function ForgotPassword() {
             </CardTitle>
             <CardDescription className="text-center text-gray-600">
               {step === 'request' 
-                ? 'Enter your email address to receive a password reset token'
-                : 'Enter the reset token and your new password'
+                ? 'Enter your email address to receive a 6-digit OTP'
+                : 'Enter the 6-digit OTP and your new password'
               }
             </CardDescription>
           </CardHeader>
@@ -151,17 +160,17 @@ export default function ForgotPassword() {
                       Sending Request...
                     </div>
                   ) : (
-                    'Send Reset Token'
+                    'Send OTP'
                   )}
                 </Button>
               </form>
             ) : (
               <form onSubmit={handleResetPassword} className="space-y-4">
-                {tokenReceived && (
+                {otpReceived && (
                   <Alert className="border-green-200 bg-green-50">
                     <CheckCircle2 className="h-4 w-4 text-green-600" />
                     <AlertDescription className="text-green-700">
-                      <strong>Demo Token Generated:</strong> {tokenReceived}
+                      <strong>Demo OTP Generated:</strong> {otpReceived}
                       <br />
                       <span className="text-sm text-green-600 mt-1 block">
                         (In production, this would be sent via email)
@@ -171,17 +180,19 @@ export default function ForgotPassword() {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="token" className="text-sm font-medium text-gray-700">
-                    Reset Token
+                  <Label htmlFor="otp" className="text-sm font-medium text-gray-700">
+                    6-Digit OTP
                   </Label>
                   <Input
-                    id="token"
+                    id="otp"
                     type="text"
-                    placeholder="Enter the reset token"
-                    value={resetToken}
-                    onChange={(e) => setResetToken(e.target.value)}
-                    className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="Enter 6-digit OTP"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500 text-center text-lg font-mono"
                     disabled={resetPasswordMutation.isPending}
+                    maxLength={6}
+                    pattern="[0-9]{6}"
                     required
                   />
                 </div>

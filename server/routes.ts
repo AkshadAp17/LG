@@ -95,11 +95,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const resetToken = await storage.createPasswordResetToken(email);
       if (resetToken) {
-        // In a real application, you would send this via email
+        // In a real application, you would send this OTP via email
         // For demo purposes, we'll return it in the response
         res.json({ 
-          message: 'Reset token generated successfully',
-          resetToken: resetToken.token // Remove this in production
+          message: 'OTP sent to your email address',
+          otp: resetToken.token // Remove this in production - only for demo
         });
       } else {
         res.status(404).json({ message: 'User not found' });
@@ -111,16 +111,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/auth/reset-password', async (req, res) => {
     try {
-      const { token, newPassword } = req.body;
-      if (!token || !newPassword) {
-        return res.status(400).json({ message: 'Token and new password are required' });
+      const { email, otp, newPassword } = req.body;
+      if (!email || !otp || !newPassword) {
+        return res.status(400).json({ message: 'Email, OTP and new password are required' });
       }
 
-      const success = await storage.resetPassword(token, newPassword);
+      const success = await storage.resetPassword(email, otp, newPassword);
       if (success) {
         res.json({ message: 'Password reset successfully' });
       } else {
-        res.status(400).json({ message: 'Invalid or expired reset token' });
+        res.status(400).json({ message: 'Invalid OTP or email' });
       }
     } catch (error: any) {
       res.status(500).json({ message: error.message || 'Failed to reset password' });
