@@ -101,15 +101,7 @@ export default function LegalSidebar({ collapsed = false, onToggle }: SidebarPro
       });
     }
 
-    if (user?.role === 'police') {
-      baseItems.splice(2, 0, {
-        icon: Shield,
-        label: 'Approvals',
-        href: '/case-requests',
-        badge: null,
-        description: 'Case Approvals'
-      });
-    }
+
 
     return baseItems;
   };
