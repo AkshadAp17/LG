@@ -412,7 +412,6 @@ export class MemoryStorage implements IStorage {
       ...caseRequest,
       status: 'pending',
       createdAt: new Date(),
-      updatedAt: new Date(),
     };
     this.caseRequests.push(newCaseRequest);
     return newCaseRequest;
@@ -422,7 +421,62 @@ export class MemoryStorage implements IStorage {
     const index = this.caseRequests.findIndex(cr => cr._id === id);
     if (index === -1) return null;
     
-    this.caseRequests[index] = { ...this.caseRequests[index], ...data, updatedAt: new Date() };
+    this.caseRequests[index] = { ...this.caseRequests[index], ...data };
     return this.caseRequests[index];
+  }
+
+  async createPasswordResetToken(email: string): Promise<{ token: string } | null> {
+    const user = this.users.find(u => u.email === email);
+    if (!user) {
+      return null;
+    }
+    
+    // Generate a 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log(`📧 Generated OTP for ${email}: ${otp}`);
+    return { token: otp };
+  }
+
+  async resetPassword(email: string, otp: string, newPassword: string): Promise<boolean> {
+    // For demo purposes, we'll validate the OTP format and update password
+    if (otp && otp.length === 6 && /^\d{6}$/.test(otp)) {
+      const userIndex = this.users.findIndex(u => u.email === email);
+      if (userIndex === -1) return false;
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      this.users[userIndex] = {
+        ...this.users[userIndex],
+        password: hashedPassword,
+        updatedAt: new Date()
+      };
+      
+      console.log(`🔐 Password reset successful for ${email}`);
+      return true;
+    }
+    return false;
+  }
+
+  async directPasswordReset(email: string, newPassword: string): Promise<boolean> {
+    try {
+      const userIndex = this.users.findIndex(u => u.email === email);
+      if (userIndex === -1) {
+        console.log(`❌ User not found: ${email}`);
+        return false;
+      }
+
+      // Hash new password and update
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      this.users[userIndex] = {
+        ...this.users[userIndex],
+        password: hashedPassword,
+        updatedAt: new Date()
+      };
+      
+      console.log(`🔐 Direct password reset successful for ${email}`);
+      return true;
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      return false;
+    }
   }
 }

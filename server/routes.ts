@@ -85,42 +85,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(req.user);
   });
 
-  // Forgot password routes
-  app.post('/api/auth/forgot-password', async (req, res) => {
-    try {
-      const { email } = req.body;
-      if (!email) {
-        return res.status(400).json({ message: 'Email is required' });
-      }
-
-      const resetToken = await storage.createPasswordResetToken(email);
-      if (resetToken) {
-        // In a real application, you would send this OTP via email
-        // For demo purposes, we'll return it in the response
-        res.json({ 
-          message: 'OTP sent to your email address',
-          otp: resetToken.token // Remove this in production - only for demo
-        });
-      } else {
-        res.status(404).json({ message: 'User not found' });
-      }
-    } catch (error: any) {
-      res.status(500).json({ message: error.message || 'Failed to process password reset' });
-    }
-  });
-
+  // Forgot password routes (simplified - no OTP required)
   app.post('/api/auth/reset-password', async (req, res) => {
     try {
-      const { email, otp, newPassword } = req.body;
-      if (!email || !otp || !newPassword) {
-        return res.status(400).json({ message: 'Email, OTP and new password are required' });
+      const { email, newPassword } = req.body;
+      if (!email || !newPassword) {
+        return res.status(400).json({ message: 'Email and new password are required' });
       }
 
-      const success = await storage.resetPassword(email, otp, newPassword);
+      // Direct password reset without OTP verification
+      const success = await storage.directPasswordReset(email, newPassword);
       if (success) {
         res.json({ message: 'Password reset successfully' });
       } else {
-        res.status(400).json({ message: 'Invalid OTP or email' });
+        res.status(404).json({ message: 'User not found' });
       }
     } catch (error: any) {
       res.status(500).json({ message: error.message || 'Failed to reset password' });

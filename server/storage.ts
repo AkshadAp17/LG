@@ -19,6 +19,7 @@ export interface IStorage {
   register(user: InsertUser): Promise<User>;
   createPasswordResetToken(email: string): Promise<{ token: string } | null>;
   resetPassword(email: string, otp: string, newPassword: string): Promise<boolean>;
+  directPasswordReset(email: string, newPassword: string): Promise<boolean>;
   
   // Users
   getUser(id: string): Promise<User | null>;
@@ -127,6 +128,28 @@ export class MongoStorage implements IStorage {
       return result.modifiedCount > 0;
     }
     return false;
+  }
+
+  async directPasswordReset(email: string, newPassword: string): Promise<boolean> {
+    try {
+      // Check if user exists
+      const user = await UserModel.findOne({ email });
+      if (!user) {
+        return false;
+      }
+
+      // Hash new password and update
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const result = await UserModel.updateOne(
+        { email }, 
+        { password: hashedPassword }
+      );
+      
+      return result.modifiedCount > 0;
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      return false;
+    }
   }
 
   async register(userData: InsertUser): Promise<User> {
