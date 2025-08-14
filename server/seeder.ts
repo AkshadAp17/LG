@@ -24,8 +24,11 @@ export const seedDatabase = async () => {
       { name: 'Bandra', code: 'MUM-001', city: 'mumbai', address: 'Bandra West, Mumbai', phone: '+91-22-26421234', email: 'bandra.mumbai@police.gov.in' },
       { name: 'Andheri', code: 'MUM-002', city: 'mumbai', address: 'Andheri East, Mumbai', phone: '+91-22-26851234', email: 'andheri.mumbai@police.gov.in' },
       { name: 'Colaba', code: 'MUM-003', city: 'mumbai', address: 'Colaba, Mumbai', phone: '+91-22-22151234', email: 'colaba.mumbai@police.gov.in' },
-      { name: 'Thane', code: 'MAH-001', city: 'pune', address: 'Thane West, Maharashtra', phone: '+91-22-25331234', email: 'thane.maharashtra@police.gov.in' },
+      { name: 'Thane', code: 'MAH-001', city: 'thane', address: 'Thane West, Maharashtra', phone: '+91-22-25331234', email: 'thane.maharashtra@police.gov.in' },
       { name: 'Pune City', code: 'PUN-001', city: 'pune', address: 'FC Road, Pune', phone: '+91-20-26051234', email: 'pune.maharashtra@police.gov.in' },
+      { name: 'Pimpri Chinchwad', code: 'PUN-002', city: 'pune', address: 'Pimpri Chinchwad, Pune', phone: '+91-20-27421234', email: 'pcmc.pune@police.gov.in' },
+      { name: 'Hadapsar', code: 'PUN-003', city: 'pune', address: 'Hadapsar, Pune', phone: '+91-20-26821234', email: 'hadapsar.pune@police.gov.in' },
+      { name: 'Shivajinagar', code: 'PUN-004', city: 'pune', address: 'Shivajinagar, Pune', phone: '+91-20-25531234', email: 'shivajinagar.pune@police.gov.in' },
       { name: 'Nashik Road', code: 'NAS-001', city: 'nashik', address: 'Nashik Road, Nashik', phone: '+91-253-2451234', email: 'nashik.maharashtra@police.gov.in' },
       
       // Bangalore/Karnataka

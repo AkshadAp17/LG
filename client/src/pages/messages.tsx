@@ -205,8 +205,12 @@ export default function Messages() {
             </div>
 
             {/* Conversations List */}
-            <ScrollArea className="h-[calc(100%-120px)] max-w-full">
-              <div className="p-2 max-w-full overflow-hidden">
+            <ScrollArea className="h-[calc(100%-120px)] max-w-full overflow-x-hidden">
+              <div className="p-2 max-w-full overflow-hidden"
+                style={{
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#8B5CF6 #E5E7EB'
+                }}>
                 {contactsLoading ? (
                   <div className="flex items-center justify-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>

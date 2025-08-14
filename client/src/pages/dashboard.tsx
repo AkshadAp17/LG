@@ -190,14 +190,14 @@ export default function Dashboard() {
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="overview" className="space-y-6">
-        <div className="flex items-center justify-between">
-          <TabsList className="grid w-fit grid-cols-4">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="cases">Recent Cases</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            {user?.role === 'client' && <TabsTrigger value="lawyers">Find Lawyers</TabsTrigger>}
-            {user?.role === 'lawyer' && <TabsTrigger value="requests">Case Requests</TabsTrigger>}
-            {user?.role === 'police' && <TabsTrigger value="pending">Pending Approval</TabsTrigger>}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <TabsList className="grid w-full sm:w-fit grid-cols-2 sm:grid-cols-4 text-sm">
+            <TabsTrigger value="overview" className="text-xs sm:text-sm px-2 sm:px-4">Overview</TabsTrigger>
+            <TabsTrigger value="cases" className="text-xs sm:text-sm px-2 sm:px-4">Cases</TabsTrigger>
+            <TabsTrigger value="notifications" className="text-xs sm:text-sm px-2 sm:px-4">Notifications</TabsTrigger>
+            {user?.role === 'client' && <TabsTrigger value="lawyers" className="text-xs sm:text-sm px-2 sm:px-4">Lawyers</TabsTrigger>}
+            {user?.role === 'lawyer' && <TabsTrigger value="requests" className="text-xs sm:text-sm px-2 sm:px-4">Requests</TabsTrigger>}
+            {user?.role === 'police' && <TabsTrigger value="pending" className="text-xs sm:text-sm px-2 sm:px-4">Pending</TabsTrigger>}
           </TabsList>
           
           <div className="flex items-center space-x-2">
@@ -215,8 +215,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <TabsContent value="overview" className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Recent Activity */}
             <Card className="border-0 shadow-md">
               <CardHeader className="pb-3">
