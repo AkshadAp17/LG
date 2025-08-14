@@ -105,7 +105,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (resetToken) {
         // Send OTP via email
         try {
-          const { sendEmail } = await import('./email.js');
+          const { sendEmail } = await import('./email');
           await sendEmail(
             email,
             '🔐 Password Reset OTP - Legal Case Management',
