@@ -36,9 +36,15 @@ export default function Messages() {
   
   const user = authService.getUser();
 
-  const { data: contacts = [], isLoading: contactsLoading } = useQuery<User[]>({
+  // Fetch all contacts first
+  const { data: allContacts = [], isLoading: contactsLoading } = useQuery<User[]>({
     queryKey: ['/api/users'],
   });
+
+  // Filter contacts based on user role - police only see lawyers
+  const contacts = user?.role === 'police' 
+    ? allContacts.filter(contact => contact.role === 'lawyer')
+    : allContacts;
 
   // Get user's cases to show assigned lawyers
   const { data: userCases = [] } = useQuery<any[]>({
@@ -113,7 +119,7 @@ export default function Messages() {
         return matchesSearch && contact.role === 'client';
       }
       
-      // For police, show all users
+      // For police, only show lawyers (already filtered above)
       return matchesSearch;
     })
     .sort((a, b) => {
@@ -293,7 +299,7 @@ export default function Messages() {
         </Card>
 
         {/* Chat Area */}
-        <Card className="border border-purple-200/50 shadow-xl bg-white lg:col-span-2 backdrop-blur-sm h-[600px]">
+        <Card className="border border-purple-200/50 shadow-xl bg-white lg:col-span-2 backdrop-blur-sm h-[600px] relative">
           <CardContent className="p-0 h-full flex flex-col overflow-hidden">
             {selectedContact ? (
               <>
@@ -342,7 +348,11 @@ export default function Messages() {
                 </div>
 
                 {/* Messages */}
-                <ScrollArea className="h-[420px] p-4">
+                <ScrollArea className="h-[420px] p-4" onScrollCapture={(e) => {
+                  // Handle scroll to see if user is at bottom
+                  const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+                  const isAtBottom = scrollHeight - scrollTop === clientHeight;
+                }}>
                   <div className="space-y-2">
                     {messagesLoading ? (
                       <div className="flex items-center justify-center py-8">
@@ -386,6 +396,17 @@ export default function Messages() {
                     <div ref={messagesEndRef} />
                   </div>
                 </ScrollArea>
+                
+                {/* Scroll to bottom button */}
+                <div className="absolute bottom-20 right-4 z-10">
+                  <Button 
+                    size="sm"
+                    className="rounded-full w-10 h-10 bg-purple-600 hover:bg-purple-700 shadow-lg"
+                    onClick={scrollToBottom}
+                  >
+                    ↓
+                  </Button>
+                </div>
 
                 {/* Message Input */}
                 <div className="p-6 border-t border-purple-200/50 bg-gradient-to-r from-white to-purple-50/20">

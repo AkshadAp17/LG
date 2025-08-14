@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import {
   Scale,
   Filter,
@@ -487,29 +487,6 @@ export default function Cases() {
 
               {/* Action Buttons */}
               <div className="flex gap-4 pt-4 border-t border-gray-200">
-                {user?.role === 'police' && (selectedCase.status === 'under_review' || selectedCase.status === 'submitted') && (
-                  <>
-                    <Button
-                      onClick={() => selectedCase._id && approveCaseMutation.mutate(selectedCase._id)}
-                      disabled={approveCaseMutation.isPending}
-                      className="flex-1 h-14 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl shadow-lg text-lg"
-                      data-testid="button-approve-case"
-                    >
-                      <CheckCircle2 className="mr-3" size={20} />
-                      {approveCaseMutation.isPending ? 'Approving...' : 'Approve Case'}
-                    </Button>
-                    <Button
-                      onClick={() => selectedCase._id && rejectCaseMutation.mutate(selectedCase._id)}
-                      disabled={rejectCaseMutation.isPending}
-                      variant="outline"
-                      className="flex-1 h-14 border-2 border-red-300 hover:bg-red-50 text-red-700 font-medium rounded-xl"
-                      data-testid="button-reject-case"
-                    >
-                      <XCircle className="mr-3" size={20} />
-                      {rejectCaseMutation.isPending ? 'Rejecting...' : 'Reject Case'}
-                    </Button>
-                  </>
-                )}
                 {user?.role === 'lawyer' && (
                   <Button 
                     onClick={() => handleDeleteCase(selectedCase)}
@@ -612,6 +589,9 @@ export default function Cases() {
               <Upload className="mr-2 text-indigo-600" size={20} />
               Upload Document
             </DialogTitle>
+            <DialogDescription>
+              Select a document file to upload for this case. Supported formats: PDF, DOC, DOCX, JPG, PNG
+            </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4">
