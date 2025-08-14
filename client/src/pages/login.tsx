@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -214,6 +214,14 @@ export default function Login() {
                   {loginMutation.isPending ? "Signing in..." : "Sign In"}
                 </Button>
               </form>
+
+              <div className="text-center mt-4">
+                <Link href="/forgot-password">
+                  <Button variant="link" className="text-sm text-blue-600 hover:text-blue-700 p-0 h-auto">
+                    Forgot your password?
+                  </Button>
+                </Link>
+              </div>
 
 
             </TabsContent>

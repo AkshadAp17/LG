@@ -159,7 +159,7 @@ export const notificationSchema = z.object({
   userId: z.string(),
   title: z.string(),
   message: z.string(),
-  type: z.enum(['case_approved', 'case_rejected', 'hearing_scheduled', 'new_message', 'case_created', 'case_request']),
+  type: z.enum(['case_approved', 'case_rejected', 'case_deleted', 'hearing_scheduled', 'new_message', 'case_created', 'case_request']),
   read: z.boolean().optional(),
   caseId: z.string().optional(),
   caseRequestId: z.string().optional(),
@@ -185,3 +185,17 @@ export const authResponseSchema = z.object({
 });
 
 export type AuthResponse = z.infer<typeof authResponseSchema>;
+
+// Password Reset Token Schema
+export const passwordResetTokenSchema = z.object({
+  _id: z.string().optional(),
+  email: z.string().email(),
+  token: z.string(),
+  expires: z.date(),
+  used: z.boolean().default(false),
+  createdAt: z.date().optional(),
+});
+
+export const insertPasswordResetTokenSchema = passwordResetTokenSchema.omit({ _id: true, createdAt: true });
+export type PasswordResetToken = z.infer<typeof passwordResetTokenSchema>;
+export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;

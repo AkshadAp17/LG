@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { authService } from "./lib/auth";
 import Login from "@/pages/login";
+import ForgotPassword from "@/pages/forgot-password";
 
 import Dashboard from "@/pages/dashboard";
 import Lawyers from "@/pages/lawyers";
@@ -28,6 +29,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/login" component={Login} />
+      <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/signup">
         <Redirect to="/login" />
       </Route>

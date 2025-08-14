@@ -173,7 +173,7 @@ export default function Messages() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
         {/* Contacts Sidebar */}
-        <Card className="border border-purple-200/50 shadow-xl bg-gradient-to-b from-white to-purple-50/30 lg:col-span-1 backdrop-blur-sm h-[600px]">
+        <Card className="border border-purple-200/50 shadow-xl bg-gradient-to-b from-white to-purple-50/30 lg:col-span-1 backdrop-blur-sm h-[600px] max-w-full overflow-hidden">
           <CardContent className="p-0">
             {/* Search Header */}
             <div className="p-4 border-b border-purple-200/50 bg-gradient-to-r from-purple-50 to-white">
@@ -199,8 +199,8 @@ export default function Messages() {
             </div>
 
             {/* Conversations List */}
-            <ScrollArea className="h-[calc(100%-120px)]">
-              <div className="p-2">
+            <ScrollArea className="h-[calc(100%-120px)] max-w-full">
+              <div className="p-2 max-w-full overflow-hidden">
                 {contactsLoading ? (
                   <div className="flex items-center justify-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
@@ -246,9 +246,9 @@ export default function Messages() {
                           )}
                         </div>
                         
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0 overflow-hidden">
                           <div className="flex items-center justify-between mb-1">
-                            <h3 className="font-semibold text-gray-900 truncate">{contact.name}</h3>
+                            <h3 className="font-semibold text-gray-900 truncate max-w-[140px] md:max-w-none">{contact.name}</h3>
                             {lastMessage && (
                               <span className="text-xs text-gray-500">
                                 {lastMessage.timestamp ? formatDistanceToNow(new Date(lastMessage.timestamp), { addSuffix: true }) : 'Just now'}
@@ -265,7 +265,7 @@ export default function Messages() {
                           )}
                           
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-600 truncate">
+                            <span className="text-sm text-gray-600 truncate max-w-[120px] md:max-w-none">
                               {lastMessage 
                                 ? (lastMessage.senderId === user?._id ? 'You: ' : '') + lastMessage.content
                                 : 'No messages yet'
@@ -367,7 +367,7 @@ export default function Messages() {
                                 ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-purple-500/20'
                                 : 'bg-white border border-gray-200 text-gray-900 shadow-gray-200/50'
                             }`}>
-                              <p className="text-sm">{message.content}</p>
+                              <div className="text-sm">{message.content}</div>
                               <div className={`flex items-center justify-end mt-1 space-x-1 ${
                                 isOwnMessage ? 'text-purple-200' : 'text-gray-500'
                               }`}>

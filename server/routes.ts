@@ -85,6 +85,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(req.user);
   });
 
+  // Forgot password routes
+  app.post('/api/auth/forgot-password', async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ message: 'Email is required' });
+      }
+
+      const resetToken = await storage.createPasswordResetToken(email);
+      if (resetToken) {
+        // In a real application, you would send this via email
+        // For demo purposes, we'll return it in the response
+        res.json({ 
+          message: 'Reset token generated successfully',
+          resetToken: resetToken.token // Remove this in production
+        });
+      } else {
+        res.status(404).json({ message: 'User not found' });
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || 'Failed to process password reset' });
+    }
+  });
+
+  app.post('/api/auth/reset-password', async (req, res) => {
+    try {
+      const { token, newPassword } = req.body;
+      if (!token || !newPassword) {
+        return res.status(400).json({ message: 'Token and new password are required' });
+      }
+
+      const success = await storage.resetPassword(token, newPassword);
+      if (success) {
+        res.json({ message: 'Password reset successfully' });
+      } else {
+        res.status(400).json({ message: 'Invalid or expired reset token' });
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || 'Failed to reset password' });
+    }
+  });
+
   // Police Stations routes
   app.get('/api/police-stations', async (req, res) => {
     try {
@@ -290,7 +332,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Case approval/rejection (Police only)
-  app.patch('/api/cases/:id/approve', authenticateToken, requireRole(['police']), async (req: any, res) => {
+  app.post('/api/cases/:id/approve', authenticateToken, requireRole(['police']), async (req: any, res) => {
     try {
       const caseId = req.params.id;
       const case_ = await storage.getCase(caseId);

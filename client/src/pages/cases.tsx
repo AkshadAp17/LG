@@ -237,13 +237,13 @@ export default function Cases() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white">
-        <div className="flex items-center justify-between">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-4 md:p-8 text-white">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center">
-            <Scale className="mr-3 text-blue-200" size={32} />
+            <Scale className="mr-3 text-blue-200" size={24} />
             <div>
-              <h1 className="text-3xl font-bold mb-2">Case Management Hub</h1>
-              <p className="text-blue-200 flex items-center">
+              <h1 className="text-xl md:text-3xl font-bold mb-2">Case Management Hub</h1>
+              <p className="text-blue-200 flex items-center text-sm md:text-base">
                 <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
                 Live system • Track and manage your legal cases efficiently
               </p>
@@ -251,7 +251,7 @@ export default function Cases() {
           </div>
           <Button
             onClick={() => window.location.href = '/new-case'}
-            className="bg-white text-blue-600 hover:bg-blue-50 font-medium px-6 py-3 rounded-xl shadow-lg"
+            className="bg-white text-blue-600 hover:bg-blue-50 font-medium px-4 md:px-6 py-2 md:py-3 rounded-xl shadow-lg text-sm md:text-base w-full sm:w-auto"
             data-testid="button-new-case"
           >
             + New Case
@@ -556,8 +556,8 @@ export default function Cases() {
                         <div className="flex-1 space-y-3">
                           {/* Header Row */}
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                              <h3 className="text-lg font-semibold text-gray-900">{case_.title}</h3>
+                            <div className="flex items-center space-x-3 overflow-hidden">
+                              <h3 className="text-lg font-semibold text-gray-900 truncate">{case_.title}</h3>
                               <Badge className={`${getStatusColor(case_.status)} px-3 py-1`}>
                                 {getStatusIcon(case_.status)}
                                 <span className="ml-2 text-sm font-medium">
@@ -575,7 +575,7 @@ export default function Cases() {
                           <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">{case_.description}</p>
 
                           {/* Info Grid */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 text-sm">
                             <div className="flex items-center text-gray-600">
                               <FileText className="mr-2 text-blue-500" size={16} />
                               <span className="capitalize font-medium">{case_.caseType}</span>
