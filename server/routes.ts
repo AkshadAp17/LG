@@ -66,7 +66,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const result = await storage.login(loginData);
       res.json(result);
     } catch (error: any) {
-      res.status(401).json({ message: error.message || 'Login failed' });
+      // Provide more specific error messages
+      let errorMessage = 'Login failed';
+      if (error.message === 'User not found') {
+        errorMessage = 'Invalid email address';
+      } else if (error.message === 'Invalid password') {
+        errorMessage = 'Invalid password';
+      }
+      
+      res.status(401).json({ message: errorMessage });
     }
   });
 
@@ -85,20 +93,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(req.user);
   });
 
-  // Forgot password routes (simplified - no OTP required)
-  app.post('/api/auth/reset-password', async (req, res) => {
+  // Forgot password routes with email OTP
+  app.post('/api/auth/forgot-password', async (req, res) => {
     try {
-      const { email, newPassword } = req.body;
-      if (!email || !newPassword) {
-        return res.status(400).json({ message: 'Email and new password are required' });
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ message: 'Email is required' });
       }
 
-      // Direct password reset without OTP verification
-      const success = await storage.directPasswordReset(email, newPassword);
+      const resetToken = await storage.createPasswordResetToken(email);
+      if (resetToken) {
+        // Send OTP via email
+        try {
+          const { sendEmail } = await import('./email.js');
+          await sendEmail(
+            email,
+            '🔐 Password Reset OTP - Legal Case Management',
+            `Your password reset OTP is: ${resetToken.token}. This OTP is valid for 10 minutes.`,
+            `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <div style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div style="text-align: center; margin-bottom: 30px;">
+                  <div style="background: #0ea5e9; width: 60px; height: 60px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+                    <span style="color: white; font-size: 24px;">🔐</span>
+                  </div>
+                  <h1 style="color: #1e293b; margin: 0; font-size: 24px; font-weight: bold;">Password Reset Request</h1>
+                </div>
+                
+                <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; border-left: 4px solid #0ea5e9; margin-bottom: 20px; text-align: center;">
+                  <h2 style="color: #0c4a6e; margin: 0 0 10px 0; font-size: 32px; letter-spacing: 4px;">${resetToken.token}</h2>
+                  <p style="color: #64748b; margin: 0; font-size: 14px;">Enter this 6-digit code to reset your password</p>
+                </div>
+                
+                <p style="color: #64748b; line-height: 1.6; margin-bottom: 20px;">
+                  You requested a password reset for your Legal Case Management account. Use the code above to set a new password.
+                </p>
+                
+                <p style="color: #ef4444; font-size: 14px; margin-bottom: 20px;">
+                  This code expires in 10 minutes. If you didn't request this reset, please ignore this email.
+                </p>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                  <p style="color: #94a3b8; font-size: 14px;">
+                    Legal Case Management System<br>
+                    Professional Legal Services
+                  </p>
+                </div>
+              </div>
+            </div>
+            `
+          );
+          
+          res.json({ 
+            message: 'OTP sent to your email address. Please check your inbox.',
+          });
+        } catch (emailError) {
+          console.error('Failed to send email:', emailError);
+          res.status(500).json({ message: 'Failed to send OTP email. Please try again.' });
+        }
+      } else {
+        res.status(404).json({ message: 'Invalid email address' });
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || 'Failed to process password reset' });
+    }
+  });
+
+  app.post('/api/auth/reset-password', async (req, res) => {
+    try {
+      const { email, otp, newPassword } = req.body;
+      if (!email || !otp || !newPassword) {
+        return res.status(400).json({ message: 'Email, OTP and new password are required' });
+      }
+
+      const success = await storage.resetPassword(email, otp, newPassword);
       if (success) {
         res.json({ message: 'Password reset successfully' });
       } else {
-        res.status(404).json({ message: 'User not found' });
+        res.status(400).json({ message: 'Invalid OTP or email address' });
       }
     } catch (error: any) {
       res.status(500).json({ message: error.message || 'Failed to reset password' });
