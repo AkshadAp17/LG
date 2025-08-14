@@ -723,6 +723,14 @@ class StorageManager implements IStorage {
     return this.getStorage().register(user);
   }
 
+  async createPasswordResetToken(email: string): Promise<{ token: string } | null> {
+    return this.getStorage().createPasswordResetToken(email);
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<boolean> {
+    return this.getStorage().resetPassword(token, newPassword);
+  }
+
   async getUser(id: string): Promise<User | null> {
     return this.getStorage().getUser(id);
   }
